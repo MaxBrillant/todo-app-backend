@@ -2,6 +2,7 @@ package com.ndashimye.firstapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,9 +24,11 @@ public class UserTodo {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @NotBlank(message = "user is required")
     private User user;
 
     @Column(name = "user_todo_order", nullable = false)
+    @NotBlank(message = "order is required")
     private int order;
 
     @Column(name = "priority_level")

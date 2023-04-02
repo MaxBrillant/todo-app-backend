@@ -3,6 +3,7 @@ package com.ndashimye.firstapp.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class TodayTask {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id", nullable = false)
+    @NotBlank(message = "task is required")
     private Task task;
 
     @Column(name = "date")
