@@ -3,6 +3,7 @@ package com.ndashimye.firstapp.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.ZoneId;
@@ -29,6 +30,7 @@ public class Todo {
     private UserTodo userTodo;
 
     @Column(name = "name", length = 40, nullable = false)
+    @NotBlank(message = "name is required")
     private String name;
 
     @Column(name = "description", length = 255)

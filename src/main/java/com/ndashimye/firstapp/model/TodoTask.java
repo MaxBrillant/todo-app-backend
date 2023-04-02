@@ -4,6 +4,7 @@ package com.ndashimye.firstapp.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class TodoTask {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id", nullable = false)
+    @NotBlank(message = "todo is required")
     private Todo todo;
 
     @Column(name = "completion_time")
@@ -35,6 +37,7 @@ public class TodoTask {
     private ZonedDateTime completionTime;
 
     @Column(name = "todo_task_order", nullable = false)
+    @NotBlank(message = "order is required")
     private int order;
 
     @Column(name = "priority_level")

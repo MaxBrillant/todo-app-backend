@@ -3,6 +3,7 @@ package com.ndashimye.firstapp.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.ZoneId;
@@ -28,6 +29,7 @@ public class Task {
     private TodoTask todoTask;
 
     @Column(name = "name", nullable = false, length = 40)
+    @NotBlank(message = "name is required")
     private String name;
 
     @Column(name = "created_at")
