@@ -41,6 +41,9 @@ public class Todo {
     @Convert(converter = ZonedDateTimeAttributeConverter.class)
     private ZonedDateTime dueTime;
 
+    @Column(name = "is_recurrent")
+    private Boolean isRecurrent;
+
 
     @Column(name = "created_at")
     private ZonedDateTime createdAt;

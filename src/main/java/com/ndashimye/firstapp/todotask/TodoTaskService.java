@@ -40,8 +40,8 @@ public class TodoTaskService {
         if (Objects.nonNull(updatedTodoTask.getPriorityLevel()) && !String.valueOf(updatedTodoTask.getPriorityLevel()).equals("")) {
             todoTask.setPriorityLevel(updatedTodoTask.getPriorityLevel());
         }
-        if (Objects.nonNull(updatedTodoTask.getCompleted()) && !String.valueOf(updatedTodoTask.getCompleted()).equals("")) {
-            todoTask.setCompleted(updatedTodoTask.getCompleted());
+        if (Objects.nonNull(updatedTodoTask.getIsCompleted()) && !String.valueOf(updatedTodoTask.getIsCompleted()).equals("")) {
+            todoTask.setIsCompleted(updatedTodoTask.getIsCompleted());
         }
         todoTaskRepository.save(todoTask);
     }

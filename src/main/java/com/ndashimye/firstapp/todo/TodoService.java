@@ -98,6 +98,9 @@ public class TodoService {
         if (Objects.nonNull(updatedTodo.getDueTime()) && !updatedTodo.getDueTime().equals("")) {
             todo.setDueTime(updatedTodo.getDueTime());
         }
+        if (Objects.nonNull(updatedTodo.getIsRecurrent()) && !String.valueOf(updatedTodo.getIsRecurrent()).equals("")) {
+            todo.setIsRecurrent(updatedTodo.getIsRecurrent());
+        }
 
         todoRepository.save(todo);
     }

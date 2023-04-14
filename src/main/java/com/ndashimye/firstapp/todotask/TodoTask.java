@@ -35,15 +35,15 @@ public class TodoTask {
     @Convert(converter = ZonedDateTimeAttributeConverter.class)
     private ZonedDateTime completionTime;
 
-    @Column(name = "todo_task_order", nullable = false)
+    @Column(name = "order", nullable = false)
     @NotBlank(message = "order is required")
     private int order;
 
     @Column(name = "priority_level")
     private Integer priorityLevel;
 
-    @Column(name = "completed")
-    private Boolean completed;
+    @Column(name = "is_completed")
+    private Boolean isCompleted;
 
 
 
