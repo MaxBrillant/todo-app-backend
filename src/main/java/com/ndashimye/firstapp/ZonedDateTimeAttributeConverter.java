@@ -1,14 +1,6 @@
 package com.ndashimye.firstapp;
-
-import com.ndashimye.firstapp.error.UserNotFoundException;
-import com.ndashimye.firstapp.error.UserSettingsNotFoundException;
-import com.ndashimye.firstapp.model.Todo;
-import com.ndashimye.firstapp.model.User;
-import com.ndashimye.firstapp.service.UserService;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
