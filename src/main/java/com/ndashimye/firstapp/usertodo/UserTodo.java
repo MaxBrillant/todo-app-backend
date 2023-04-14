@@ -27,7 +27,7 @@ public class UserTodo {
     @NotBlank(message = "user is required")
     private User user;
 
-    @Column(name = "user_todo_order", nullable = false)
+    @Column(name = "order", nullable = false)
     @NotBlank(message = "order is required")
     private int order;
 

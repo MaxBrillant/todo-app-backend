@@ -1,6 +1,5 @@
 package com.ndashimye.firstapp.error;
 import com.ndashimye.firstapp.task.TaskNotFoundException;
-import com.ndashimye.firstapp.todaytask.TodayTaskNotFoundException;
 import com.ndashimye.firstapp.todo.TodoNotFoundException;
 import com.ndashimye.firstapp.todotask.TodoTaskNotFoundException;
 import com.ndashimye.firstapp.user.UserNotFoundException;
@@ -92,16 +91,6 @@ public class RestResponseEntityExceptionHandler
     @ExceptionHandler(TodoTaskNotFoundException.class)
     public ResponseEntity<ErrorMessage> todoTaskNotFoundException(TodoTaskNotFoundException exception,
                                                               WebRequest request) {
-        ErrorMessage message = new ErrorMessage(HttpStatus.NOT_FOUND,
-                exception.getMessage());
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(message);
-    }
-
-    @ExceptionHandler(TodayTaskNotFoundException.class)
-    public ResponseEntity<ErrorMessage> todayTaskNotFoundException(TodayTaskNotFoundException exception,
-                                                                  WebRequest request) {
         ErrorMessage message = new ErrorMessage(HttpStatus.NOT_FOUND,
                 exception.getMessage());
 

@@ -18,13 +18,13 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     @Query("SELECT t FROM Task t " +
             "INNER JOIN TodoTask tt ON t.todoTask = tt " +
             "INNER JOIN Todo td ON tt.todo = td " +
-            "WHERE td = :todo AND tt.completed = true ")
+            "WHERE td = :todo AND tt.isCompleted = true ")
     List<Task> findByCompletedTasks(Todo todo);
 
     @Query("SELECT t FROM Task t " +
             "INNER JOIN TodoTask tt ON t.todoTask = tt " +
             "INNER JOIN Todo td ON tt.todo = td " +
-            "WHERE td = :todo AND tt.completed = false")
+            "WHERE td = :todo AND tt.isCompleted = false")
     List<Task> findByUncompletedTasks(@Param("todo") Todo todo);
 
     @Query(value = "SELECT t.* FROM task t " +
