@@ -1,4 +1,5 @@
 package com.ndashimye.firstapp;
+
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import java.sql.Timestamp;

@@ -1,4 +1,5 @@
 package com.ndashimye.firstapp.usertodo;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +42,7 @@ public class UserTodoController {
         UserTodo userTodo = userTodoService.getUserTodoById(userTodoId);
         int id = userTodo.getUserTodoId();
         userTodoService.deleteUserTodo(userTodo);
+
         return "user todo of id "+id+" was successfully deleted from the database";
     }
 }

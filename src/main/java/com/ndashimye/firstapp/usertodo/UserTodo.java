@@ -1,4 +1,5 @@
 package com.ndashimye.firstapp.usertodo;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.user.User;
 import jakarta.persistence.*;

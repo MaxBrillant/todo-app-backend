@@ -1,4 +1,5 @@
 package com.ndashimye.firstapp.task;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +40,7 @@ public class TaskController {
         Task task = taskService.getTaskById(taskId);
         int id = task.getTaskId();
         taskService.deleteTask(task);
+
         return "task of id "+id+" was successfully deleted from the database";
     }
 }

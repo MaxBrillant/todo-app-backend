@@ -1,10 +1,10 @@
 package com.ndashimye.firstapp.user;
+
 import com.ndashimye.firstapp.error.InvalidTimeFormatException;
 import com.ndashimye.firstapp.userprofile.UserProfile;
 import com.ndashimye.firstapp.userprofile.UserProfileNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
 import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
-import com.ndashimye.firstapp.task.Task;
 import com.ndashimye.firstapp.todo.Todo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -79,24 +79,6 @@ public class UserController {
 
     }
 
-
-    @GetMapping("/id/{userId}/today-tasks/on")
-    public List<Task> getAllTodayTasksOnDate
-            (@PathVariable Integer userId, @RequestParam String date)
-            throws InvalidTimeFormatException, UserNotFoundException, UserSettingsNotFoundException {
-
-        LocalDate startDate;
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            startDate = LocalDate.parse(date, formatter);
-        }
-        catch (Exception e){
-            throw new InvalidTimeFormatException();
-        }
-        return userService.getAllTodayTasksOnDate(userId, startDate);
-
-    }
-
     @GetMapping("/email/{emailAddress}")
     public User getUserByEmailAddress(@PathVariable String emailAddress) throws UserNotFoundException {
         return userService.getUserByEmailAddress(emailAddress);
@@ -163,6 +145,7 @@ public class UserController {
         User user = userService.getUserById(userId);
         String username = user.getUsername();
         userService.deleteUser(user);
+        
         return "user "+username+" was successfully deleted from the database";
     }
 }

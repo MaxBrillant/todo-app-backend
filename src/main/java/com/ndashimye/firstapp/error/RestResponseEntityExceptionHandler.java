@@ -1,4 +1,5 @@
 package com.ndashimye.firstapp.error;
+
 import com.ndashimye.firstapp.task.TaskNotFoundException;
 import com.ndashimye.firstapp.todo.TodoNotFoundException;
 import com.ndashimye.firstapp.todotask.TodoTaskNotFoundException;

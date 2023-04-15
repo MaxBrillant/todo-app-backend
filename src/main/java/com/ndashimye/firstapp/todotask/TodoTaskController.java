@@ -1,4 +1,5 @@
 package com.ndashimye.firstapp.todotask;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +42,7 @@ public class TodoTaskController {
         TodoTask todoTask = todoTaskService.getTodoTaskById(todoTaskId);
         int id = todoTask.getTodoTaskId();
         todoTaskService.deleteTodoTask(todoTask);
+
         return "todo task of id "+id+" was successfully deleted from the database";
     }
 }

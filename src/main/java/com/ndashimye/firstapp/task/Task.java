@@ -1,4 +1,5 @@
 package com.ndashimye.firstapp.task;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.todotask.TodoTask;
 import jakarta.persistence.*;

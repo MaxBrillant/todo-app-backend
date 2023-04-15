@@ -1,4 +1,5 @@
 package com.ndashimye.firstapp.userprofile;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +42,7 @@ public class UserProfileController {
         UserProfile userProfile = userProfileService.getUserProfileById(userProfileId);
         Integer id = userProfile.getUserProfileId();
         userProfileService.deleteUserProfile(userProfile);
+
         return "profile of profile id "+id+" was successfully deleted from the database";
     }
 }
