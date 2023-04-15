@@ -1,4 +1,5 @@
 package com.ndashimye.firstapp.usersettings;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +40,7 @@ public class UserSettingsController {
         UserSettings userSettings = userSettingsService.getUserSettingsById(userSettingsId);
         Integer id = userSettings.getUserSettingsId();
         userSettingsService.deleteUserSettings(userSettings);
+
         return "settings of profile id "+id+" were successfully deleted from the database";
     }
 }

@@ -1,4 +1,5 @@
 package com.ndashimye.firstapp.todo;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
 import com.ndashimye.firstapp.user.User;
@@ -7,6 +8,9 @@ import com.ndashimye.firstapp.usertodo.UserTodo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -46,9 +50,11 @@ public class Todo {
 
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private ZonedDateTime createdAt;
 
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private ZonedDateTime updatedAt;
 
 

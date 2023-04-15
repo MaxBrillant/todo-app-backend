@@ -1,10 +1,10 @@
 package com.ndashimye.firstapp.user;
+
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
 import com.ndashimye.firstapp.userprofile.UserProfile;
 import com.ndashimye.firstapp.userprofile.UserProfileNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
 import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
-import com.ndashimye.firstapp.task.Task;
 import com.ndashimye.firstapp.task.TaskRepository;
 import com.ndashimye.firstapp.todo.Todo;
 import com.ndashimye.firstapp.todo.TodoRepository;
@@ -158,36 +158,6 @@ public class UserService {
                 Timestamp.valueOf(ZonedDateTimeAttributeConverter.toUtcZoneId(zonedEndDate).toLocalDateTime()));
 
         return todos;
-    }
-
-
-    public List<Task> getAllTodayTasksOnDate
-            (Integer userId, LocalDate date) throws UserNotFoundException, UserSettingsNotFoundException {
-
-        Optional<User> user = userRepository.findById(userId);
-
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-
-        if(!Objects.nonNull(user.get().getSettings())){
-            throw new UserSettingsNotFoundException();
-        }
-
-        ZoneId zoneId = ZoneId.of(user.get().getSettings().getTimeZone()); // or specify a specific timezone
-
-        LocalDate nextDate = date.plusDays(1);
-
-        ZonedDateTime taskDate = date.atStartOfDay(zoneId);
-        ZonedDateTime nextZonedDate = nextDate.atStartOfDay(zoneId);
-
-//        System.out.println("from "+ Timestamp.valueOf(ZonedDateTimeAttributeConverter.toUtcZoneId(taskDate).toLocalDateTime())+" to "+ nextZonedDate);
-
-        List<Task> tasks = taskRepository.findAllByDateAndUser(user.get().getUserId(),
-                Timestamp.valueOf(ZonedDateTimeAttributeConverter.toUtcZoneId(taskDate).toLocalDateTime()),
-                Timestamp.valueOf(ZonedDateTimeAttributeConverter.toUtcZoneId(nextZonedDate).toLocalDateTime()));
-
-        return tasks;
     }
 
     public User getUserByEmailAddress(String emailAddress) throws UserNotFoundException {

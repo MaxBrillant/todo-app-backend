@@ -1,4 +1,5 @@
 package com.ndashimye.firstapp.todo;
+
 import com.ndashimye.firstapp.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

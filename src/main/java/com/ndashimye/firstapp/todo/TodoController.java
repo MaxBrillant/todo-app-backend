@@ -1,4 +1,5 @@
 package com.ndashimye.firstapp.todo;
+
 import com.ndashimye.firstapp.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,9 @@ public class TodoController {
     }
 
     @GetMapping("/id/{todoId}/tasks/order-by/priority")
-    public List<Task> getTasksByTodoIdOrderedByPriority(@PathVariable Integer todoId) throws TodoNotFoundException {
+    public List<Task> getTasksByTodoIdOrderedByPriority(@PathVariable Integer todoId)
+            throws TodoNotFoundException {
+
         return todoService.getAllTasksByTodoIdOrderedByPriority(todoId);
     }
 
@@ -46,7 +49,8 @@ public class TodoController {
     }
 
     @PutMapping("/{todoId}")
-    public String updateTodo(@RequestBody Todo updatedTodo, @PathVariable Integer todoId) throws TodoNotFoundException {
+    public String updateTodo(@RequestBody Todo updatedTodo, @PathVariable Integer todoId)
+            throws TodoNotFoundException {
 
         Todo todo = todoService.getTodoById(todoId);
 
@@ -61,6 +65,7 @@ public class TodoController {
         Todo todo = todoService.getTodoById(todoId);
         int id = todo.getTodoId();
         todoService.deleteTodo(todo);
+
         return "todo of id "+id+" was successfully deleted from the database";
     }
 }
