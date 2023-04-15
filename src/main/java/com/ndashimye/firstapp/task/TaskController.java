@@ -1,7 +1,10 @@
 package com.ndashimye.firstapp.task;
 
+import com.ndashimye.firstapp.todo.TodoNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/tasks")
@@ -14,6 +17,36 @@ public class TaskController {
     public Task getTaskById(@PathVariable Integer taskId) throws TaskNotFoundException {
         return taskService.getTaskById(taskId);
     }
+
+
+    @GetMapping("/id/{taskId}/sub-tasks")
+    public List<Task> getChildTasksByTaskId(@PathVariable Integer taskId)
+            throws TaskNotFoundException {
+
+        return taskService.getAllChildTasksByTaskId(taskId);
+    }
+
+    @GetMapping("/id/{taskId}/sub-tasks/order-by/priority")
+    public List<Task> getChildTasksByTaskIdOrderedByPriority(@PathVariable Integer taskId)
+            throws TaskNotFoundException {
+
+        return taskService.getAllChildTasksByTaskIdOrderedByPriority(taskId);
+    }
+
+    @GetMapping("/id/{taskId}/sub-tasks/completed")
+    public List<Task> getCompletedChildTasks(@PathVariable Integer taskId)
+            throws TaskNotFoundException {
+
+        return taskService.getCompletedChildTasks(taskId);
+    }
+
+    @GetMapping("/id/{taskId}/sub-tasks/uncompleted")
+    public List<Task> getUncompletedChildTasks(@PathVariable Integer taskId)
+            throws TaskNotFoundException {
+
+        return taskService.getUncompletedChildTasks(taskId);
+    }
+
 
     @PostMapping()
     public String addTask(@RequestBody Task task) {

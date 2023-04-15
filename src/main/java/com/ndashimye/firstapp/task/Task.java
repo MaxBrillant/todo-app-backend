@@ -5,6 +5,9 @@ import com.ndashimye.firstapp.todotask.TodoTask;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.time.ZonedDateTime;
 
 @Entity
@@ -26,13 +29,19 @@ public class Task {
     @JoinColumn(name = "todo_task_id", unique = true)
     private TodoTask todoTask;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_task_id")
+    private Task parentTask;
+
     @Column(name = "name", nullable = false, length = 40)
     @NotBlank(message = "name is required")
     private String name;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private ZonedDateTime createdAt;
 
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private ZonedDateTime updatedAt;
 }
