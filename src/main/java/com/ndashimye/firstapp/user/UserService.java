@@ -45,58 +45,15 @@ public class UserService {
 
     public User getUserById(Integer userId) throws UserNotFoundException {
 
-        Optional<User> user = userRepository.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-        return user.get();
-    }
-
-    public UserProfile getUserProfileByUserId(Integer userId) throws UserProfileNotFoundException, UserNotFoundException {
-
-        Optional<User> user = userRepository.findById(userId);
-
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-        if(!Objects.nonNull(user.get().getProfile())){
-            throw new UserProfileNotFoundException();
-        }
-        Optional<UserProfile> userProfile = Optional.of(user.get().getProfile());
-
-        if(!userProfile.isPresent() && !userProfile.isEmpty()){
-            throw new UserProfileNotFoundException();
-        }
-        return userProfile.get();
-    }
-
-
-    public UserSettings getUserSettingsByUserId(Integer userId) throws UserNotFoundException, UserSettingsNotFoundException {
-        Optional<User> user = userRepository.findById(userId);
-
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-        if(!Objects.nonNull(user.get().getSettings())){
-            throw new UserSettingsNotFoundException();
-        }
-        Optional<UserSettings> userSettings = Optional.of(user.get().getSettings());
-
-        if(!userSettings.isPresent() && !userSettings.isEmpty()){
-            throw new UserSettingsNotFoundException();
-        }
-        return userSettings.get();
+        return user;
     }
 
     public List<Todo> getAllTodosByUserId(Integer userId) throws UserNotFoundException {
 
-        Optional<User> user = userRepository.findById(userId);
-
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-        List<Todo> todos = todoRepository.findByUserTodo_UserOrderByUserTodo_PositionAsc(user.get());
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
+        List<Todo> todos = todoRepository.findByUserTodo_UserOrderByUserTodo_PositionAsc(user);
 
         return todos;
     }
@@ -104,24 +61,18 @@ public class UserService {
 
     public List<Todo> getAllTodosByUserIdOrderedByMostRecent(Integer userId) throws UserNotFoundException {
 
-        Optional<User> user = userRepository.findById(userId);
 
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-        List<Todo> todos = todoRepository.findByUserOrderByDueTimeDesc(user.get());
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
+        List<Todo> todos = todoRepository.findByUserOrderByDueTimeDesc(user);
 
         return todos;
     }
 
     public List<Todo> getAllTodosByUserIdOrderedByLeastRecent(Integer userId) throws UserNotFoundException {
 
-        Optional<User> user = userRepository.findById(userId);
 
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-        List<Todo> todos = todoRepository.findByUserOrderByDueTimeAsc(user.get());
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
+        List<Todo> todos = todoRepository.findByUserOrderByDueTimeAsc(user);
 
         return todos;
     }
@@ -129,12 +80,9 @@ public class UserService {
 
     public List<Todo> getAllTodosByUserIdOrderedByPriority(Integer userId) throws UserNotFoundException {
 
-        Optional<User> user = userRepository.findById(userId);
 
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-        List<Todo> todos = todoRepository.findByUserTodo_UserOrderByUserTodo_PriorityLevelDesc(user.get());
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
+        List<Todo> todos = todoRepository.findByUserTodo_UserOrderByUserTodo_PriorityLevelDesc(user);
 
         return todos;
     }
@@ -154,22 +102,17 @@ public class UserService {
             throw new InvalidTimeFormatException();
         }
 
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 
-        Optional<User> user = userRepository.findById(userId);
+        UserSettings userSettings = Optional.of(user.getSettings())
+                .orElseThrow(() -> new UserSettingsNotFoundException());
 
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-
-        if(!Objects.nonNull(user.get().getSettings())){
-            throw new UserSettingsNotFoundException();
-        }
-        ZoneId zoneId = ZoneId.of(user.get().getSettings().getTimeZone()); // or specify a specific timezone
+        ZoneId zoneId = ZoneId.of(userSettings.getTimeZone()); // or specify a specific timezone
 
         ZonedDateTime zonedStartDate = startDate.atStartOfDay(zoneId);
         ZonedDateTime zonedEndDate = endDate.plusDays(1).atStartOfDay(zoneId);
 
-        List<Todo> todos = todoRepository.findByUserAndDueTimeBetween(user.get().getUserId(),
+        List<Todo> todos = todoRepository.findByUserAndDueTimeBetween(user.getUserId(),
                 Timestamp.valueOf(ZonedDateTimeAttributeConverter.toUtcZoneId(zonedStartDate).toLocalDateTime()),
                 Timestamp.valueOf(ZonedDateTimeAttributeConverter.toUtcZoneId(zonedEndDate).toLocalDateTime()));
 
@@ -178,21 +121,16 @@ public class UserService {
 
     public User getUserByEmailAddress(String emailAddress) throws UserNotFoundException {
 
-        Optional<User> user = userRepository.findUserByEmailAddress(emailAddress);
+        User user = userRepository.findUserByEmailAddress(emailAddress)
+                .orElseThrow(() -> new UserNotFoundException());
 
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-        return user.get();
+        return user;
     }
 
     public User getUserByUsername(String username) throws UserNotFoundException {
-        Optional<User> user = userRepository.findByUsername(username);
 
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-        return user.get();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException());
+        return user;
     }
     public boolean userIdExists(Integer userId){
         return userRepository.existsByUserId(userId);
@@ -263,52 +201,40 @@ public class UserService {
 
     public void addNewUserProfile(Integer userId, UserProfile userProfile) throws UserNotFoundException {
 
-        Optional<User> user = userRepository.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-        if(Objects.isNull(user.get().getProfile())) {
+        if(Objects.isNull(user.getProfile())) {
             userProfileRepository.save(userProfile);
-            user.get().setProfile(userProfile);
+            user.setProfile(userProfile);
         }
     }
 
     public void updateUserProfile(Integer userId, UserProfile updatedUserProfile)
             throws UserNotFoundException {
 
-        Optional<User> user = userRepository.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-
-
-        if (Objects.nonNull(user.get().getProfile())) {
+        if (Objects.nonNull(user.getProfile())) {
             if (Objects.nonNull(updatedUserProfile.getFirstName()) && !updatedUserProfile.getFirstName().equals("")) {
-                user.get().getProfile().setFirstName(updatedUserProfile.getFirstName());
+                user.getProfile().setFirstName(updatedUserProfile.getFirstName());
             }
             if (Objects.nonNull(updatedUserProfile.getLastName()) && !updatedUserProfile.getLastName().equals("")) {
-                user.get().getProfile().setLastName(updatedUserProfile.getLastName());
+                user.getProfile().setLastName(updatedUserProfile.getLastName());
             }
             if (Objects.nonNull(updatedUserProfile.getEmailAddress()) && !updatedUserProfile.getEmailAddress().equals("")) {
-                user.get().getProfile().setEmailAddress(updatedUserProfile.getEmailAddress());
+                user.getProfile().setEmailAddress(updatedUserProfile.getEmailAddress());
             }
             if (Objects.nonNull(updatedUserProfile.getProfileImageUrl()) && !updatedUserProfile.getProfileImageUrl().equals("")) {
-                user.get().getProfile().setProfileImageUrl(updatedUserProfile.getProfileImageUrl());
+                user.getProfile().setProfileImageUrl(updatedUserProfile.getProfileImageUrl());
             }
         }
     }
     public void deleteUserProfile(Integer userId) throws UserNotFoundException {
 
-        Optional<User> user = userRepository.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-
-        if (Objects.nonNull(user.get().getProfile())) {
-            userProfileRepository.delete(user.get().getProfile());
+        if (Objects.nonNull(user.getProfile())) {
+            userProfileRepository.delete(user.getProfile());
         }
     }
 
@@ -316,43 +242,31 @@ public class UserService {
 
     public void addNewUserSettings(Integer userId, UserSettings userSettings) throws UserNotFoundException {
 
-        Optional<User> user = userRepository.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-
-        if(Objects.isNull(user.get().getSettings())) {
+        if(Objects.isNull(user.getSettings())) {
             userSettingsRepository.save(userSettings);
-            user.get().setSettings(userSettings);
+            user.setSettings(userSettings);
         }
     }
 
     public void updateUserSettings(Integer userId, UserSettings updatedUserSettings) throws UserNotFoundException {
 
-        Optional<User> user = userRepository.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
-        }
-
-        if (Objects.nonNull(user.get().getSettings())) {
+        if (Objects.nonNull(user.getSettings())) {
             if (Objects.nonNull(updatedUserSettings.getTimeZone()) && !updatedUserSettings.getTimeZone().equals("")) {
-                user.get().getSettings().setTimeZone(updatedUserSettings.getTimeZone());
+                user.getSettings().setTimeZone(updatedUserSettings.getTimeZone());
             }
         }
     }
 
     public void deleteUserSettings(Integer userId) throws UserNotFoundException {
 
-        Optional<User> user = userRepository.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 
-        if(!user.isPresent()) {
-            throw new UserNotFoundException();
-        }
-
-        if(Objects.nonNull(user.get().getSettings())) {
-            userSettingsRepository.delete(user.get().getSettings());
+        if(Objects.nonNull(user.getSettings())) {
+            userSettingsRepository.delete(user.getSettings());
         }
     }
 

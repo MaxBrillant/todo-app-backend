@@ -26,24 +26,16 @@ public class TodoService {
 
     public Todo getTodoById(Integer todoId) throws TodoNotFoundException {
 
-        Optional<Todo> todo = todoRepository.findById(todoId);
-
-        if(!todo.isPresent()){
-            throw new TodoNotFoundException();
-        }
-        return todo.get();
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
+        return todo;
 
     }
 
 
     public List<Task> getAllTasksByTodoId(Integer todoId) throws TodoNotFoundException {
 
-        Optional<Todo> todo = todoRepository.findById(todoId);
-
-        if(!todo.isPresent()){
-            throw new TodoNotFoundException();
-        }
-        List<Task> tasks = taskRepository.findByTodoTask_TodoOrderByTodoTask_PositionAsc(todo.get());
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
+        List<Task> tasks = taskRepository.findByTodoTask_TodoOrderByTodoTask_PositionAsc(todo);
 
         return tasks;
     }
@@ -51,34 +43,24 @@ public class TodoService {
 
     public List<Task> getAllTasksByTodoIdOrderedByPriority(Integer todoId) throws TodoNotFoundException {
 
-        Optional<Todo> todo = todoRepository.findById(todoId);
-
-        if(!todo.isPresent()){
-            throw new TodoNotFoundException();
-        }
-        List<Task> tasks = taskRepository.findByTodoTask_TodoOrderByTodoTask_PriorityLevelDesc(todo.get());
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
+        List<Task> tasks = taskRepository.findByTodoTask_TodoOrderByTodoTask_PriorityLevelDesc(todo);
 
         return tasks;
     }
 
     public List<Task> getCompletedTasks(Integer todoId) throws TodoNotFoundException {
-        Optional<Todo> todo = todoRepository.findById(todoId);
 
-        if(!todo.isPresent()){
-            throw new TodoNotFoundException();
-        }
-        List<Task> tasks = taskRepository.findByCompletedTasks(todo.get());
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
+        List<Task> tasks = taskRepository.findByCompletedTasks(todo);
 
         return tasks;
     }
 
     public List<Task> getUncompletedTasks(Integer todoId) throws TodoNotFoundException {
-        Optional<Todo> todo = todoRepository.findById(todoId);
 
-        if(!todo.isPresent()){
-            throw new TodoNotFoundException();
-        }
-        List<Task> tasks = taskRepository.findByUncompletedTasks(todo.get());
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
+        List<Task> tasks = taskRepository.findByUncompletedTasks(todo);
 
         return tasks;
     }
@@ -121,16 +103,12 @@ public class TodoService {
 
     public void addNewUserTodo(Integer todoId, UserTodo userTodo) throws TodoNotFoundException {
 
-        Optional<Todo> todo = todoRepository.findById(todoId);
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
 
-        if(!todo.isPresent()){
-            throw new TodoNotFoundException();
-        }
-        //set userTodo order
-        if (Objects.isNull(todo.get().getUserTodo())) {
+        if (Objects.isNull(todo.getUserTodo())) {
             userTodoRepository.save(userTodo);
-            todo.get().setUserTodo(userTodo);
-            assignPositionToNewTodo(todo.get());
+            todo.setUserTodo(userTodo);
+            assignPositionToNewTodo(todo);
         }
     }
 
@@ -153,18 +131,14 @@ public class TodoService {
 
     public void updateUserTodo(Integer todoId, UserTodo updatedUserTodo) throws TodoNotFoundException {
 
-        Optional<Todo> todo = todoRepository.findById(todoId);
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
 
-        if(!todo.isPresent()){
-            throw new TodoNotFoundException();
-        }
-
-        if (Objects.nonNull(todo.get().getUserTodo())) {
+        if (Objects.nonNull(todo.getUserTodo())) {
             if (Objects.nonNull(updatedUserTodo.getUser()) && !updatedUserTodo.getUser().equals("")) {
-                todo.get().getUserTodo().setUser(updatedUserTodo.getUser());
+                todo.getUserTodo().setUser(updatedUserTodo.getUser());
             }
             if (Objects.nonNull(updatedUserTodo.getPriorityLevel()) && !String.valueOf(updatedUserTodo.getPriorityLevel()).equals("")) {
-                todo.get().getUserTodo().setPriorityLevel(updatedUserTodo.getPriorityLevel());
+                todo.getUserTodo().setPriorityLevel(updatedUserTodo.getPriorityLevel());
             }
         }
     }
@@ -172,14 +146,10 @@ public class TodoService {
 
     public void updateTodoPosition(Integer todoId, int newPosition) throws TodoNotFoundException {
 
-        Optional<Todo> todo = todoRepository.findById(todoId);
-
-        if(!todo.isPresent()){
-            throw new TodoNotFoundException();
-        }
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
 
         // Get the current position of the todo
-        int currentPosition = todo.get().getUserTodo().getPosition();
+        int currentPosition = todo.getUserTodo().getPosition();
 
         // If the new position is equal to the current position, do nothing
         if (newPosition == currentPosition) {
@@ -206,19 +176,16 @@ public class TodoService {
         }
 
         // Update the position of the target todo
-        todo.get().getUserTodo().setPosition(newPosition);
-        todoRepository.save(todo.get());
+        todo.getUserTodo().setPosition(newPosition);
+        todoRepository.save(todo);
     }
 
     public void deleteUserTodo(Integer todoId) throws TodoNotFoundException {
 
-        Optional<Todo> todo = todoRepository.findById(todoId);
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
 
-        if(!todo.isPresent()){
-            throw new TodoNotFoundException();
-        }
-        if (Objects.nonNull(todo.get().getUserTodo())) {
-            userTodoRepository.delete(todo.get().getUserTodo());
+        if (Objects.nonNull(todo.getUserTodo())) {
+            userTodoRepository.delete(todo.getUserTodo());
         }
     }
 }

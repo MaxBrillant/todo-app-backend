@@ -22,24 +22,16 @@ public class TaskService {
 
     public Task getTaskById(Integer taskId) throws TaskNotFoundException {
 
-        Optional<Task> task = taskRepository.findById(taskId);
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
 
-        if(!task.isPresent()){
-            throw new TaskNotFoundException();
-        }
-        return task.get();
-
+        return task;
     }
 
 
     public List<Task> getAllChildTasksByTaskId(Integer taskId) throws TaskNotFoundException {
 
-        Optional<Task> task = taskRepository.findById(taskId);
-
-        if(!task.isPresent()){
-            throw new TaskNotFoundException();
-        }
-        List<Task> tasks = taskRepository.findByParentTaskOrderByTodoTask_PositionAsc(task.get());
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
+        List<Task> tasks = taskRepository.findByParentTaskOrderByTodoTask_PositionAsc(task);
 
         return tasks;
     }
@@ -47,34 +39,24 @@ public class TaskService {
 
     public List<Task> getAllChildTasksByTaskIdOrderedByPriority(Integer taskId) throws TaskNotFoundException {
 
-        Optional<Task> task = taskRepository.findById(taskId);
-
-        if(!task.isPresent()){
-            throw new TaskNotFoundException();
-        }
-        List<Task> tasks = taskRepository.findByParentTaskOrderByTodoTask_PriorityLevelDesc(task.get());
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
+        List<Task> tasks = taskRepository.findByParentTaskOrderByTodoTask_PriorityLevelDesc(task);
 
         return tasks;
     }
 
     public List<Task> getCompletedChildTasks(Integer taskId) throws TaskNotFoundException {
-        Optional<Task> task = taskRepository.findById(taskId);
 
-        if(!task.isPresent()){
-            throw new TaskNotFoundException();
-        }
-        List<Task> tasks = taskRepository.findByCompletedChildTasks(task.get());
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
+        List<Task> tasks = taskRepository.findByCompletedChildTasks(task);
 
         return tasks;
     }
 
     public List<Task> getUncompletedChildTasks(Integer taskId) throws TaskNotFoundException {
-        Optional<Task> task = taskRepository.findById(taskId);
 
-        if(!task.isPresent()){
-            throw new TaskNotFoundException();
-        }
-        List<Task> tasks = taskRepository.findByUncompletedChildTasks(task.get());
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
+        List<Task> tasks = taskRepository.findByUncompletedChildTasks(task);
 
         return tasks;
     }
@@ -119,15 +101,13 @@ public class TaskService {
 
 
     public void addNewTodoTask(Integer taskId, TodoTask todoTask) throws TaskNotFoundException {
-        Optional<Task> task = taskRepository.findById(taskId);
 
-        if(!task.isPresent()){
-            throw new TaskNotFoundException();
-        }
-        if (Objects.isNull(task.get().getTodoTask())) {
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
+
+        if (Objects.isNull(task.getTodoTask())) {
             todoTaskRepository.save(todoTask);
-            task.get().setTodoTask(todoTask);
-            assignPositionToNewTask(task.get());
+            task.setTodoTask(todoTask);
+            assignPositionToNewTask(task);
         }
     }
 
@@ -153,36 +133,29 @@ public class TaskService {
 
     public void updateTodoTask(Integer taskId, TodoTask updatedTodoTask) throws TaskNotFoundException {
 
-        Optional<Task> task = taskRepository.findById(taskId);
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
 
-        if(!task.isPresent()){
-            throw new TaskNotFoundException();
-        }
-
-        if (Objects.nonNull(task.get().getTodoTask())) {
+        if (Objects.nonNull(task.getTodoTask())) {
             if (Objects.nonNull(updatedTodoTask.getTodo()) && !updatedTodoTask.getTodo().equals("")) {
-                task.get().getTodoTask().setTodo(updatedTodoTask.getTodo());
+                task.getTodoTask().setTodo(updatedTodoTask.getTodo());
             }
             if (Objects.nonNull(updatedTodoTask.getCompletionTime()) && !updatedTodoTask.getCompletionTime().equals("")) {
-                task.get().getTodoTask().setCompletionTime(updatedTodoTask.getCompletionTime());
+                task.getTodoTask().setCompletionTime(updatedTodoTask.getCompletionTime());
             }
             if (Objects.nonNull(updatedTodoTask.getPriorityLevel()) && !String.valueOf(updatedTodoTask.getPriorityLevel()).equals("")) {
-                task.get().getTodoTask().setPriorityLevel(updatedTodoTask.getPriorityLevel());
+                task.getTodoTask().setPriorityLevel(updatedTodoTask.getPriorityLevel());
             }
             if (Objects.nonNull(updatedTodoTask.getIsCompleted()) && !String.valueOf(updatedTodoTask.getIsCompleted()).equals("")) {
-                task.get().getTodoTask().setIsCompleted(updatedTodoTask.getIsCompleted());
+                task.getTodoTask().setIsCompleted(updatedTodoTask.getIsCompleted());
             }
         }
     }
 
     public void updateTaskPosition(Integer taskId, int newPosition) throws TaskNotFoundException {
-        Optional<Task> task = taskRepository.findById(taskId);
 
-        if(!task.isPresent()){
-            throw new TaskNotFoundException();
-        }
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
 
-        TodoTask todoTask = task.get().getTodoTask();
+        TodoTask todoTask = task.getTodoTask();
         Todo todo = todoTask.getTodo();
         int currentPosition = todoTask.getPosition();
         if (newPosition > currentPosition) {
@@ -202,14 +175,10 @@ public class TaskService {
 
     public void deleteTodoTask(Integer taskId) throws TaskNotFoundException {
 
-        Optional<Task> task = taskRepository.findById(taskId);
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
 
-        if(!task.isPresent()){
-            throw new TaskNotFoundException();
-        }
-
-        if (Objects.nonNull(task.get().getTodoTask())) {
-            todoTaskRepository.delete(task.get().getTodoTask());
+        if (Objects.nonNull(task.getTodoTask())) {
+            todoTaskRepository.delete(task.getTodoTask());
         }
     }
 }

@@ -28,16 +28,6 @@ public class UserController {
         return userService.getUserById(userId);
     }
 
-    @GetMapping("/id/{userId}/profile")
-    public UserProfile getUserProfileByUserId(@PathVariable Integer userId) throws UserProfileNotFoundException, UserNotFoundException {
-        return userService.getUserProfileByUserId(userId);
-    }
-
-    @GetMapping("/id/{userId}/settings")
-    public UserSettings getUserSettingsByUserId(@PathVariable Integer userId) throws UserNotFoundException, UserSettingsNotFoundException {
-        return userService.getUserSettingsByUserId(userId);
-    }
-
     @GetMapping("/id/{userId}/todos")
     public List<Todo> getTodosByUserId(@PathVariable Integer userId) throws UserNotFoundException {
         return userService.getAllTodosByUserId(userId);

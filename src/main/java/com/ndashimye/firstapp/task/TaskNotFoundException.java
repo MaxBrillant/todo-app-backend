@@ -1,6 +1,6 @@
 package com.ndashimye.firstapp.task;
 
-public class TaskNotFoundException extends Exception{
+public class TaskNotFoundException extends Exception {
 
     public TaskNotFoundException() {
         super("Task not found");
