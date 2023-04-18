@@ -3,12 +3,12 @@ package com.ndashimye.firstapp.task;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.todotask.TodoTask;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -34,8 +34,11 @@ public class Task {
     private Task parentTask;
 
     @Column(name = "name", nullable = false, length = 40)
-    @NotBlank(message = "name is required")
+    @NotNull(message = "name is required")
     private String name;
+
+    @OneToMany(mappedBy = "parentTask", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Task> childTasks;
 
     @Column(name = "created_at")
     @CreationTimestamp

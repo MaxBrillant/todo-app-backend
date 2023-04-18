@@ -1,25 +1,29 @@
 package com.ndashimye.firstapp.user;
 
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
+import com.ndashimye.firstapp.error.InvalidTimeFormatException;
 import com.ndashimye.firstapp.userprofile.UserProfile;
 import com.ndashimye.firstapp.userprofile.UserProfileNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
 import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
-import com.ndashimye.firstapp.task.TaskRepository;
 import com.ndashimye.firstapp.todo.Todo;
 import com.ndashimye.firstapp.todo.TodoRepository;
 import com.ndashimye.firstapp.userprofile.UserProfileRepository;
+import com.ndashimye.firstapp.usersettings.UserSettingsRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class UserService {
 
     @Autowired
@@ -28,10 +32,10 @@ public class UserService {
     private UserProfileRepository userProfileRepository;
 
     @Autowired
-    private TodoRepository todoRepository;
+    private UserSettingsRepository userSettingsRepository;
 
     @Autowired
-    private TaskRepository taskRepository;
+    private TodoRepository todoRepository;
 
 
     @Autowired
@@ -92,7 +96,7 @@ public class UserService {
         if(!user.isPresent()){
             throw new UserNotFoundException();
         }
-        List<Todo> todos = todoRepository.findByUserTodo_UserOrderByUserTodo_OrderAsc(user.get());
+        List<Todo> todos = todoRepository.findByUserTodo_UserOrderByUserTodo_PositionAsc(user.get());
 
         return todos;
     }
@@ -136,8 +140,20 @@ public class UserService {
     }
 
     public List<Todo> getAllTodosBetweenDates
-            (Integer userId, LocalDate startDate, LocalDate endDate) 
-            throws UserNotFoundException, UserSettingsNotFoundException {
+            (Integer userId, String start, String end)
+            throws UserNotFoundException, UserSettingsNotFoundException, InvalidTimeFormatException {
+
+        LocalDate startDate;
+        LocalDate endDate;
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            startDate = LocalDate.parse(start, formatter);
+            endDate = LocalDate.parse(end, formatter);
+        }
+        catch (Exception e){
+            throw new InvalidTimeFormatException();
+        }
+
 
         Optional<User> user = userRepository.findById(userId);
 
@@ -207,22 +223,22 @@ public class UserService {
 
     public void updateUser(User updatedUser, User user) {
 
-        if(Objects.nonNull(updatedUser.getProfile())){
-            if(!updatedUser.getProfile().equals("")) {
-                user.setProfile(updatedUser.getProfile());
-            }
-        }else{
-            user.setProfile(updatedUser.getProfile());
-        }
-
-
-        if(Objects.nonNull(updatedUser.getSettings())){
-            if(!updatedUser.getSettings().equals("")) {
-                user.setSettings(updatedUser.getSettings());
-            }
-        }else{
-            user.setSettings(updatedUser.getSettings());
-        }
+//        if(Objects.nonNull(updatedUser.getProfile())){
+//            if(!updatedUser.getProfile().equals("")) {
+//                user.setProfile(updatedUser.getProfile());
+//            }
+//        }else{
+//            userProfileRepository.delete(user.getProfile());
+//        }
+//
+//
+//        if(Objects.nonNull(updatedUser.getSettings())){
+//            if(!updatedUser.getSettings().equals("")) {
+//                user.setSettings(updatedUser.getSettings());
+//            }
+//        }else{
+//            userSettingsRepository.delete(user.getSettings());
+//        }
 
 
         if (Objects.nonNull(updatedUser.getUsername()) && !updatedUser.getUsername().equals("")) {
@@ -240,6 +256,104 @@ public class UserService {
 
     public void deleteUser(User user) {
         userRepository.delete(user);
+    }
+
+
+
+
+    public void addNewUserProfile(Integer userId, UserProfile userProfile) throws UserNotFoundException {
+
+        Optional<User> user = userRepository.findById(userId);
+
+        if(!user.isPresent()){
+            throw new UserNotFoundException();
+        }
+        if(Objects.isNull(user.get().getProfile())) {
+            userProfileRepository.save(userProfile);
+            user.get().setProfile(userProfile);
+        }
+    }
+
+    public void updateUserProfile(Integer userId, UserProfile updatedUserProfile)
+            throws UserNotFoundException {
+
+        Optional<User> user = userRepository.findById(userId);
+
+        if(!user.isPresent()){
+            throw new UserNotFoundException();
+        }
+
+
+        if (Objects.nonNull(user.get().getProfile())) {
+            if (Objects.nonNull(updatedUserProfile.getFirstName()) && !updatedUserProfile.getFirstName().equals("")) {
+                user.get().getProfile().setFirstName(updatedUserProfile.getFirstName());
+            }
+            if (Objects.nonNull(updatedUserProfile.getLastName()) && !updatedUserProfile.getLastName().equals("")) {
+                user.get().getProfile().setLastName(updatedUserProfile.getLastName());
+            }
+            if (Objects.nonNull(updatedUserProfile.getEmailAddress()) && !updatedUserProfile.getEmailAddress().equals("")) {
+                user.get().getProfile().setEmailAddress(updatedUserProfile.getEmailAddress());
+            }
+            if (Objects.nonNull(updatedUserProfile.getProfileImageUrl()) && !updatedUserProfile.getProfileImageUrl().equals("")) {
+                user.get().getProfile().setProfileImageUrl(updatedUserProfile.getProfileImageUrl());
+            }
+        }
+    }
+    public void deleteUserProfile(Integer userId) throws UserNotFoundException {
+
+        Optional<User> user = userRepository.findById(userId);
+
+        if(!user.isPresent()){
+            throw new UserNotFoundException();
+        }
+
+        if (Objects.nonNull(user.get().getProfile())) {
+            userProfileRepository.delete(user.get().getProfile());
+        }
+    }
+
+
+
+    public void addNewUserSettings(Integer userId, UserSettings userSettings) throws UserNotFoundException {
+
+        Optional<User> user = userRepository.findById(userId);
+
+        if(!user.isPresent()){
+            throw new UserNotFoundException();
+        }
+
+        if(Objects.isNull(user.get().getSettings())) {
+            userSettingsRepository.save(userSettings);
+            user.get().setSettings(userSettings);
+        }
+    }
+
+    public void updateUserSettings(Integer userId, UserSettings updatedUserSettings) throws UserNotFoundException {
+
+        Optional<User> user = userRepository.findById(userId);
+
+        if(!user.isPresent()){
+            throw new UserNotFoundException();
+        }
+
+        if (Objects.nonNull(user.get().getSettings())) {
+            if (Objects.nonNull(updatedUserSettings.getTimeZone()) && !updatedUserSettings.getTimeZone().equals("")) {
+                user.get().getSettings().setTimeZone(updatedUserSettings.getTimeZone());
+            }
+        }
+    }
+
+    public void deleteUserSettings(Integer userId) throws UserNotFoundException {
+
+        Optional<User> user = userRepository.findById(userId);
+
+        if(!user.isPresent()) {
+            throw new UserNotFoundException();
+        }
+
+        if(Objects.nonNull(user.get().getSettings())) {
+            userSettingsRepository.delete(user.get().getSettings());
+        }
     }
 
 }

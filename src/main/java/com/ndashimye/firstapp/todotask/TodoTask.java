@@ -7,7 +7,7 @@ import com.ndashimye.firstapp.user.User;
 import com.ndashimye.firstapp.usersettings.UserSettings;
 import com.ndashimye.firstapp.usertodo.UserTodo;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -29,16 +29,16 @@ public class TodoTask {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id", nullable = false)
-    @NotBlank(message = "todo is required")
+    @NotNull(message = "todo is required")
     private Todo todo;
 
     @Column(name = "completion_time")
     @Convert(converter = ZonedDateTimeAttributeConverter.class)
     private ZonedDateTime completionTime;
 
-    @Column(name = "order", nullable = false)
-    @NotBlank(message = "order is required")
-    private int order;
+    @Column(name = "position", nullable = false)
+    @NotNull(message = "position of task is required")
+    private int position;
 
     @Column(name = "priority_level")
     private Integer priorityLevel;
