@@ -8,8 +8,6 @@ import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import com.ndashimye.firstapp.todo.Todo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -28,16 +26,6 @@ public class UserController {
     @GetMapping("/id/{userId}")
     public User getUserById(@PathVariable Integer userId) throws UserNotFoundException {
         return userService.getUserById(userId);
-    }
-
-    @GetMapping("/id/{userId}/profile")
-    public UserProfile getUserProfileByUserId(@PathVariable Integer userId) throws UserProfileNotFoundException, UserNotFoundException {
-        return userService.getUserProfileByUserId(userId);
-    }
-
-    @GetMapping("/id/{userId}/settings")
-    public UserSettings getUserSettingsByUserId(@PathVariable Integer userId) throws UserNotFoundException, UserSettingsNotFoundException {
-        return userService.getUserSettingsByUserId(userId);
     }
 
     @GetMapping("/id/{userId}/todos")
@@ -63,19 +51,9 @@ public class UserController {
     @GetMapping("/id/{userId}/todos/between")
     public List<Todo> getTodosBetweenDates
             (@PathVariable Integer userId, @RequestParam String start, @RequestParam String end)
-            throws InvalidTimeFormatException, UserNotFoundException, UserSettingsNotFoundException {
+            throws UserNotFoundException, UserSettingsNotFoundException, InvalidTimeFormatException {
 
-        LocalDate startDate;
-        LocalDate endDate;
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            startDate = LocalDate.parse(start, formatter);
-            endDate = LocalDate.parse(end, formatter);
-        }
-        catch (Exception e){
-            throw new InvalidTimeFormatException();
-        }
-            return userService.getAllTodosBetweenDates(userId, startDate, endDate);
+            return userService.getAllTodosBetweenDates(userId, start, end);
 
     }
 
@@ -147,5 +125,69 @@ public class UserController {
         userService.deleteUser(user);
         
         return "user "+username+" was successfully deleted from the database";
+    }
+
+
+
+
+    @PostMapping("/{userId}/profile")
+    public String addUserProfile(@PathVariable Integer userId, @RequestBody UserProfile userProfile)
+            throws UserNotFoundException {
+
+        userService.addNewUserProfile(userId, userProfile);
+
+        return "profile of profile id "+userProfile.getUserProfileId()+" was added successfully";
+    }
+
+    @PutMapping("/{userId}/profile")
+    public String updateUserProfile(@PathVariable Integer userId,
+                                    @RequestBody UserProfile updatedUserProfile)
+            throws UserNotFoundException {
+
+        userService.updateUserProfile(userId, updatedUserProfile);
+
+        return "profile of profile id "+ updatedUserProfile.getUserProfileId()+" was updated successfully";
+    }
+
+    @DeleteMapping("/{userId}/profile")
+    public String deleteUserProfile(@PathVariable Integer userId) throws UserNotFoundException {
+
+        User user = userService.getUserById(userId);
+        Integer id = user.getProfile().getUserProfileId();
+        userService.deleteUserProfile(userId);
+
+        return "profile of profile id "+id+" was successfully deleted from the database";
+    }
+
+
+
+
+    @PostMapping("/{userId}/settings")
+    public String addUserSettings(@PathVariable Integer userId, @RequestBody UserSettings userSettings)
+            throws UserNotFoundException {
+
+        userService.addNewUserSettings(userId, userSettings);
+
+        return "settings of settings id "+userSettings.getUserSettingsId()+" were added successfully";
+    }
+
+    @PutMapping("/{userId}/settings")
+    public String updateUserSettings(@PathVariable Integer userId,
+                                    @RequestBody UserSettings updatedUserSettings)
+            throws UserNotFoundException {
+
+        userService.updateUserSettings(userId, updatedUserSettings);
+
+        return "settings of settings id "+ updatedUserSettings.getUserSettingsId()+" were updated successfully";
+    }
+
+    @DeleteMapping("/{userId}/settings")
+    public String deleteUserSettings(@PathVariable Integer userId) throws UserNotFoundException {
+
+        User user = userService.getUserById(userId);
+        Integer id = user.getSettings().getUserSettingsId();
+        userService.deleteUserSettings(userId);
+
+        return "settings of settings id "+id+" were successfully deleted from the database";
     }
 }

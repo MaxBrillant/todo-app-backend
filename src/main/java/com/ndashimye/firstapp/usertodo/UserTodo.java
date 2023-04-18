@@ -3,7 +3,7 @@ package com.ndashimye.firstapp.usertodo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.user.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,12 +25,12 @@ public class UserTodo {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @NotBlank(message = "user is required")
+    @NotNull(message = "user is required")
     private User user;
 
-    @Column(name = "order", nullable = false)
-    @NotBlank(message = "order is required")
-    private int order;
+    @Column(name = "position", nullable = false)
+    @NotNull(message = "position of todo of is required")
+    private int position;
 
     @Column(name = "priority_level")
     private int priorityLevel;

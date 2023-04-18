@@ -5,7 +5,7 @@ import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
 import com.ndashimye.firstapp.userprofile.UserProfile;
 import com.ndashimye.firstapp.usersettings.UserSettings;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -35,12 +35,12 @@ public class User {
     private UserSettings settings;
 
     @Column(name = "username", nullable = false, unique = true, length = 30)
-    @NotBlank(message = "Username is required")
+    @NotNull(message = "Username is required")
     private String username;
 
 
     @Column(name = "password_hash", nullable = false, unique = true, columnDefinition = "BINARY(60)")
-    @NotBlank(message = "User password is required")
+    @NotNull(message = "User password is required")
     private String passwordHash;
 
     @Column(name = "password_salt", unique = true, length = 40, columnDefinition = "BINARY(40)")

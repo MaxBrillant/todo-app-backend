@@ -11,7 +11,7 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Integer> {
 
 
-    List<Task> findByTodoTask_TodoOrderByTodoTask_OrderAsc(Todo todo);
+    List<Task> findByTodoTask_TodoOrderByTodoTask_PositionAsc(Todo todo);
 
     List<Task> findByTodoTask_TodoOrderByTodoTask_PriorityLevelDesc(Todo todo);
 
@@ -32,7 +32,7 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
 
 
 
-    List<Task> findByParentTaskOrderByTodoTask_OrderAsc(Task task);
+    List<Task> findByParentTaskOrderByTodoTask_PositionAsc(Task task);
 
     List<Task> findByParentTaskOrderByTodoTask_PriorityLevelDesc(Task task);
 

@@ -6,11 +6,10 @@ import com.ndashimye.firstapp.user.User;
 import com.ndashimye.firstapp.usersettings.UserSettings;
 import com.ndashimye.firstapp.usertodo.UserTodo;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -35,7 +34,7 @@ public class Todo {
     private UserTodo userTodo;
 
     @Column(name = "name", length = 40, nullable = false)
-    @NotBlank(message = "name is required")
+    @NotNull(message = "name is required")
     private String name;
 
     @Column(name = "description", length = 255)

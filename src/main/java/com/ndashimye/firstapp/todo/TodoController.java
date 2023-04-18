@@ -1,6 +1,8 @@
 package com.ndashimye.firstapp.todo;
 
 import com.ndashimye.firstapp.task.Task;
+import com.ndashimye.firstapp.task.TaskNotFoundException;
+import com.ndashimye.firstapp.usertodo.UserTodo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -67,5 +69,48 @@ public class TodoController {
         todoService.deleteTodo(todo);
 
         return "todo of id "+id+" was successfully deleted from the database";
+    }
+
+
+
+    @PostMapping("/{todoId}/user-todo")
+    public String addUserTodo(@PathVariable Integer todoId,
+                              @RequestBody UserTodo userTodo)
+            throws TodoNotFoundException {
+
+        todoService.addNewUserTodo(todoId, userTodo);
+
+        return "user todo of id "+userTodo.getUserTodoId()+" was added successfully";
+    }
+
+    @PutMapping("/{todoId}/user-todo")
+    public String updateUserTodo(@PathVariable Integer todoId,
+                                 @RequestBody UserTodo updatedUserTodo)
+            throws TodoNotFoundException {
+
+        todoService.updateUserTodo(todoId, updatedUserTodo);
+
+        return "user todo of id "+updatedUserTodo.getUserTodoId()+" was updated successfully";
+    }
+
+
+    @PutMapping("/{todoId}/user-todo/update")
+    public String updateUserTodoPosition(@PathVariable Integer todoId,
+                                         @RequestParam Integer position)
+            throws TodoNotFoundException {
+
+        todoService.updateTodoPosition(todoId, position);
+
+        return "position of user todo that belongs to the todo of id "+todoId+" was updated successfully";
+    }
+
+    @DeleteMapping("/{todoId}/user-todo")
+    public String deleteUserTodo(@PathVariable Integer todoId) throws TodoNotFoundException {
+
+        Todo todo = todoService.getTodoById(todoId);
+        int id = todo.getUserTodo().getUserTodoId();
+        todoService.deleteUserTodo(todoId);
+
+        return "user todo of id "+id+" was successfully deleted from the database";
     }
 }
