@@ -22,8 +22,8 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "task_id", nullable = false, updatable = false)
-    private int taskId;
+    @Column(name = "task_id", nullable = false, unique = true, updatable = false)
+    private Long taskId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_task_id", unique = true)

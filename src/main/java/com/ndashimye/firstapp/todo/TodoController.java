@@ -1,7 +1,6 @@
 package com.ndashimye.firstapp.todo;
 
 import com.ndashimye.firstapp.task.Task;
-import com.ndashimye.firstapp.task.TaskNotFoundException;
 import com.ndashimye.firstapp.usertodo.UserTodo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,30 +14,30 @@ public class TodoController {
     private TodoService todoService;
 
     @GetMapping("/{todoId}")
-    public Todo getTodoById(@PathVariable Integer todoId) throws TodoNotFoundException {
+    public Todo getTodoById(@PathVariable Long todoId) throws TodoNotFoundException {
         return todoService.getTodoById(todoId);
     }
 
 
     @GetMapping("/id/{todoId}/tasks")
-    public List<Task> getTasksByTodoId(@PathVariable Integer todoId) throws TodoNotFoundException {
+    public List<Task> getTasksByTodoId(@PathVariable Long todoId) throws TodoNotFoundException {
         return todoService.getAllTasksByTodoId(todoId);
     }
 
     @GetMapping("/id/{todoId}/tasks/order-by/priority")
-    public List<Task> getTasksByTodoIdOrderedByPriority(@PathVariable Integer todoId)
+    public List<Task> getTasksByTodoIdOrderedByPriority(@PathVariable Long todoId)
             throws TodoNotFoundException {
 
         return todoService.getAllTasksByTodoIdOrderedByPriority(todoId);
     }
 
     @GetMapping("/id/{todoId}/tasks/completed")
-    public List<Task> getCompletedTasks(@PathVariable Integer todoId) throws TodoNotFoundException {
+    public List<Task> getCompletedTasks(@PathVariable Long todoId) throws TodoNotFoundException {
         return todoService.getCompletedTasks(todoId);
     }
 
     @GetMapping("/id/{todoId}/tasks/uncompleted")
-    public List<Task> getUncompletedTasks(@PathVariable Integer todoId) throws TodoNotFoundException {
+    public List<Task> getUncompletedTasks(@PathVariable Long todoId) throws TodoNotFoundException {
         return todoService.getUncompletedTasks(todoId);
     }
 
@@ -51,7 +50,7 @@ public class TodoController {
     }
 
     @PutMapping("/{todoId}")
-    public String updateTodo(@RequestBody Todo updatedTodo, @PathVariable Integer todoId)
+    public String updateTodo(@PathVariable Long todoId, @RequestBody Todo updatedTodo)
             throws TodoNotFoundException {
 
         Todo todo = todoService.getTodoById(todoId);
@@ -62,10 +61,10 @@ public class TodoController {
     }
 
     @DeleteMapping("/{todoId}")
-    public String deleteTodo(@PathVariable Integer todoId) throws TodoNotFoundException {
+    public String deleteTodo(@PathVariable Long todoId) throws TodoNotFoundException {
 
         Todo todo = todoService.getTodoById(todoId);
-        int id = todo.getTodoId();
+        Long id = todo.getTodoId();
         todoService.deleteTodo(todo);
 
         return "todo of id "+id+" was successfully deleted from the database";
@@ -74,7 +73,7 @@ public class TodoController {
 
 
     @PostMapping("/{todoId}/user-todo")
-    public String addUserTodo(@PathVariable Integer todoId,
+    public String addUserTodo(@PathVariable Long todoId,
                               @RequestBody UserTodo userTodo)
             throws TodoNotFoundException {
 
@@ -84,7 +83,7 @@ public class TodoController {
     }
 
     @PutMapping("/{todoId}/user-todo")
-    public String updateUserTodo(@PathVariable Integer todoId,
+    public String updateUserTodo(@PathVariable Long todoId,
                                  @RequestBody UserTodo updatedUserTodo)
             throws TodoNotFoundException {
 
@@ -95,7 +94,7 @@ public class TodoController {
 
 
     @PutMapping("/{todoId}/user-todo/update")
-    public String updateUserTodoPosition(@PathVariable Integer todoId,
+    public String updateUserTodoPosition(@PathVariable Long todoId,
                                          @RequestParam Integer position)
             throws TodoNotFoundException {
 
@@ -105,10 +104,10 @@ public class TodoController {
     }
 
     @DeleteMapping("/{todoId}/user-todo")
-    public String deleteUserTodo(@PathVariable Integer todoId) throws TodoNotFoundException {
+    public String deleteUserTodo(@PathVariable Long todoId) throws TodoNotFoundException {
 
         Todo todo = todoService.getTodoById(todoId);
-        int id = todo.getUserTodo().getUserTodoId();
+        Long id = todo.getUserTodo().getUserTodoId();
         todoService.deleteUserTodo(todoId);
 
         return "user todo of id "+id+" was successfully deleted from the database";

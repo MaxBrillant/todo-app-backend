@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -24,7 +23,7 @@ public class TodoService {
     @Autowired
     private TaskRepository taskRepository;
 
-    public Todo getTodoById(Integer todoId) throws TodoNotFoundException {
+    public Todo getTodoById(Long todoId) throws TodoNotFoundException {
 
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
         return todo;
@@ -32,7 +31,7 @@ public class TodoService {
     }
 
 
-    public List<Task> getAllTasksByTodoId(Integer todoId) throws TodoNotFoundException {
+    public List<Task> getAllTasksByTodoId(Long todoId) throws TodoNotFoundException {
 
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
         List<Task> tasks = taskRepository.findByTodoTask_TodoOrderByTodoTask_PositionAsc(todo);
@@ -41,7 +40,7 @@ public class TodoService {
     }
 
 
-    public List<Task> getAllTasksByTodoIdOrderedByPriority(Integer todoId) throws TodoNotFoundException {
+    public List<Task> getAllTasksByTodoIdOrderedByPriority(Long todoId) throws TodoNotFoundException {
 
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
         List<Task> tasks = taskRepository.findByTodoTask_TodoOrderByTodoTask_PriorityLevelDesc(todo);
@@ -49,7 +48,7 @@ public class TodoService {
         return tasks;
     }
 
-    public List<Task> getCompletedTasks(Integer todoId) throws TodoNotFoundException {
+    public List<Task> getCompletedTasks(Long todoId) throws TodoNotFoundException {
 
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
         List<Task> tasks = taskRepository.findByCompletedTasks(todo);
@@ -57,7 +56,7 @@ public class TodoService {
         return tasks;
     }
 
-    public List<Task> getUncompletedTasks(Integer todoId) throws TodoNotFoundException {
+    public List<Task> getUncompletedTasks(Long todoId) throws TodoNotFoundException {
 
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
         List<Task> tasks = taskRepository.findByUncompletedTasks(todo);
@@ -101,7 +100,7 @@ public class TodoService {
 
 
 
-    public void addNewUserTodo(Integer todoId, UserTodo userTodo) throws TodoNotFoundException {
+    public void addNewUserTodo(Long todoId, UserTodo userTodo) throws TodoNotFoundException {
 
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
 
@@ -129,7 +128,7 @@ public class TodoService {
         todoRepository.save(todo);
     }
 
-    public void updateUserTodo(Integer todoId, UserTodo updatedUserTodo) throws TodoNotFoundException {
+    public void updateUserTodo(Long todoId, UserTodo updatedUserTodo) throws TodoNotFoundException {
 
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
 
@@ -144,7 +143,7 @@ public class TodoService {
     }
 
 
-    public void updateTodoPosition(Integer todoId, int newPosition) throws TodoNotFoundException {
+    public void updateTodoPosition(Long todoId, int newPosition) throws TodoNotFoundException {
 
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
 
@@ -180,7 +179,7 @@ public class TodoService {
         todoRepository.save(todo);
     }
 
-    public void deleteUserTodo(Integer todoId) throws TodoNotFoundException {
+    public void deleteUserTodo(Long todoId) throws TodoNotFoundException {
 
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
 

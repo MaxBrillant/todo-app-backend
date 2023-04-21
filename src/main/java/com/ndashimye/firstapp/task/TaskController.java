@@ -2,7 +2,6 @@ package com.ndashimye.firstapp.task;
 
 import com.ndashimye.firstapp.todotask.TodoTask;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,34 +14,34 @@ public class TaskController {
     private TaskService taskService;
 
     @GetMapping("/{taskId}")
-    public Task getTaskById(@PathVariable Integer taskId) throws TaskNotFoundException {
+    public Task getTaskById(@PathVariable Long taskId) throws TaskNotFoundException {
         return taskService.getTaskById(taskId);
     }
 
 
     @GetMapping("/id/{taskId}/sub-tasks")
-    public List<Task> getChildTasksByTaskId(@PathVariable Integer taskId)
+    public List<Task> getChildTasksByTaskId(@PathVariable Long taskId)
             throws TaskNotFoundException {
 
         return taskService.getAllChildTasksByTaskId(taskId);
     }
 
     @GetMapping("/id/{taskId}/sub-tasks/order-by/priority")
-    public List<Task> getChildTasksByTaskIdOrderedByPriority(@PathVariable Integer taskId)
+    public List<Task> getChildTasksByTaskIdOrderedByPriority(@PathVariable Long taskId)
             throws TaskNotFoundException {
 
         return taskService.getAllChildTasksByTaskIdOrderedByPriority(taskId);
     }
 
     @GetMapping("/id/{taskId}/sub-tasks/completed")
-    public List<Task> getCompletedChildTasks(@PathVariable Integer taskId)
+    public List<Task> getCompletedChildTasks(@PathVariable Long taskId)
             throws TaskNotFoundException {
 
         return taskService.getCompletedChildTasks(taskId);
     }
 
     @GetMapping("/id/{taskId}/sub-tasks/uncompleted")
-    public List<Task> getUncompletedChildTasks(@PathVariable Integer taskId)
+    public List<Task> getUncompletedChildTasks(@PathVariable Long taskId)
             throws TaskNotFoundException {
 
         return taskService.getUncompletedChildTasks(taskId);
@@ -58,7 +57,7 @@ public class TaskController {
     }
 
     @PutMapping("/{taskId}")
-    public String updateTask(@RequestBody Task updatedTask, @PathVariable Integer taskId)
+    public String updateTask(@RequestBody Task updatedTask, @PathVariable Long taskId)
             throws TaskNotFoundException {
 
         Task task = taskService.getTaskById(taskId);
@@ -69,10 +68,10 @@ public class TaskController {
     }
 
     @DeleteMapping("/{taskId}")
-    public String deleteTask(@PathVariable Integer taskId) throws TaskNotFoundException {
+    public String deleteTask(@PathVariable Long taskId) throws TaskNotFoundException {
 
         Task task = taskService.getTaskById(taskId);
-        int id = task.getTaskId();
+        Long id = task.getTaskId();
         taskService.deleteTask(task);
 
         return "task of id "+id+" was successfully deleted from the database";
@@ -81,7 +80,7 @@ public class TaskController {
 
 
     @PostMapping("/{taskId}/todo-task")
-    public String addTodoTask(@PathVariable Integer taskId, @RequestBody TodoTask todoTask)
+    public String addTodoTask(@PathVariable Long taskId, @RequestBody TodoTask todoTask)
             throws TaskNotFoundException {
 
         taskService.addNewTodoTask(taskId, todoTask);
@@ -90,7 +89,7 @@ public class TaskController {
     }
 
     @PutMapping("/{taskId}/todo-task")
-    public String updateTodoTask(@PathVariable Integer taskId,
+    public String updateTodoTask(@PathVariable Long taskId,
                                  @RequestBody TodoTask updatedTodoTask)
             throws TaskNotFoundException {
 
@@ -101,7 +100,7 @@ public class TaskController {
 
 
     @PutMapping("/{taskId}/todo-task/update")
-    public String updateTodoTaskPosition(@PathVariable Integer taskId,
+    public String updateTodoTaskPosition(@PathVariable Long taskId,
                                          @RequestParam Integer position)
             throws TaskNotFoundException {
 
@@ -111,10 +110,10 @@ public class TaskController {
     }
 
     @DeleteMapping("/{taskId}/todo-task")
-    public String deleteTodoTask(@PathVariable Integer taskId) throws TaskNotFoundException {
+    public String deleteTodoTask(@PathVariable Long taskId) throws TaskNotFoundException {
 
         Task task = taskService.getTaskById(taskId);
-        int id = task.getTodoTask().getTodoTaskId();
+        Long id = task.getTodoTask().getTodoTaskId();
         taskService.deleteTodoTask(taskId);
 
         return "todo task of id "+id+" was successfully deleted from the database";

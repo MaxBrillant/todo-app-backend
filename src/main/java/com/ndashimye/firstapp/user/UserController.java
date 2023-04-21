@@ -2,7 +2,6 @@ package com.ndashimye.firstapp.user;
 
 import com.ndashimye.firstapp.error.InvalidTimeFormatException;
 import com.ndashimye.firstapp.userprofile.UserProfile;
-import com.ndashimye.firstapp.userprofile.UserProfileNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
 import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import com.ndashimye.firstapp.todo.Todo;
@@ -24,33 +23,36 @@ public class UserController {
     }
 
     @GetMapping("/id/{userId}")
-    public User getUserById(@PathVariable Integer userId) throws UserNotFoundException {
+    public User getUserById(@PathVariable Long userId) throws UserNotFoundException {
         return userService.getUserById(userId);
     }
 
     @GetMapping("/id/{userId}/todos")
-    public List<Todo> getTodosByUserId(@PathVariable Integer userId) throws UserNotFoundException {
+    public List<Todo> getTodosByUserId(@PathVariable Long userId) throws UserNotFoundException {
         return userService.getAllTodosByUserId(userId);
     }
 
     @GetMapping("/id/{userId}/todos/order-by/due-time/most-recent")
-    public List<Todo> getTodosByUserIdOrderedByMostRecent(@PathVariable Integer userId) throws UserNotFoundException {
+    public List<Todo> getTodosByUserIdOrderedByMostRecent(@PathVariable Long userId)
+            throws UserNotFoundException {
         return userService.getAllTodosByUserIdOrderedByMostRecent(userId);
     }
 
     @GetMapping("/id/{userId}/todos/order-by/due-time/least-recent")
-    public List<Todo> getTodosByUserIdOrderedByLeastRecent(@PathVariable Integer userId) throws UserNotFoundException {
+    public List<Todo> getTodosByUserIdOrderedByLeastRecent(@PathVariable Long userId)
+            throws UserNotFoundException {
         return userService.getAllTodosByUserIdOrderedByLeastRecent(userId);
     }
 
     @GetMapping("/id/{userId}/todos/order-by/priority")
-    public List<Todo> getTodosByUserIdOrderedByPriority(@PathVariable Integer userId) throws UserNotFoundException {
+    public List<Todo> getTodosByUserIdOrderedByPriority(@PathVariable Long userId)
+            throws UserNotFoundException {
         return userService.getAllTodosByUserIdOrderedByPriority(userId);
     }
 
     @GetMapping("/id/{userId}/todos/between")
     public List<Todo> getTodosBetweenDates
-            (@PathVariable Integer userId, @RequestParam String start, @RequestParam String end)
+            (@PathVariable Long userId, @RequestParam String start, @RequestParam String end)
             throws UserNotFoundException, UserSettingsNotFoundException, InvalidTimeFormatException {
 
             return userService.getAllTodosBetweenDates(userId, start, end);
@@ -58,7 +60,9 @@ public class UserController {
     }
 
     @GetMapping("/email/{emailAddress}")
-    public User getUserByEmailAddress(@PathVariable String emailAddress) throws UserNotFoundException {
+    public User getUserByEmailAddress(@PathVariable String emailAddress)
+            throws UserNotFoundException {
+
         return userService.getUserByEmailAddress(emailAddress);
     }
 
@@ -74,7 +78,7 @@ public class UserController {
     }
 
     @GetMapping("/check/id/{userId}")
-    public boolean checkUserExistence(@PathVariable Integer userId){
+    public boolean checkUserExistence(@PathVariable Long userId){
         return userService.userIdExists(userId);
     }
 
@@ -91,7 +95,7 @@ public class UserController {
 
 
     @GetMapping("/check/password/{userId}/{password}")
-    public boolean checkPassword(@PathVariable Integer userId,
+    public boolean checkPassword(@PathVariable Long userId,
                                  @PathVariable String password)
             throws Exception {
 
@@ -108,7 +112,9 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public String updateUser(@RequestBody User updatedUser, @PathVariable Integer userId) throws UserNotFoundException, UserSettingsNotFoundException {
+    public String updateUser(@RequestBody User updatedUser,
+                             @PathVariable Long userId)
+            throws UserNotFoundException {
 
         User user = userService.getUserById(userId);
 
@@ -118,7 +124,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public String deleteUser(@PathVariable Integer userId) throws UserNotFoundException {
+    public String deleteUser(@PathVariable Long userId) throws UserNotFoundException {
 
         User user = userService.getUserById(userId);
         String username = user.getUsername();
@@ -131,7 +137,7 @@ public class UserController {
 
 
     @PostMapping("/{userId}/profile")
-    public String addUserProfile(@PathVariable Integer userId, @RequestBody UserProfile userProfile)
+    public String addUserProfile(@PathVariable Long userId, @RequestBody UserProfile userProfile)
             throws UserNotFoundException {
 
         userService.addNewUserProfile(userId, userProfile);
@@ -140,7 +146,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}/profile")
-    public String updateUserProfile(@PathVariable Integer userId,
+    public String updateUserProfile(@PathVariable Long userId,
                                     @RequestBody UserProfile updatedUserProfile)
             throws UserNotFoundException {
 
@@ -150,10 +156,10 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}/profile")
-    public String deleteUserProfile(@PathVariable Integer userId) throws UserNotFoundException {
+    public String deleteUserProfile(@PathVariable Long userId) throws UserNotFoundException {
 
         User user = userService.getUserById(userId);
-        Integer id = user.getProfile().getUserProfileId();
+        Long id = user.getProfile().getUserProfileId();
         userService.deleteUserProfile(userId);
 
         return "profile of profile id "+id+" was successfully deleted from the database";
@@ -163,7 +169,7 @@ public class UserController {
 
 
     @PostMapping("/{userId}/settings")
-    public String addUserSettings(@PathVariable Integer userId, @RequestBody UserSettings userSettings)
+    public String addUserSettings(@PathVariable Long userId, @RequestBody UserSettings userSettings)
             throws UserNotFoundException {
 
         userService.addNewUserSettings(userId, userSettings);
@@ -172,7 +178,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}/settings")
-    public String updateUserSettings(@PathVariable Integer userId,
+    public String updateUserSettings(@PathVariable Long userId,
                                     @RequestBody UserSettings updatedUserSettings)
             throws UserNotFoundException {
 
@@ -182,10 +188,10 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}/settings")
-    public String deleteUserSettings(@PathVariable Integer userId) throws UserNotFoundException {
+    public String deleteUserSettings(@PathVariable Long userId) throws UserNotFoundException {
 
         User user = userService.getUserById(userId);
-        Integer id = user.getSettings().getUserSettingsId();
+        Long id = user.getSettings().getUserSettingsId();
         userService.deleteUserSettings(userId);
 
         return "settings of settings id "+id+" were successfully deleted from the database";

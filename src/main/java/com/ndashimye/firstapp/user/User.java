@@ -22,9 +22,9 @@ import java.time.ZonedDateTime;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
     @Id
-    @Column(name = "user_id", nullable = false, updatable = false)
+    @Column(name = "user_id", nullable = false, unique = true, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userId;
+    private Long userId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_profile_id", unique = true)
