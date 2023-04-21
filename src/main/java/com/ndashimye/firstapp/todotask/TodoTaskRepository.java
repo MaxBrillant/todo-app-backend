@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TodoTaskRepository extends JpaRepository<TodoTask, Integer> {
+public interface TodoTaskRepository extends JpaRepository<TodoTask, Long> {
 
     TodoTask findTopByTodoOrderByPositionDesc(Todo todo);
 

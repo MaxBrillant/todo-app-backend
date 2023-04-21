@@ -25,15 +25,15 @@ public class Todo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "todo_id", nullable = false, updatable = false)
-    private Integer todoId;
+    @Column(name = "todo_id", nullable = false, unique = true, updatable = false)
+    private Long todoId;
 
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_todo_id", unique = true)
     private UserTodo userTodo;
 
-    @Column(name = "name", length = 40, nullable = false)
+    @Column(name = "name", nullable = false, length = 40)
     @NotNull(message = "name is required")
     private String name;
 

@@ -21,16 +21,16 @@ public class UserProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, updatable = false, name = "user_profile_id")
-    private Integer userProfileId;
+    @Column(name = "user_profile_id", nullable = false, unique = true, updatable = false)
+    private Long userProfileId;
 
-    @Column(name = "first_name", length = 40)
+    @Column(name = "first_name", nullable = false, length = 40)
     private String firstName;
 
-    @Column(name = "last_name", length = 40)
+    @Column(name = "last_name", nullable = false, length = 40)
     private String lastName;
 
-    @Column(name = "email_address", length = 50, unique = true)
+    @Column(name = "email_address", nullable = false, unique = true, length = 50)
     private String emailAddress;
 
     @Column(name = "profile_image_url", length = 255)

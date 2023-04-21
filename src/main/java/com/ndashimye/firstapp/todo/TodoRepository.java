@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Repository
-public interface TodoRepository extends JpaRepository<Todo, Integer> {
+public interface TodoRepository extends JpaRepository<Todo, Long> {
 
     List<Todo> findByUserTodo_UserOrderByUserTodo_PositionAsc(User user);
 
@@ -31,7 +31,7 @@ public interface TodoRepository extends JpaRepository<Todo, Integer> {
             "AND t.due_time BETWEEN :startDate AND :endDate " +
             "ORDER BY ut.position ASC",
             nativeQuery = true)
-    List<Todo> findByUserAndDueTimeBetween(Integer userId, Timestamp startDate, Timestamp endDate);
+    List<Todo> findByUserAndDueTimeBetween(Long userId, Timestamp startDate, Timestamp endDate);
 
 
     @Query("SELECT MAX(userTodo.position) FROM Todo")

@@ -22,8 +22,8 @@ public class UserSettings {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, updatable = false, name = "user_settings_id")
-    private Integer userSettingsId;
+    @Column(name = "user_settings_id", nullable = false, unique = true, updatable = false)
+    private Long userSettingsId;
 
     @Column(name = "time_zone", nullable = false, length = 60)
     @NotNull(message = "time zone is required")

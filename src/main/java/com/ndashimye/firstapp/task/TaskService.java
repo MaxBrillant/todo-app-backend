@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -20,7 +19,7 @@ public class TaskService {
     @Autowired
     private TodoTaskRepository todoTaskRepository;
 
-    public Task getTaskById(Integer taskId) throws TaskNotFoundException {
+    public Task getTaskById(Long taskId) throws TaskNotFoundException {
 
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
 
@@ -28,7 +27,7 @@ public class TaskService {
     }
 
 
-    public List<Task> getAllChildTasksByTaskId(Integer taskId) throws TaskNotFoundException {
+    public List<Task> getAllChildTasksByTaskId(Long taskId) throws TaskNotFoundException {
 
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
         List<Task> tasks = taskRepository.findByParentTaskOrderByTodoTask_PositionAsc(task);
@@ -37,7 +36,7 @@ public class TaskService {
     }
 
 
-    public List<Task> getAllChildTasksByTaskIdOrderedByPriority(Integer taskId) throws TaskNotFoundException {
+    public List<Task> getAllChildTasksByTaskIdOrderedByPriority(Long taskId) throws TaskNotFoundException {
 
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
         List<Task> tasks = taskRepository.findByParentTaskOrderByTodoTask_PriorityLevelDesc(task);
@@ -45,7 +44,7 @@ public class TaskService {
         return tasks;
     }
 
-    public List<Task> getCompletedChildTasks(Integer taskId) throws TaskNotFoundException {
+    public List<Task> getCompletedChildTasks(Long taskId) throws TaskNotFoundException {
 
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
         List<Task> tasks = taskRepository.findByCompletedChildTasks(task);
@@ -53,7 +52,7 @@ public class TaskService {
         return tasks;
     }
 
-    public List<Task> getUncompletedChildTasks(Integer taskId) throws TaskNotFoundException {
+    public List<Task> getUncompletedChildTasks(Long taskId) throws TaskNotFoundException {
 
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
         List<Task> tasks = taskRepository.findByUncompletedChildTasks(task);
@@ -78,12 +77,14 @@ public class TaskService {
 //        }
 
 
-        if(Objects.nonNull(updatedTask.getParentTask())) {
-            if(!updatedTask.getParentTask().equals("")) {
+        if (!task.equals(updatedTask)) {
+            if (Objects.nonNull(updatedTask.getParentTask())) {
+                if (!updatedTask.getParentTask().equals("")) {
+                    task.setParentTask(updatedTask.getParentTask());
+                }
+            } else {
                 task.setParentTask(updatedTask.getParentTask());
             }
-        }else {
-            task.setParentTask(updatedTask.getParentTask());
         }
 
 
@@ -100,7 +101,7 @@ public class TaskService {
 
 
 
-    public void addNewTodoTask(Integer taskId, TodoTask todoTask) throws TaskNotFoundException {
+    public void addNewTodoTask(Long taskId, TodoTask todoTask) throws TaskNotFoundException {
 
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
 
@@ -131,7 +132,7 @@ public class TaskService {
     }
 
 
-    public void updateTodoTask(Integer taskId, TodoTask updatedTodoTask) throws TaskNotFoundException {
+    public void updateTodoTask(Long taskId, TodoTask updatedTodoTask) throws TaskNotFoundException {
 
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
 
@@ -151,7 +152,7 @@ public class TaskService {
         }
     }
 
-    public void updateTaskPosition(Integer taskId, int newPosition) throws TaskNotFoundException {
+    public void updateTaskPosition(Long taskId, int newPosition) throws TaskNotFoundException {
 
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
 
@@ -173,7 +174,7 @@ public class TaskService {
     }
 
 
-    public void deleteTodoTask(Integer taskId) throws TaskNotFoundException {
+    public void deleteTodoTask(Long taskId) throws TaskNotFoundException {
 
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
 

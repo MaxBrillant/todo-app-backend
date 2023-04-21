@@ -20,8 +20,8 @@ public class UserTodo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_todo_id", nullable = false, updatable = false)
-    private Integer userTodoId;
+    @Column(name = "user_todo_id", nullable = false, unique = true, updatable = false)
+    private Long userTodoId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

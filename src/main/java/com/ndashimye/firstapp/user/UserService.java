@@ -3,7 +3,6 @@ package com.ndashimye.firstapp.user;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
 import com.ndashimye.firstapp.error.InvalidTimeFormatException;
 import com.ndashimye.firstapp.userprofile.UserProfile;
-import com.ndashimye.firstapp.userprofile.UserProfileNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
 import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import com.ndashimye.firstapp.todo.Todo;
@@ -43,14 +42,14 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User getUserById(Integer userId) throws UserNotFoundException {
+    public User getUserById(Long userId) throws UserNotFoundException {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 
         return user;
     }
 
-    public List<Todo> getAllTodosByUserId(Integer userId) throws UserNotFoundException {
+    public List<Todo> getAllTodosByUserId(Long userId) throws UserNotFoundException {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
         List<Todo> todos = todoRepository.findByUserTodo_UserOrderByUserTodo_PositionAsc(user);
@@ -59,7 +58,8 @@ public class UserService {
     }
 
 
-    public List<Todo> getAllTodosByUserIdOrderedByMostRecent(Integer userId) throws UserNotFoundException {
+    public List<Todo> getAllTodosByUserIdOrderedByMostRecent(Long userId)
+            throws UserNotFoundException {
 
 
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
@@ -68,7 +68,8 @@ public class UserService {
         return todos;
     }
 
-    public List<Todo> getAllTodosByUserIdOrderedByLeastRecent(Integer userId) throws UserNotFoundException {
+    public List<Todo> getAllTodosByUserIdOrderedByLeastRecent(Long userId)
+            throws UserNotFoundException {
 
 
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
@@ -78,7 +79,8 @@ public class UserService {
     }
 
 
-    public List<Todo> getAllTodosByUserIdOrderedByPriority(Integer userId) throws UserNotFoundException {
+    public List<Todo> getAllTodosByUserIdOrderedByPriority(Long userId)
+            throws UserNotFoundException {
 
 
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
@@ -88,7 +90,7 @@ public class UserService {
     }
 
     public List<Todo> getAllTodosBetweenDates
-            (Integer userId, String start, String end)
+            (Long userId, String start, String end)
             throws UserNotFoundException, UserSettingsNotFoundException, InvalidTimeFormatException {
 
         LocalDate startDate;
@@ -132,7 +134,7 @@ public class UserService {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException());
         return user;
     }
-    public boolean userIdExists(Integer userId){
+    public boolean userIdExists(Long userId){
         return userRepository.existsByUserId(userId);
     }
     public boolean usernameExists(String username){
@@ -144,7 +146,7 @@ public class UserService {
     }
 
 
-    public boolean checkPassword(Integer userId, String password) throws UserNotFoundException {
+    public boolean checkPassword(Long userId, String password) throws UserNotFoundException {
         return getUserById(userId).checkPassword(password);
     }
 
@@ -199,7 +201,8 @@ public class UserService {
 
 
 
-    public void addNewUserProfile(Integer userId, UserProfile userProfile) throws UserNotFoundException {
+    public void addNewUserProfile(Long userId, UserProfile userProfile)
+            throws UserNotFoundException {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 
@@ -209,7 +212,7 @@ public class UserService {
         }
     }
 
-    public void updateUserProfile(Integer userId, UserProfile updatedUserProfile)
+    public void updateUserProfile(Long userId, UserProfile updatedUserProfile)
             throws UserNotFoundException {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
@@ -229,7 +232,7 @@ public class UserService {
             }
         }
     }
-    public void deleteUserProfile(Integer userId) throws UserNotFoundException {
+    public void deleteUserProfile(Long userId) throws UserNotFoundException {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 
@@ -240,7 +243,8 @@ public class UserService {
 
 
 
-    public void addNewUserSettings(Integer userId, UserSettings userSettings) throws UserNotFoundException {
+    public void addNewUserSettings(Long userId, UserSettings userSettings)
+            throws UserNotFoundException {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 
@@ -250,7 +254,8 @@ public class UserService {
         }
     }
 
-    public void updateUserSettings(Integer userId, UserSettings updatedUserSettings) throws UserNotFoundException {
+    public void updateUserSettings(Long userId, UserSettings updatedUserSettings)
+            throws UserNotFoundException {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 
@@ -261,7 +266,7 @@ public class UserService {
         }
     }
 
-    public void deleteUserSettings(Integer userId) throws UserNotFoundException {
+    public void deleteUserSettings(Long userId) throws UserNotFoundException {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 
