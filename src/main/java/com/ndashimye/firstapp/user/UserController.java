@@ -121,16 +121,6 @@ public class UserController {
         userService.deleteUser(userId);
     }
 
-
-
-
-    @PostMapping("/{userId}/profile")
-    public void addUserProfile(@PathVariable Long userId, @RequestBody UserProfile userProfile)
-            throws UserNotFoundException {
-
-        userService.addNewUserProfile(userId, userProfile);
-    }
-
     @PutMapping("/{userId}/profile")
     public void updateUserProfile(@PathVariable Long userId,
                                     @RequestBody UserProfile updatedUserProfile)
@@ -139,35 +129,11 @@ public class UserController {
         userService.updateUserProfile(userId, updatedUserProfile);
     }
 
-    @DeleteMapping("/{userId}/profile")
-    public void deleteUserProfile(@PathVariable Long userId)
-            throws UserNotFoundException, UserProfileNotFoundException {
-
-        userService.deleteUserProfile(userId);
-    }
-
-
-
-
-    @PostMapping("/{userId}/settings")
-    public void addUserSettings(@PathVariable Long userId, @RequestBody UserSettings userSettings)
-            throws UserNotFoundException {
-
-        userService.addNewUserSettings(userId, userSettings);
-    }
-
     @PutMapping("/{userId}/settings")
     public void updateUserSettings(@PathVariable Long userId,
                                     @RequestBody UserSettings updatedUserSettings)
             throws UserNotFoundException, UserSettingsNotFoundException {
 
         userService.updateUserSettings(userId, updatedUserSettings);
-    }
-
-    @DeleteMapping("/{userId}/settings")
-    public void deleteUserSettings(@PathVariable Long userId)
-            throws UserNotFoundException, UserSettingsNotFoundException {
-
-        userService.deleteUserSettings(userId);
     }
 }

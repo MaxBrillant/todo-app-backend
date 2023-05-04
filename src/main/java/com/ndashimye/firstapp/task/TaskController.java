@@ -53,10 +53,11 @@ public class TaskController {
     }
 
 
-    @PostMapping()
-    public void addTask(@RequestBody Task task) {
+    @PostMapping("/{todoId}")
+    public void addTask(@RequestBody Task task, @PathVariable Long todoId)
+            throws TaskNotFoundException, TodoTaskNotFoundException, TodoNotFoundException {
 
-        taskService.addNewTask(task);
+        taskService.addNewTask(task, todoId);
     }
 
     @PutMapping("/{taskId}")
@@ -71,13 +72,12 @@ public class TaskController {
         taskService.deleteTask(taskId);
     }
 
-
-
-    @PostMapping("/{taskId}/todo-task")
-    public void addTodoTask(@PathVariable Long taskId, @RequestBody TodoTask todoTask)
+    @PutMapping("/{taskId}/parent-task/{parentTaskId}/position")
+    public void updateParentTask(@PathVariable Long taskId,
+                               @PathVariable Long parentTaskId, @RequestParam int position)
             throws TaskNotFoundException, TodoTaskNotFoundException, TodoNotFoundException {
 
-        taskService.addNewTodoTask(taskId, todoTask);
+        taskService.updateParentTask(taskId, parentTaskId, position);
     }
 
     @PutMapping("/{taskId}/todo-task")
@@ -95,12 +95,5 @@ public class TaskController {
             throws TaskNotFoundException, TodoTaskNotFoundException, TodoNotFoundException {
 
         taskService.updateTaskPosition(taskId, position);
-    }
-
-    @DeleteMapping("/{taskId}/todo-task")
-    public void deleteTodoTask(@PathVariable Long taskId)
-            throws TaskNotFoundException, TodoTaskNotFoundException {
-
-        taskService.deleteTodoTask(taskId);
     }
 }

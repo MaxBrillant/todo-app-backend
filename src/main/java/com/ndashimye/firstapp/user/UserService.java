@@ -207,6 +207,9 @@ public class UserService {
         userRepository.save(user);
         log.info("User of ID: {} and username: {} was successfully added."
                 , user.getUserId(), user.getUsername());
+
+        addNewUserProfile(user, new UserProfile());
+        addNewUserSettings(user, new UserSettings());
     }
 
     public void updateUser(User updatedUser, Long userId) throws UserNotFoundException {
@@ -242,10 +245,8 @@ public class UserService {
 
 
 
-    public void addNewUserProfile(Long userId, UserProfile userProfile)
-            throws UserNotFoundException {
+    public void addNewUserProfile(User user, UserProfile userProfile) {
 
-        User user = getUserById(userId);
         log.info("Adding a profile to user of ID: {} and username: {}..."
                 , user.getUserId(), user.getUsername());
 
@@ -279,25 +280,9 @@ public class UserService {
                 , user.getUserId(), user.getUsername());
     }
 
-    public void deleteUserProfile(Long userId) throws UserNotFoundException, UserProfileNotFoundException {
-
-        User user = getUserById(userId);
-
-        log.info("Deleting the profile of user of ID: {} and username: {}..."
-                , user.getUserId(), user.getUsername());
-
-        userProfileRepository.delete(user.getProfile());
-        log.info("Profile of user of ID: {} and username: {} was successfully deleted."
-                , user.getUserId(), user.getUsername());
-
-    }
 
 
-
-    public void addNewUserSettings(Long userId, UserSettings userSettings)
-            throws UserNotFoundException {
-
-        User user = getUserById(userId);
+    public void addNewUserSettings(User user, UserSettings userSettings) {
 
         log.info("Adding settings to user of ID: {} and username: {}..."
                 , user.getUserId(), user.getUsername());
@@ -322,17 +307,4 @@ public class UserService {
         log.info("Settings of user of ID: {} and username: {} were successfully updated."
                 , user.getUserId(), user.getUsername());
     }
-
-    public void deleteUserSettings(Long userId) throws UserNotFoundException, UserSettingsNotFoundException {
-
-        User user = getUserById(userId);
-
-        log.info("Deleting the settings of user of ID: {} and username: {}..."
-                , user.getUserId(), user.getUsername());
-
-        userSettingsRepository.delete(user.getSettings());
-        log.info("Settings of user of ID: {} and username: {} were successfully deleted."
-                , user.getUserId(), user.getUsername());
-    }
-
 }

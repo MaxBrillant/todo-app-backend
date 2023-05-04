@@ -44,10 +44,11 @@ public class TodoController {
         return todoService.getUncompletedTasks(todoId);
     }
 
-    @PostMapping()
-    public void addTodo(@RequestBody Todo todo) {
+    @PostMapping("/{userId}")
+    public void addTodo(@RequestBody Todo todo, @PathVariable Long userId)
+            throws UserNotFoundException, UserTodoNotFoundException {
 
-        todoService.addNewTodo(todo);
+        todoService.addNewTodo(todo, userId);
     }
 
     @PutMapping("/{todoId}")
@@ -62,16 +63,6 @@ public class TodoController {
     public void deleteTodo(@PathVariable Long todoId) throws TodoNotFoundException {
 
         todoService.deleteTodo(todoId);
-    }
-
-
-
-    @PostMapping("/{todoId}/user-todo")
-    public void addUserTodo(@PathVariable Long todoId,
-                              @RequestBody UserTodo userTodo)
-            throws TodoNotFoundException, UserNotFoundException, UserTodoNotFoundException {
-
-        todoService.addNewUserTodo(todoId, userTodo);
     }
 
     @PutMapping("/{todoId}/user-todo")
@@ -89,12 +80,5 @@ public class TodoController {
             throws TodoNotFoundException, UserTodoNotFoundException {
 
         todoService.updateTodoPosition(todoId, position);
-    }
-
-    @DeleteMapping("/{todoId}/user-todo")
-    public void deleteUserTodo(@PathVariable Long todoId)
-            throws TodoNotFoundException, UserTodoNotFoundException {
-
-        todoService.deleteUserTodo(todoId);
     }
 }

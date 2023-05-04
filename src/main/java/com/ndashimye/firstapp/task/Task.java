@@ -54,8 +54,4 @@ public class Task {
     public TodoTask getTodoTask() throws TodoTaskNotFoundException {
         return Optional.of(this.todoTask).orElseThrow(() -> new TodoTaskNotFoundException());
     }
-
-    public Task getParentTask() throws TaskNotFoundException {
-        return Optional.of(this.parentTask).orElseThrow(() -> new TaskNotFoundException());
-    }
 }
