@@ -1,7 +1,10 @@
 package com.ndashimye.firstapp.todo;
 
 import com.ndashimye.firstapp.task.Task;
+import com.ndashimye.firstapp.user.UserNotFoundException;
+import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import com.ndashimye.firstapp.usertodo.UserTodo;
+import com.ndashimye.firstapp.usertodo.UserTodoNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -49,7 +52,8 @@ public class TodoController {
 
     @PutMapping("/{todoId}")
     public void updateTodo(@PathVariable Long todoId, @RequestBody Todo updatedTodo)
-            throws TodoNotFoundException {
+            throws TodoNotFoundException, UserNotFoundException, UserSettingsNotFoundException
+            , UserTodoNotFoundException {
 
         todoService.updateTodo(updatedTodo, todoId);
     }
@@ -65,7 +69,7 @@ public class TodoController {
     @PostMapping("/{todoId}/user-todo")
     public void addUserTodo(@PathVariable Long todoId,
                               @RequestBody UserTodo userTodo)
-            throws TodoNotFoundException {
+            throws TodoNotFoundException, UserNotFoundException, UserTodoNotFoundException {
 
         todoService.addNewUserTodo(todoId, userTodo);
     }
@@ -73,7 +77,7 @@ public class TodoController {
     @PutMapping("/{todoId}/user-todo")
     public void updateUserTodo(@PathVariable Long todoId,
                                  @RequestBody UserTodo updatedUserTodo)
-            throws TodoNotFoundException {
+            throws TodoNotFoundException, UserNotFoundException, UserTodoNotFoundException {
 
         todoService.updateUserTodo(todoId, updatedUserTodo);
     }
@@ -82,13 +86,15 @@ public class TodoController {
     @PutMapping("/{todoId}/user-todo/update")
     public void updateUserTodoPosition(@PathVariable Long todoId,
                                          @RequestParam Integer position)
-            throws TodoNotFoundException {
+            throws TodoNotFoundException, UserTodoNotFoundException {
 
         todoService.updateTodoPosition(todoId, position);
     }
 
     @DeleteMapping("/{todoId}/user-todo")
-    public void deleteUserTodo(@PathVariable Long todoId) throws TodoNotFoundException {
+    public void deleteUserTodo(@PathVariable Long todoId)
+            throws TodoNotFoundException, UserTodoNotFoundException {
+
         todoService.deleteUserTodo(todoId);
     }
 }

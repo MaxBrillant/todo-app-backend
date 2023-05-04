@@ -3,7 +3,9 @@ package com.ndashimye.firstapp.user;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
 import com.ndashimye.firstapp.userprofile.UserProfile;
+import com.ndashimye.firstapp.userprofile.UserProfileNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
+import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -11,6 +13,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.mindrot.jbcrypt.BCrypt;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -60,6 +63,14 @@ public class User {
     private ZonedDateTime updatedAt;
 
 
+    public UserProfile getProfile() throws UserProfileNotFoundException {
+        return Optional.of(this.profile).orElseThrow(() -> new UserProfileNotFoundException());
+    }
+
+    public UserSettings getSettings() throws UserSettingsNotFoundException {
+        return Optional.of(this.settings).orElseThrow(() -> new UserSettingsNotFoundException());
+    }
+
 
     public void setPassword(String password) {
         this.passwordSalt = BCrypt.gensalt();
@@ -69,15 +80,5 @@ public class User {
     public boolean checkPassword(String password) {
         return BCrypt.checkpw(password, this.passwordHash);
     }
-
-
-//    @PostLoad
-//    private void convertLastLoginToUserTimeZone() {
-//        if (lastLogin != null && userSettings != null) {
-//            String timeZoneId = userSettings.getTimeZone();
-//            ZoneId userTimeZone = ZoneId.of(timeZoneId);
-//            lastLogin = lastLogin.withZoneSameInstant(userTimeZone);
-//        }
-//    }
 
 }

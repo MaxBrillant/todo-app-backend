@@ -2,7 +2,10 @@ package com.ndashimye.firstapp.todo;
 
 import com.ndashimye.firstapp.task.Task;
 import com.ndashimye.firstapp.task.TaskRepository;
+import com.ndashimye.firstapp.user.UserNotFoundException;
+import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import com.ndashimye.firstapp.usertodo.UserTodo;
+import com.ndashimye.firstapp.usertodo.UserTodoNotFoundException;
 import com.ndashimye.firstapp.usertodo.UserTodoRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -82,7 +85,7 @@ public class TodoService {
         log.info("Todo of ID: {} was successfully added.", todo.getTodoId());
     }
 
-    public void updateTodo(Todo updatedTodo, Long todoId) throws TodoNotFoundException {
+    public void updateTodo(Todo updatedTodo, Long todoId) throws TodoNotFoundException, UserNotFoundException, UserSettingsNotFoundException, UserTodoNotFoundException {
 
         Todo todo = getTodoById(todoId);
         log.info("Updating todo of ID: {}...", todo.getTodoId());
@@ -115,26 +118,21 @@ public class TodoService {
 
 
 
-    public void addNewUserTodo(Long todoId, UserTodo userTodo) throws TodoNotFoundException {
+    public void addNewUserTodo(Long todoId, UserTodo userTodo) throws TodoNotFoundException, UserNotFoundException, UserTodoNotFoundException {
 
         Todo todo = getTodoById(todoId);
         log.info("Assigning todo of ID: {} to user of ID: {} and username: {}..."
                 , todo.getTodoId(), userTodo.getUser().getUserId(), userTodo.getUser().getUsername());
 
-        if (Objects.isNull(todo.getUserTodo())) {
-            userTodoRepository.save(userTodo);
-            todo.setUserTodo(userTodo);
-            assignPositionToNewTodo(todo);
-            log.info("Todo of ID: {} was successfully assigned to user of ID: {} and username: {}."
-                    , todo.getTodoId(), userTodo.getUser().getUserId(), userTodo.getUser().getUsername());
-        }else {
-            log.error("ERROR: Todo of ID: {} has already been assigned to another user, try to update it instead."
-                    , todo.getTodoId());
-        }
+        userTodoRepository.save(userTodo);
+        todo.setUserTodo(userTodo);
+        assignPositionToNewTodo(todo);
+        log.info("Todo of ID: {} was successfully assigned to user of ID: {} and username: {}."
+                , todo.getTodoId(), userTodo.getUser().getUserId(), userTodo.getUser().getUsername());
     }
 
 
-    public void assignPositionToNewTodo(Todo todo) {
+    public void assignPositionToNewTodo(Todo todo) throws UserTodoNotFoundException {
 
         log.info("Calculating the maximum position value of all existing todos...");
         // Get the maximum position value from all existing todos
@@ -155,30 +153,24 @@ public class TodoService {
                 , todo.getUserTodo().getPosition(), todo.getTodoId());
     }
 
-    public void updateUserTodo(Long todoId, UserTodo updatedUserTodo) throws TodoNotFoundException {
+    public void updateUserTodo(Long todoId, UserTodo updatedUserTodo) throws TodoNotFoundException, UserNotFoundException, UserTodoNotFoundException {
 
         Todo todo = getTodoById(todoId);
         log.info("Updating information related to the assignment of todo of ID: {} to a user..."
                 , todo.getTodoId());
 
-        if (Objects.nonNull(todo.getUserTodo())) {
-
-            if (Objects.nonNull(updatedUserTodo.getUser()) && !updatedUserTodo.getUser().equals("")) {
-                todo.getUserTodo().setUser(updatedUserTodo.getUser());
-            }
-            if (Objects.nonNull(updatedUserTodo.getPriorityLevel()) && !String.valueOf(updatedUserTodo.getPriorityLevel()).equals("")) {
-                todo.getUserTodo().setPriorityLevel(updatedUserTodo.getPriorityLevel());
-            }
-            log.info("The information related to the assignment of todo of ID: {} to user of ID: {} was successfully updated."
-                    , todo.getTodoId(), todo.getUserTodo().getUser().getUserId());
-        }else {
-            log.error("ERROR: Todo of ID: {} is not assigned to any user, try to assign it to a user instead."
-                    , todo.getTodoId());
+        if (Objects.nonNull(updatedUserTodo.getUser()) && !updatedUserTodo.getUser().equals("")) {
+            todo.getUserTodo().setUser(updatedUserTodo.getUser());
         }
-    }
+        if (Objects.nonNull(updatedUserTodo.getPriorityLevel()) && !String.valueOf(updatedUserTodo.getPriorityLevel()).equals("")) {
+            todo.getUserTodo().setPriorityLevel(updatedUserTodo.getPriorityLevel());
+        }
+        log.info("The information related to the assignment of todo of ID: {} to user of ID: {} was successfully updated."
+                , todo.getTodoId(), todo.getUserTodo().getUser().getUserId());
+        }
 
 
-    public void updateTodoPosition(Long todoId, int newPosition) throws TodoNotFoundException {
+    public void updateTodoPosition(Long todoId, int newPosition) throws TodoNotFoundException, UserTodoNotFoundException {
 
         Todo todo = getTodoById(todoId);
 
@@ -223,19 +215,14 @@ public class TodoService {
         log.info("The position of todo of ID: {} was successfully updated.", todo.getTodoId());
     }
 
-    public void deleteUserTodo(Long todoId) throws TodoNotFoundException {
+    public void deleteUserTodo(Long todoId) throws TodoNotFoundException, UserTodoNotFoundException {
 
         Todo todo = getTodoById(todoId);
         log.info("Deleting information related to the assignment of todo of ID: {} to a user..."
                 , todo.getTodoId());
 
-        if (Objects.nonNull(todo.getUserTodo())) {
-            userTodoRepository.delete(todo.getUserTodo());
-            log.info("The information related to the assignment of todo of ID: {} to a user was successfully deleted."
-                    , todo.getTodoId());
-        }else {
-            log.error("ERROR: Todo of ID: {} is not assigned to any user, try to assign it to a user instead."
-                    , todo.getTodoId());
-        }
+        userTodoRepository.delete(todo.getUserTodo());
+        log.info("The information related to the assignment of todo of ID: {} to a user was successfully deleted."
+                , todo.getTodoId());
     }
 }

@@ -2,15 +2,16 @@ package com.ndashimye.firstapp.usertodo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.user.User;
+import com.ndashimye.firstapp.user.UserNotFoundException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.Optional;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -35,4 +36,8 @@ public class UserTodo {
     @Column(name = "priority_level")
     private int priorityLevel;
 
+
+    public User getUser() throws UserNotFoundException {
+        return Optional.of(this.user).orElseThrow(() -> new UserNotFoundException());
+    }
 }

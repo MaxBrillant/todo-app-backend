@@ -3,6 +3,7 @@ package com.ndashimye.firstapp.user;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
 import com.ndashimye.firstapp.error.InvalidTimeFormatException;
 import com.ndashimye.firstapp.userprofile.UserProfile;
+import com.ndashimye.firstapp.userprofile.UserProfileNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
 import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import com.ndashimye.firstapp.todo.Todo;
@@ -248,60 +249,47 @@ public class UserService {
         log.info("Adding a profile to user of ID: {} and username: {}..."
                 , user.getUserId(), user.getUsername());
 
-        if(Objects.isNull(user.getProfile())) {
-            userProfileRepository.save(userProfile);
-            user.setProfile(userProfile);
-            log.info("Profile of user of ID: {} and username: {} was successfully added."
-                    , user.getUserId(), user.getUsername());
-        }else {
-            log.error("ERROR: User of ID: {} and username: {} already has an existing profile, try to update it instead."
-                    , user.getUserId(), user.getUsername());
-        }
+        userProfileRepository.save(userProfile);
+        user.setProfile(userProfile);
+        log.info("Profile of user of ID: {} and username: {} was successfully added."
+                , user.getUserId(), user.getUsername());
     }
 
     public void updateUserProfile(Long userId, UserProfile updatedUserProfile)
-            throws UserNotFoundException {
+            throws UserNotFoundException, UserProfileNotFoundException {
 
         User user = getUserById(userId);
 
         log.info("Updating the profile of user of ID: {} and username: {}..."
                 , user.getUserId(), user.getUsername());
 
-        if (Objects.nonNull(user.getProfile())) {
-            if (Objects.nonNull(updatedUserProfile.getFirstName()) && !updatedUserProfile.getFirstName().equals("")) {
-                user.getProfile().setFirstName(updatedUserProfile.getFirstName());
-            }
-            if (Objects.nonNull(updatedUserProfile.getLastName()) && !updatedUserProfile.getLastName().equals("")) {
-                user.getProfile().setLastName(updatedUserProfile.getLastName());
-            }
-            if (Objects.nonNull(updatedUserProfile.getEmailAddress()) && !updatedUserProfile.getEmailAddress().equals("")) {
-                user.getProfile().setEmailAddress(updatedUserProfile.getEmailAddress());
-            }
-            if (Objects.nonNull(updatedUserProfile.getProfileImageUrl()) && !updatedUserProfile.getProfileImageUrl().equals("")) {
-                user.getProfile().setProfileImageUrl(updatedUserProfile.getProfileImageUrl());
-            }
-            log.info("Profile of user of ID: {} and username: {} was successfully updated."
-                    , user.getUserId(), user.getUsername());
-        }else {
-            log.error("ERROR: User of ID: {} and username: {} doesn't have a profile yet, " +
-                    "try to add a profile to the user instead.", user.getUserId(), user.getUsername());
+        if (Objects.nonNull(updatedUserProfile.getFirstName()) && !updatedUserProfile.getFirstName().equals("")) {
+            user.getProfile().setFirstName(updatedUserProfile.getFirstName());
         }
+        if (Objects.nonNull(updatedUserProfile.getLastName()) && !updatedUserProfile.getLastName().equals("")) {
+            user.getProfile().setLastName(updatedUserProfile.getLastName());
+        }
+        if (Objects.nonNull(updatedUserProfile.getEmailAddress()) && !updatedUserProfile.getEmailAddress().equals("")) {
+            user.getProfile().setEmailAddress(updatedUserProfile.getEmailAddress());
+        }
+        if (Objects.nonNull(updatedUserProfile.getProfileImageUrl()) && !updatedUserProfile.getProfileImageUrl().equals("")) {
+            user.getProfile().setProfileImageUrl(updatedUserProfile.getProfileImageUrl());
+        }
+        log.info("Profile of user of ID: {} and username: {} was successfully updated."
+                , user.getUserId(), user.getUsername());
     }
-    public void deleteUserProfile(Long userId) throws UserNotFoundException {
+
+    public void deleteUserProfile(Long userId) throws UserNotFoundException, UserProfileNotFoundException {
 
         User user = getUserById(userId);
 
         log.info("Deleting the profile of user of ID: {} and username: {}..."
                 , user.getUserId(), user.getUsername());
 
-        if (Objects.nonNull(user.getProfile())) {
-            userProfileRepository.delete(user.getProfile());
-            log.info("Profile of user of ID: {} and username: {} was successfully deleted."
-                    , user.getUserId(), user.getUsername());
-        }else {
-            log.error("ERROR: User of ID: {} and username: {} doesn't have a profile yet, " +
-                    "try to add a profile to the user instead.", user.getUserId(), user.getUsername());
-        }
+        userProfileRepository.delete(user.getProfile());
+        log.info("Profile of user of ID: {} and username: {} was successfully deleted."
+                , user.getUserId(), user.getUsername());
+
     }
 
 
@@ -314,52 +302,37 @@ public class UserService {
         log.info("Adding settings to user of ID: {} and username: {}..."
                 , user.getUserId(), user.getUsername());
 
-        if(Objects.isNull(user.getSettings())) {
-            userSettingsRepository.save(userSettings);
-            user.setSettings(userSettings);
-            log.info("Settings of user of ID: {} and username: {} were successfully added."
-                    , user.getUserId(), user.getUsername());
-        }else {
-            log.error("ERROR: User of ID: {} and username: {} already has existing settings, try to update them instead."
-                    , user.getUserId(), user.getUsername());
-        }
+        userSettingsRepository.save(userSettings);
+        user.setSettings(userSettings);
+        log.info("Settings of user of ID: {} and username: {} were successfully added."
+                , user.getUserId(), user.getUsername());
     }
 
     public void updateUserSettings(Long userId, UserSettings updatedUserSettings)
-            throws UserNotFoundException {
+            throws UserNotFoundException, UserSettingsNotFoundException {
 
         User user = getUserById(userId);
 
         log.info("Updating the settings of user of ID: {} and username: {}..."
                 , user.getUserId(), user.getUsername());
 
-        if (Objects.nonNull(user.getSettings())) {
-            if (Objects.nonNull(updatedUserSettings.getTimeZone()) && !updatedUserSettings.getTimeZone().equals("")) {
-                user.getSettings().setTimeZone(updatedUserSettings.getTimeZone());
-            }
-            log.info("Settings of user of ID: {} and username: {} were successfully updated."
-                    , user.getUserId(), user.getUsername());
-        }else {
-            log.error("ERROR: User of ID: {} and username: {} doesn't have settings yet, " +
-                    "try to add settings to the user instead.", user.getUserId(), user.getUsername());
+        if (Objects.nonNull(updatedUserSettings.getTimeZone()) && !updatedUserSettings.getTimeZone().equals("")) {
+            user.getSettings().setTimeZone(updatedUserSettings.getTimeZone());
         }
+        log.info("Settings of user of ID: {} and username: {} were successfully updated."
+                , user.getUserId(), user.getUsername());
     }
 
-    public void deleteUserSettings(Long userId) throws UserNotFoundException {
+    public void deleteUserSettings(Long userId) throws UserNotFoundException, UserSettingsNotFoundException {
 
         User user = getUserById(userId);
 
         log.info("Deleting the settings of user of ID: {} and username: {}..."
                 , user.getUserId(), user.getUsername());
 
-        if(Objects.nonNull(user.getSettings())) {
-            userSettingsRepository.delete(user.getSettings());
-            log.info("Settings of user of ID: {} and username: {} were successfully deleted."
-                    , user.getUserId(), user.getUsername());
-        }else {
-            log.error("ERROR: User of ID: {} and username: {} doesn't have settings yet, " +
-                    "try to add settings to the user instead.", user.getUserId(), user.getUsername());
-        }
+        userSettingsRepository.delete(user.getSettings());
+        log.info("Settings of user of ID: {} and username: {} were successfully deleted."
+                , user.getUserId(), user.getUsername());
     }
 
 }

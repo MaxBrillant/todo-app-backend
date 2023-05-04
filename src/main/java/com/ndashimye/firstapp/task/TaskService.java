@@ -5,6 +5,9 @@ import com.ndashimye.firstapp.todo.TodoNotFoundException;
 import com.ndashimye.firstapp.todotask.TodoTask;
 import com.ndashimye.firstapp.todotask.TodoTaskNotFoundException;
 import com.ndashimye.firstapp.todotask.TodoTaskRepository;
+import com.ndashimye.firstapp.user.UserNotFoundException;
+import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
+import com.ndashimye.firstapp.usertodo.UserTodoNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,25 +120,20 @@ public class TaskService {
 
 
 
-    public void addNewTodoTask(Long taskId, TodoTask todoTask) throws TaskNotFoundException {
+    public void addNewTodoTask(Long taskId, TodoTask todoTask) throws TaskNotFoundException, TodoNotFoundException, TodoTaskNotFoundException {
 
         Task task = getTaskById(taskId);
         log.info("Assigning task of ID: {} to todo of ID: {}..."
                 , task.getTaskId(), todoTask.getTodo().getTodoId());
 
-        if (Objects.isNull(task.getTodoTask())) {
-            todoTaskRepository.save(todoTask);
-            task.setTodoTask(todoTask);
-            assignPositionToNewTask(task);
-            log.info("Task of ID: {} was successfully assigned to todo of ID: {}."
-                    , task.getTaskId(), todoTask.getTodo().getTodoId());
-        }else {
-            log.error("ERROR: Task of ID: {} has already been assigned to another todo, try to update it instead."
-                    , task.getTaskId());
-        }
+        todoTaskRepository.save(todoTask);
+        task.setTodoTask(todoTask);
+        assignPositionToNewTask(task);
+        log.info("Task of ID: {} was successfully assigned to todo of ID: {}."
+                , task.getTaskId(), todoTask.getTodo().getTodoId());
     }
 
-    public void assignPositionToNewTask(Task task) {
+    public void assignPositionToNewTask(Task task) throws TaskNotFoundException, TodoTaskNotFoundException, TodoNotFoundException {
 
         if (Objects.isNull(task.getParentTask())) {
             log.info("Calculating the maximum position value...");
@@ -166,38 +164,34 @@ public class TaskService {
     }
 
 
-    public void updateTodoTask(Long taskId, TodoTask updatedTodoTask) throws TaskNotFoundException {
+    public void updateTodoTask(Long taskId, TodoTask updatedTodoTask) throws TaskNotFoundException, TodoNotFoundException, TodoTaskNotFoundException, UserNotFoundException, UserSettingsNotFoundException, UserTodoNotFoundException {
 
         Task task = getTaskById(taskId);
         log.info("Updating information related to the assignment of task of ID: {} to a todo..."
                 , task.getTaskId());
 
-        if (Objects.nonNull(task.getTodoTask())) {
-            if (Objects.nonNull(updatedTodoTask.getTodo()) && !updatedTodoTask.getTodo().equals("")) {
-                task.getTodoTask().setTodo(updatedTodoTask.getTodo());
-            }
-            if (Objects.nonNull(updatedTodoTask.getCompletionTime()) && !updatedTodoTask.getCompletionTime().equals("")) {
-                task.getTodoTask().setCompletionTime(updatedTodoTask.getCompletionTime());
-            }
-            if (Objects.nonNull(updatedTodoTask.getPriorityLevel()) && !String.valueOf(updatedTodoTask.getPriorityLevel()).equals("")) {
-                task.getTodoTask().setPriorityLevel(updatedTodoTask.getPriorityLevel());
-            }
-            if (Objects.nonNull(updatedTodoTask.getIsCompleted()) && !String.valueOf(updatedTodoTask.getIsCompleted()).equals("")) {
-                task.getTodoTask().setIsCompleted(updatedTodoTask.getIsCompleted());
-            }
-            log.info("The information related to the assignment of task of ID: {} to todo of ID: {} was successfully updated."
-                    , task.getTaskId(), task.getTodoTask().getTodo().getTodoId());
-        }else {
-            log.error("ERROR: Task of ID: {} is not assigned to any todo, try to assign it to a todo instead."
-                    , task.getTaskId());
+        if (Objects.nonNull(updatedTodoTask.getTodo()) && !updatedTodoTask.getTodo().equals("")) {
+            task.getTodoTask().setTodo(updatedTodoTask.getTodo());
         }
+        if (Objects.nonNull(updatedTodoTask.getCompletionTime()) && !updatedTodoTask.getCompletionTime().equals("")) {
+            task.getTodoTask().setCompletionTime(updatedTodoTask.getCompletionTime());
+        }
+        if (Objects.nonNull(updatedTodoTask.getPriorityLevel()) && !String.valueOf(updatedTodoTask.getPriorityLevel()).equals("")) {
+            task.getTodoTask().setPriorityLevel(updatedTodoTask.getPriorityLevel());
+        }
+        if (Objects.nonNull(updatedTodoTask.getIsCompleted()) && !String.valueOf(updatedTodoTask.getIsCompleted()).equals("")) {
+            task.getTodoTask().setIsCompleted(updatedTodoTask.getIsCompleted());
+        }
+        log.info("The information related to the assignment of task of ID: {} to todo of ID: {} was successfully updated."
+                , task.getTaskId(), task.getTodoTask().getTodo().getTodoId());
     }
 
-    public void updateTaskPosition(Long taskId, int newPosition) throws TaskNotFoundException, TodoTaskNotFoundException, TodoNotFoundException {
+    public void updateTaskPosition(Long taskId, int newPosition)
+            throws TaskNotFoundException, TodoTaskNotFoundException, TodoNotFoundException {
 
         Task task = getTaskById(taskId);
-        TodoTask todoTask = Optional.of(task.getTodoTask()).orElseThrow(() -> new TodoTaskNotFoundException());
-        Todo todo = Optional.of(todoTask.getTodo()).orElseThrow(() -> new TodoNotFoundException());
+        TodoTask todoTask = task.getTodoTask();
+        Todo todo = todoTask.getTodo();
         // TODO: 5/2/2023 CHANGE THE GET methods for all entities.
 
         log.info("Getting the current position of task of ID: {}...", task.getTaskId());
@@ -228,7 +222,7 @@ public class TaskService {
     }
 
 
-    public void deleteTodoTask(Long taskId) throws TaskNotFoundException {
+    public void deleteTodoTask(Long taskId) throws TaskNotFoundException, TodoTaskNotFoundException {
 
         Task task = getTaskById(taskId);
         log.info("Deleting information related to the assignment of task of ID: {} to a todo..."
