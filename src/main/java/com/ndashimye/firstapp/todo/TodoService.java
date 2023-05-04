@@ -26,7 +26,7 @@ public class TodoService {
     private TaskRepository taskRepository;
 
     public Todo getTodoById(Long todoId) throws TodoNotFoundException {
-        log.info("Fetching todo by ID {}...", todoId);
+        log.info("Fetching todo by ID: {}...", todoId);
         Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
         log.info("Todo of ID: {} was successfully fetched.", todoId);
 
@@ -169,10 +169,10 @@ public class TodoService {
             if (Objects.nonNull(updatedUserTodo.getPriorityLevel()) && !String.valueOf(updatedUserTodo.getPriorityLevel()).equals("")) {
                 todo.getUserTodo().setPriorityLevel(updatedUserTodo.getPriorityLevel());
             }
-            log.info("The information related to the assignment of todo of ID: {} to a user was successfully updated."
-                    , todo.getTodoId());
+            log.info("The information related to the assignment of todo of ID: {} to user of ID: {} was successfully updated."
+                    , todo.getTodoId(), todo.getUserTodo().getUser().getUserId());
         }else {
-            log.error("Todo of ID: {} is not assigned to any user, try to assign it to a user instead."
+            log.error("ERROR: Todo of ID: {} is not assigned to any user, try to assign it to a user instead."
                     , todo.getTodoId());
         }
     }
@@ -202,7 +202,7 @@ public class TodoService {
             todosToUpdate = todoRepository.findTodosWithPositionsBetween(newPosition, currentPosition - 1);
         }
 
-        log.info("Updating the positions of all the todos with positions between {} and {}...", currentPosition, newPosition);
+        log.info("Updating positions of all the todos that are between position {} and {}...", currentPosition, newPosition);
         // Update the positions of the affected todos
         for (Todo todoToUpdate : todosToUpdate) {
             UserTodo userTodo = todoToUpdate.getUserTodo();
@@ -213,7 +213,7 @@ public class TodoService {
             }
             todoRepository.save(todoToUpdate);
         }
-        log.info("The positions of all todos with positions between {} and {} were successfully updated."
+        log.info("The positions of all todos that are between position {} and {} were successfully updated."
                 , currentPosition, newPosition);
 
         log.info("Updating the position of todo of ID: {}...", todo.getTodoId());
@@ -234,7 +234,7 @@ public class TodoService {
             log.info("The information related to the assignment of todo of ID: {} to a user was successfully deleted."
                     , todo.getTodoId());
         }else {
-            log.error("Todo of ID: {} is not assigned to any user, try to assign it to a user instead."
+            log.error("ERROR: Todo of ID: {} is not assigned to any user, try to assign it to a user instead."
                     , todo.getTodoId());
         }
     }
