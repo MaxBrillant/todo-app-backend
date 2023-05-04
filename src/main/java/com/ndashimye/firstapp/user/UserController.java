@@ -2,6 +2,7 @@ package com.ndashimye.firstapp.user;
 
 import com.ndashimye.firstapp.error.InvalidTimeFormatException;
 import com.ndashimye.firstapp.userprofile.UserProfile;
+import com.ndashimye.firstapp.userprofile.UserProfileNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
 import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import com.ndashimye.firstapp.todo.Todo;
@@ -133,13 +134,15 @@ public class UserController {
     @PutMapping("/{userId}/profile")
     public void updateUserProfile(@PathVariable Long userId,
                                     @RequestBody UserProfile updatedUserProfile)
-            throws UserNotFoundException {
+            throws UserNotFoundException, UserProfileNotFoundException {
 
         userService.updateUserProfile(userId, updatedUserProfile);
     }
 
     @DeleteMapping("/{userId}/profile")
-    public void deleteUserProfile(@PathVariable Long userId) throws UserNotFoundException {
+    public void deleteUserProfile(@PathVariable Long userId)
+            throws UserNotFoundException, UserProfileNotFoundException {
+
         userService.deleteUserProfile(userId);
     }
 
@@ -156,13 +159,14 @@ public class UserController {
     @PutMapping("/{userId}/settings")
     public void updateUserSettings(@PathVariable Long userId,
                                     @RequestBody UserSettings updatedUserSettings)
-            throws UserNotFoundException {
+            throws UserNotFoundException, UserSettingsNotFoundException {
 
         userService.updateUserSettings(userId, updatedUserSettings);
     }
 
     @DeleteMapping("/{userId}/settings")
-    public void deleteUserSettings(@PathVariable Long userId) throws UserNotFoundException {
+    public void deleteUserSettings(@PathVariable Long userId)
+            throws UserNotFoundException, UserSettingsNotFoundException {
 
         userService.deleteUserSettings(userId);
     }

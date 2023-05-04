@@ -90,15 +90,16 @@ public class TaskService {
         Task task = getTaskById(taskId);
         log.info("Updating task of ID: {}...", task.getTaskId());
 
-        if (!task.equals(updatedTask)) {
-            if (Objects.nonNull(updatedTask.getParentTask())) {
-                if (!updatedTask.getParentTask().equals("")) {
-                    task.setParentTask(updatedTask.getParentTask());
-                }
-            } else {
-                task.setParentTask(updatedTask.getParentTask());
-            }
-        }
+        // TODO: 5/4/2023 Create an endpoint to set the parentTask
+//        if (!task.equals(updatedTask)) {
+//            if (Objects.nonNull(updatedTask.getParentTask())) {
+//                if (!updatedTask.getParentTask().equals("")) {
+//                    task.setParentTask(updatedTask.getParentTask());
+//                }
+//            } else {
+//                task.setParentTask(updatedTask.getParentTask());
+//            }
+//        }
 
 
         if (Objects.nonNull(updatedTask.getName()) && !updatedTask.getName().equals("")) {
@@ -228,13 +229,8 @@ public class TaskService {
         log.info("Deleting information related to the assignment of task of ID: {} to a todo..."
                 , task.getTaskId());
 
-        if (Objects.nonNull(task.getTodoTask())) {
-            todoTaskRepository.delete(task.getTodoTask());
-            log.info("The information related to the assignment of task of ID: {} to a todo was successfully deleted."
-                    , task.getTaskId());
-        }else {
-            log.error("ERROR: Task of ID: {} is not assigned to any todo, try to assign it to a todo instead."
-                    , task.getTaskId());
-        }
+        todoTaskRepository.delete(task.getTodoTask());
+        log.info("The information related to the assignment of task of ID: {} to a todo was successfully deleted."
+                , task.getTaskId());
     }
 }
