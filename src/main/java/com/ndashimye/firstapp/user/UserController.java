@@ -78,31 +78,6 @@ public class UserController {
         return userService.getUsersCount();
     }
 
-    @GetMapping("/check/id/{userId}")
-    public boolean checkUserExistence(@PathVariable Long userId){
-        return userService.userIdExists(userId);
-    }
-
-    @GetMapping("/check/username/{username}")
-    public boolean checkUsernameExistence(@PathVariable String username){
-        return userService.usernameExists(username);
-    }
-
-
-    @GetMapping("/check/email/{emailAddress}")
-    public boolean checkEmailExistence(@PathVariable String emailAddress){
-        return userService.emailAddressExists(emailAddress);
-    }
-
-
-    @GetMapping("/check/password/{userId}/{password}")
-    public boolean checkPassword(@PathVariable Long userId,
-                                 @PathVariable String password)
-            throws Exception {
-
-        return userService.checkPassword(userId, password);
-    }
-
 
     @PostMapping()
     public void addUser(@RequestBody User user) {

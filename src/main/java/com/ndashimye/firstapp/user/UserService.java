@@ -40,7 +40,6 @@ public class UserService {
     private TodoRepository todoRepository;
 
 
-    @Autowired
     public List<User> getAllUsers(){
         log.info("Fetching all users...");
         List<User> users = userRepository.findAll();
@@ -54,6 +53,26 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
         log.info("User of ID: {} and username: {} was successfully fetched."
                 , user.getUserId(), user.getUsername());
+
+        return user;
+    }
+
+
+    public User getUserByEmailAddress(String emailAddress) throws UserNotFoundException {
+
+        log.info("Fetching user by email address: {}...", emailAddress);
+        User user = userRepository.findUserByEmailAddress(emailAddress)
+                .orElseThrow(() -> new UserNotFoundException());
+        log.info("User of email address: {} was successfully fetched.", emailAddress);
+
+        return user;
+    }
+
+    public User getUserByUsername(String username) throws UserNotFoundException {
+
+        log.info("Fetching user by username: {}...", username);
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException());
+        log.info("User of username: {} was successfully fetched.", username);
 
         return user;
     }
@@ -161,46 +180,12 @@ public class UserService {
         return todos;
     }
 
-    public User getUserByEmailAddress(String emailAddress) throws UserNotFoundException {
-
-        log.info("Fetching user by email address: {}...", emailAddress);
-        User user = userRepository.findUserByEmailAddress(emailAddress)
-                .orElseThrow(() -> new UserNotFoundException());
-        log.info("User of email address: {} was successfully fetched.", emailAddress);
-
-        return user;
-    }
-
-    public User getUserByUsername(String username) throws UserNotFoundException {
-
-        log.info("Fetching user by username: {}...", username);
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException());
-        log.info("User of username: {} was successfully fetched.", username);
-
-        return user;
-    }
-    public boolean userIdExists(Long userId){
-        return userRepository.existsByUserId(userId);
-    }
-    public boolean usernameExists(String username){
-        return userRepository.existsByUsername(username);
-    }
-
-    public boolean emailAddressExists(String emailAddress){
-        return userProfileRepository.existsByEmailAddress(emailAddress);
-    }
-
-
-    public boolean checkPassword(Long userId, String password) throws UserNotFoundException {
-        return getUserById(userId).checkPassword(password);
-    }
-
     @Autowired
     public Integer getUsersCount(){
         return Math.toIntExact(userRepository.count());
     }
 
-    public void addNewUser(User user){
+    public void addNewUser(User user) {
 
         log.info("Adding a new user of username: {}...", user.getUsername());
         user.setPassword(user.getPasswordHash());
