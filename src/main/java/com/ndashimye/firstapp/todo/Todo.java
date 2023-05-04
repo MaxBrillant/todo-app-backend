@@ -3,8 +3,11 @@ package com.ndashimye.firstapp.todo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
 import com.ndashimye.firstapp.user.User;
+import com.ndashimye.firstapp.user.UserNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
+import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import com.ndashimye.firstapp.usertodo.UserTodo;
+import com.ndashimye.firstapp.usertodo.UserTodoNotFoundException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -12,6 +15,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -57,19 +61,17 @@ public class Todo {
     private ZonedDateTime updatedAt;
 
 
-    public ZonedDateTime getDueTime() {
+    public UserTodo getUserTodo() throws UserTodoNotFoundException {
+        return Optional.of(this.userTodo).orElseThrow(() -> new UserTodoNotFoundException());
+    }
+
+
+    public ZonedDateTime getDueTime() throws UserTodoNotFoundException, UserNotFoundException, UserSettingsNotFoundException {
         ZonedDateTimeAttributeConverter.setDefaultZoneId(ZoneId.of("UTC"));
         if(dueTime != null) {
-            if (this.getUserTodo() != null) {
-                User user = this.getUserTodo().getUser();
-                if (user != null) {
-                    UserSettings userSettings = user.getSettings();
-                    if (userSettings != null) {
-                        ZoneId userTimeZone = ZoneId.of(userSettings.getTimeZone());
-                        ZonedDateTimeAttributeConverter.setDefaultZoneId(userTimeZone);
-                    }
-                }
-            }
+            UserSettings userSettings = this.getUserTodo().getUser().getSettings();
+            ZoneId userTimeZone = ZoneId.of(userSettings.getTimeZone());
+            ZonedDateTimeAttributeConverter.setDefaultZoneId(userTimeZone);
             return ZonedDateTimeAttributeConverter.toDefaultZoneId(dueTime);
         }
         return null;

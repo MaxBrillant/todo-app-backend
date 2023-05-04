@@ -2,6 +2,7 @@ package com.ndashimye.firstapp.user;
 
 import com.ndashimye.firstapp.error.InvalidTimeFormatException;
 import com.ndashimye.firstapp.userprofile.UserProfile;
+import com.ndashimye.firstapp.userprofile.UserProfileNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
 import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import com.ndashimye.firstapp.todo.Todo;
@@ -104,96 +105,69 @@ public class UserController {
 
 
     @PostMapping()
-    public String addUser(@RequestBody User user) {
-
+    public void addUser(@RequestBody User user) {
         userService.addNewUser(user);
-
-        return "user "+user.getUsername()+" was added successfully";
     }
 
     @PutMapping("/{userId}")
-    public String updateUser(@RequestBody User updatedUser,
-                             @PathVariable Long userId)
-            throws UserNotFoundException {
+    public void updateUser(@RequestBody User updatedUser,
+                             @PathVariable Long userId) throws UserNotFoundException {
 
-        User user = userService.getUserById(userId);
-
-        userService.updateUser(updatedUser, user);
-
-        return "user "+ userService.getUserById(userId).getUsername()+" was updated successfully";
+        userService.updateUser(updatedUser, userId);
     }
 
     @DeleteMapping("/{userId}")
-    public String deleteUser(@PathVariable Long userId) throws UserNotFoundException {
-
-        User user = userService.getUserById(userId);
-        String username = user.getUsername();
-        userService.deleteUser(user);
-        
-        return "user "+username+" was successfully deleted from the database";
+    public void deleteUser(@PathVariable Long userId) throws UserNotFoundException {
+        userService.deleteUser(userId);
     }
 
 
 
 
     @PostMapping("/{userId}/profile")
-    public String addUserProfile(@PathVariable Long userId, @RequestBody UserProfile userProfile)
+    public void addUserProfile(@PathVariable Long userId, @RequestBody UserProfile userProfile)
             throws UserNotFoundException {
 
         userService.addNewUserProfile(userId, userProfile);
-
-        return "profile of profile id "+userProfile.getUserProfileId()+" was added successfully";
     }
 
     @PutMapping("/{userId}/profile")
-    public String updateUserProfile(@PathVariable Long userId,
+    public void updateUserProfile(@PathVariable Long userId,
                                     @RequestBody UserProfile updatedUserProfile)
-            throws UserNotFoundException {
+            throws UserNotFoundException, UserProfileNotFoundException {
 
         userService.updateUserProfile(userId, updatedUserProfile);
-
-        return "profile of profile id "+ updatedUserProfile.getUserProfileId()+" was updated successfully";
     }
 
     @DeleteMapping("/{userId}/profile")
-    public String deleteUserProfile(@PathVariable Long userId) throws UserNotFoundException {
+    public void deleteUserProfile(@PathVariable Long userId)
+            throws UserNotFoundException, UserProfileNotFoundException {
 
-        User user = userService.getUserById(userId);
-        Long id = user.getProfile().getUserProfileId();
         userService.deleteUserProfile(userId);
-
-        return "profile of profile id "+id+" was successfully deleted from the database";
     }
 
 
 
 
     @PostMapping("/{userId}/settings")
-    public String addUserSettings(@PathVariable Long userId, @RequestBody UserSettings userSettings)
+    public void addUserSettings(@PathVariable Long userId, @RequestBody UserSettings userSettings)
             throws UserNotFoundException {
 
         userService.addNewUserSettings(userId, userSettings);
-
-        return "settings of settings id "+userSettings.getUserSettingsId()+" were added successfully";
     }
 
     @PutMapping("/{userId}/settings")
-    public String updateUserSettings(@PathVariable Long userId,
+    public void updateUserSettings(@PathVariable Long userId,
                                     @RequestBody UserSettings updatedUserSettings)
-            throws UserNotFoundException {
+            throws UserNotFoundException, UserSettingsNotFoundException {
 
         userService.updateUserSettings(userId, updatedUserSettings);
-
-        return "settings of settings id "+ updatedUserSettings.getUserSettingsId()+" were updated successfully";
     }
 
     @DeleteMapping("/{userId}/settings")
-    public String deleteUserSettings(@PathVariable Long userId) throws UserNotFoundException {
+    public void deleteUserSettings(@PathVariable Long userId)
+            throws UserNotFoundException, UserSettingsNotFoundException {
 
-        User user = userService.getUserById(userId);
-        Long id = user.getSettings().getUserSettingsId();
         userService.deleteUserSettings(userId);
-
-        return "settings of settings id "+id+" were successfully deleted from the database";
     }
 }

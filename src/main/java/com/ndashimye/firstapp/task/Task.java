@@ -2,6 +2,7 @@ package com.ndashimye.firstapp.task;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.todotask.TodoTask;
+import com.ndashimye.firstapp.todotask.TodoTaskNotFoundException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -47,4 +49,13 @@ public class Task {
     @Column(name = "updated_at")
     @UpdateTimestamp
     private ZonedDateTime updatedAt;
+
+
+    public TodoTask getTodoTask() throws TodoTaskNotFoundException {
+        return Optional.of(this.todoTask).orElseThrow(() -> new TodoTaskNotFoundException());
+    }
+
+    public Task getParentTask() throws TaskNotFoundException {
+        return Optional.of(this.parentTask).orElseThrow(() -> new TaskNotFoundException());
+    }
 }

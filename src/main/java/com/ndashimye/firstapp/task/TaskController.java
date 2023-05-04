@@ -1,6 +1,11 @@
 package com.ndashimye.firstapp.task;
 
+import com.ndashimye.firstapp.todo.TodoNotFoundException;
 import com.ndashimye.firstapp.todotask.TodoTask;
+import com.ndashimye.firstapp.todotask.TodoTaskNotFoundException;
+import com.ndashimye.firstapp.user.UserNotFoundException;
+import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
+import com.ndashimye.firstapp.usertodo.UserTodoNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,73 +54,53 @@ public class TaskController {
 
 
     @PostMapping()
-    public String addTask(@RequestBody Task task) {
+    public void addTask(@RequestBody Task task) {
 
         taskService.addNewTask(task);
-
-        return "task of id "+task.getTaskId()+" was added successfully";
     }
 
     @PutMapping("/{taskId}")
-    public String updateTask(@RequestBody Task updatedTask, @PathVariable Long taskId)
+    public void updateTask(@RequestBody Task updatedTask, @PathVariable Long taskId)
             throws TaskNotFoundException {
 
-        Task task = taskService.getTaskById(taskId);
-
-        taskService.updateTask(updatedTask, task);
-
-        return "task of id "+task.getTaskId()+" was updated successfully";
+        taskService.updateTask(updatedTask, taskId);
     }
 
     @DeleteMapping("/{taskId}")
-    public String deleteTask(@PathVariable Long taskId) throws TaskNotFoundException {
-
-        Task task = taskService.getTaskById(taskId);
-        Long id = task.getTaskId();
-        taskService.deleteTask(task);
-
-        return "task of id "+id+" was successfully deleted from the database";
+    public void deleteTask(@PathVariable Long taskId) throws TaskNotFoundException {
+        taskService.deleteTask(taskId);
     }
 
 
 
     @PostMapping("/{taskId}/todo-task")
-    public String addTodoTask(@PathVariable Long taskId, @RequestBody TodoTask todoTask)
-            throws TaskNotFoundException {
+    public void addTodoTask(@PathVariable Long taskId, @RequestBody TodoTask todoTask)
+            throws TaskNotFoundException, TodoTaskNotFoundException, TodoNotFoundException {
 
         taskService.addNewTodoTask(taskId, todoTask);
-
-        return "todo task of id "+todoTask.getTodoTaskId()+" was added successfully";
     }
 
     @PutMapping("/{taskId}/todo-task")
-    public String updateTodoTask(@PathVariable Long taskId,
+    public void updateTodoTask(@PathVariable Long taskId,
                                  @RequestBody TodoTask updatedTodoTask)
-            throws TaskNotFoundException {
+            throws TaskNotFoundException, UserNotFoundException, TodoTaskNotFoundException, UserSettingsNotFoundException, TodoNotFoundException, UserTodoNotFoundException {
 
         taskService.updateTodoTask(taskId, updatedTodoTask);
-
-        return "todo task of id "+updatedTodoTask.getTodoTaskId()+" was updated successfully";
     }
 
 
     @PutMapping("/{taskId}/todo-task/update")
-    public String updateTodoTaskPosition(@PathVariable Long taskId,
+    public void updateTodoTaskPosition(@PathVariable Long taskId,
                                          @RequestParam Integer position)
-            throws TaskNotFoundException {
+            throws TaskNotFoundException, TodoTaskNotFoundException, TodoNotFoundException {
 
         taskService.updateTaskPosition(taskId, position);
-
-        return "position of todo task that belongs to the task of id "+taskId+" was updated successfully";
     }
 
     @DeleteMapping("/{taskId}/todo-task")
-    public String deleteTodoTask(@PathVariable Long taskId) throws TaskNotFoundException {
+    public void deleteTodoTask(@PathVariable Long taskId)
+            throws TaskNotFoundException, TodoTaskNotFoundException {
 
-        Task task = taskService.getTaskById(taskId);
-        Long id = task.getTodoTask().getTodoTaskId();
         taskService.deleteTodoTask(taskId);
-
-        return "todo task of id "+id+" was successfully deleted from the database";
     }
 }

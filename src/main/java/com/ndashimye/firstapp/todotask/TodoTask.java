@@ -3,14 +3,19 @@ package com.ndashimye.firstapp.todotask;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
 import com.ndashimye.firstapp.todo.Todo;
+import com.ndashimye.firstapp.todo.TodoNotFoundException;
 import com.ndashimye.firstapp.user.User;
+import com.ndashimye.firstapp.user.UserNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
+import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import com.ndashimye.firstapp.usertodo.UserTodo;
+import com.ndashimye.firstapp.usertodo.UserTodoNotFoundException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -47,26 +52,21 @@ public class TodoTask {
     private Boolean isCompleted;
 
 
+    public Todo getTodo() throws TodoNotFoundException {
+        return Optional.of(this.todo).orElseThrow(() -> new TodoNotFoundException());
+    }
 
-    public ZonedDateTime getCompletionTime() {
+    public ZonedDateTime getCompletionTime()
+            throws TodoNotFoundException, UserTodoNotFoundException, UserNotFoundException
+            , UserSettingsNotFoundException {
+
         ZonedDateTimeAttributeConverter.setDefaultZoneId(ZoneId.of("UTC"));
         if(completionTime != null) {
-            if (this.getTodo() != null) {
-                UserTodo userTodo = this.getTodo().getUserTodo();
-                if (userTodo != null) {
-                    User user = userTodo.getUser();
-                    if (user != null) {
-                        UserSettings userSettings = user.getSettings();
-                        if (userSettings != null) {
-                            ZoneId userTimeZone = ZoneId.of(userSettings.getTimeZone());
-                            ZonedDateTimeAttributeConverter.setDefaultZoneId(userTimeZone);
-                        }
-                    }
-                }
+            UserSettings userSettings = this.getTodo().getUserTodo().getUser().getSettings();
+            ZoneId userTimeZone = ZoneId.of(userSettings.getTimeZone());
+            ZonedDateTimeAttributeConverter.setDefaultZoneId(userTimeZone);
             }
             return ZonedDateTimeAttributeConverter.toDefaultZoneId(completionTime);
-        }
-        return null;
     }
 
 }
