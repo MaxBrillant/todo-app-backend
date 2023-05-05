@@ -360,13 +360,15 @@ class UserServiceTest {
 
 
     @Test
-    void deleteUserTest() throws UserNotFoundException {
+    void deleteUserTest() throws UserNotFoundException, UserSettingsNotFoundException, UserProfileNotFoundException {
         // Given
         Long userId = 1L;
         User user = new User();
         user.setUserId(userId);
         user.setUsername("testUsername");
         user.setPassword("testPassword");
+        user.setProfile(new UserProfile());
+        user.setSettings(new UserSettings());
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user)).thenReturn(Optional.empty());
 
@@ -376,6 +378,8 @@ class UserServiceTest {
         // Then
         verify(userRepository, times(1)).findById(userId);
         verify(userRepository, times(1)).delete(user);
+        verify(userProfileRepository, times(1)).delete(any(UserProfile.class));
+        verify(userSettingsRepository, times(1)).delete(any(UserSettings.class));
 
         Optional<User> deletedUser = userRepository.findById(userId);
         assertFalse(deletedUser.isPresent());
@@ -442,6 +446,30 @@ class UserServiceTest {
 
 
     @Test
+    void deleteUserProfileTest() throws UserProfileNotFoundException {
+        // Given
+        User user = new User();
+        user.setUserId(1L);
+        user.setUsername("testUsername");
+        user.setPassword("testPassword");
+
+        UserProfile userProfile = new UserProfile();
+        userProfile.setUserProfileId(1L);
+        userProfile.setFirstName("John");
+        userProfile.setLastName("Doe");
+        user.setProfile(userProfile);
+
+        // When
+        userService.deleteUserProfile(user);
+
+        // Then
+        verify(userProfileRepository, times(1)).delete(userProfile);
+        Optional<UserProfile> deletedProfile = userProfileRepository.findById(1L);
+        assertFalse(deletedProfile.isPresent());
+    }
+
+
+    @Test
     void addNewUserSettingsTest() throws UserSettingsNotFoundException {
         // Given
         User user = new User();
@@ -487,6 +515,29 @@ class UserServiceTest {
 
         // Then
         assertEquals(updatedUserSettings.getTimeZone(), user.getSettings().getTimeZone());
+    }
+
+
+    @Test
+    void deleteUserSettingsTest() throws UserSettingsNotFoundException {
+        // Given
+        User user = new User();
+        user.setUserId(1L);
+        user.setUsername("testUsername");
+        user.setPassword("testPassword");
+
+        UserSettings userSettings = new UserSettings();
+        userSettings.setUserSettingsId(1L);
+        userSettings.setTimeZone("UTC");
+        user.setSettings(userSettings);
+
+        // When
+        userService.deleteUserSettings(user);
+
+        // Then
+        verify(userSettingsRepository, times(1)).delete(userSettings);
+        Optional<UserSettings> deletedSettings = userSettingsRepository.findById(1L);
+        assertFalse(deletedSettings.isPresent());
     }
 
 }
