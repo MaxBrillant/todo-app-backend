@@ -1,11 +1,10 @@
 package com.ndashimye.firstapp.user;
 
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
+import com.ndashimye.firstapp.error.AppEntityNotFoundException;
 import com.ndashimye.firstapp.error.InvalidTimeFormatException;
 import com.ndashimye.firstapp.userprofile.UserProfile;
-import com.ndashimye.firstapp.userprofile.UserProfileNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
-import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import com.ndashimye.firstapp.todo.Todo;
 import com.ndashimye.firstapp.todo.TodoRepository;
 import com.ndashimye.firstapp.userprofile.UserProfileRepository;
@@ -47,10 +46,10 @@ public class UserService {
         return users;
     }
 
-    public User getUserById(Long userId) throws UserNotFoundException {
+    public User getUserById(Long userId) throws AppEntityNotFoundException {
 
         log.info("Fetching user by ID: {}...", userId);
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppEntityNotFoundException(User.class));
         log.info("User of ID: {} and username: {} was successfully fetched."
                 , user.getUserId(), user.getUsername());
 
@@ -58,26 +57,27 @@ public class UserService {
     }
 
 
-    public User getUserByEmailAddress(String emailAddress) throws UserNotFoundException {
+    public User getUserByEmailAddress(String emailAddress) throws AppEntityNotFoundException {
 
         log.info("Fetching user by email address: {}...", emailAddress);
         User user = userRepository.findUserByEmailAddress(emailAddress)
-                .orElseThrow(() -> new UserNotFoundException());
+                .orElseThrow(() -> new AppEntityNotFoundException(User.class));
         log.info("User of email address: {} was successfully fetched.", emailAddress);
 
         return user;
     }
 
-    public User getUserByUsername(String username) throws UserNotFoundException {
+    public User getUserByUsername(String username) throws AppEntityNotFoundException {
 
         log.info("Fetching user by username: {}...", username);
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException());
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new AppEntityNotFoundException(User.class));
         log.info("User of username: {} was successfully fetched.", username);
 
         return user;
     }
 
-    public List<Todo> getAllTodosByUserId(Long userId) throws UserNotFoundException {
+    public List<Todo> getAllTodosByUserId(Long userId) throws AppEntityNotFoundException {
 
         User user = getUserById(userId);
         log.info("Fetching all todos of user of ID: {} and username: {}..."
@@ -92,7 +92,7 @@ public class UserService {
 
 
     public List<Todo> getAllTodosByUserIdOrderedByPriority(Long userId)
-            throws UserNotFoundException {
+            throws AppEntityNotFoundException {
 
         User user = getUserById(userId);
         log.info("Fetching all todos of user of ID: {} and username: {} ordered by priority..."
@@ -107,7 +107,7 @@ public class UserService {
 
 
     public List<Todo> getAllTodosByUserIdOrderedByMostRecent(Long userId)
-            throws UserNotFoundException {
+            throws AppEntityNotFoundException {
 
         User user = getUserById(userId);
         log.info("Fetching all todos of user of ID: {} and username: {} ordered from most to least recent..."
@@ -121,7 +121,7 @@ public class UserService {
     }
 
     public List<Todo> getAllTodosByUserIdOrderedByLeastRecent(Long userId)
-            throws UserNotFoundException {
+            throws AppEntityNotFoundException {
 
         User user = getUserById(userId);
         log.info("Fetching all todos of user of ID: {} and username: {} ordered from least to most recent..."
@@ -137,7 +137,7 @@ public class UserService {
 
     public List<Todo> getAllTodosBetweenDates
             (Long userId, String start, String end)
-            throws UserNotFoundException, UserSettingsNotFoundException, InvalidTimeFormatException {
+            throws AppEntityNotFoundException, InvalidTimeFormatException {
 
 
         LocalDate startDate;
@@ -155,8 +155,7 @@ public class UserService {
 
         log.info("Getting the timezone information from the user settings...");
 
-        UserSettings userSettings = Optional.ofNullable(user.getSettings())
-                .orElseThrow(() -> new UserSettingsNotFoundException());
+        UserSettings userSettings = user.getSettings();
 
         ZoneId zoneId = ZoneId.of(userSettings.getTimeZone()); // or specify a specific timezone
 
@@ -200,7 +199,7 @@ public class UserService {
 
     }
 
-    public void updateUser(User updatedUser, Long userId) throws UserNotFoundException {
+    public void updateUser(User updatedUser, Long userId) throws AppEntityNotFoundException {
 
         User user = getUserById(userId);
         log.info("Updating user of ID: {} and username: {}...", user.getUserId(), user.getUsername());
@@ -223,8 +222,7 @@ public class UserService {
                 , user.getUserId(), updatedUser.getUsername());
     }
 
-    public void deleteUser(Long userId)
-            throws UserNotFoundException, UserProfileNotFoundException, UserSettingsNotFoundException {
+    public void deleteUser(Long userId) throws AppEntityNotFoundException {
 
         User user = getUserById(userId);
         log.info("Deleting user of ID: {} and username: {}...", user.getUserId(), user.getUsername());
@@ -254,7 +252,7 @@ public class UserService {
     }
 
     public void updateUserProfile(Long userId, UserProfile updatedUserProfile)
-            throws UserNotFoundException, UserProfileNotFoundException {
+            throws AppEntityNotFoundException {
 
         User user = getUserById(userId);
 
@@ -275,7 +273,7 @@ public class UserService {
     }
 
 
-    public void deleteUserProfile(User user) throws UserProfileNotFoundException {
+    public void deleteUserProfile(User user) throws AppEntityNotFoundException {
 
         log.info("Deleting profile of user of ID: {} and username: {}..."
                 , user.getUserId(), user.getUsername());
@@ -299,7 +297,7 @@ public class UserService {
     }
 
     public void updateUserSettings(Long userId, UserSettings updatedUserSettings)
-            throws UserNotFoundException, UserSettingsNotFoundException {
+            throws AppEntityNotFoundException {
 
         User user = getUserById(userId);
 
@@ -313,7 +311,7 @@ public class UserService {
                 , user.getUserId(), user.getUsername());
     }
 
-    public void deleteUserSettings(User user) throws UserSettingsNotFoundException {
+    public void deleteUserSettings(User user) throws AppEntityNotFoundException {
 
         log.info("Deleting settings of user of ID: {} and username: {}..."
                 , user.getUserId(), user.getUsername());

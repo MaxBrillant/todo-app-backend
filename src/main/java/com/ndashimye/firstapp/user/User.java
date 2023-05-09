@@ -2,10 +2,9 @@ package com.ndashimye.firstapp.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
+import com.ndashimye.firstapp.error.AppEntityNotFoundException;
 import com.ndashimye.firstapp.userprofile.UserProfile;
-import com.ndashimye.firstapp.userprofile.UserProfileNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
-import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -70,12 +69,12 @@ public class User {
     private ZonedDateTime updatedAt;
 
 
-    public UserProfile getProfile() throws UserProfileNotFoundException {
-        return Optional.of(this.profile).orElseThrow(() -> new UserProfileNotFoundException());
+    public UserProfile getProfile() throws AppEntityNotFoundException {
+        return Optional.of(this.profile).orElseThrow(() -> new AppEntityNotFoundException(UserProfile.class));
     }
 
-    public UserSettings getSettings() throws UserSettingsNotFoundException {
-        return Optional.of(this.settings).orElseThrow(() -> new UserSettingsNotFoundException());
+    public UserSettings getSettings() throws AppEntityNotFoundException {
+        return Optional.of(this.settings).orElseThrow(() -> new AppEntityNotFoundException(UserSettings.class));
     }
 
 

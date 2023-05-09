@@ -1,10 +1,9 @@
 package com.ndashimye.firstapp.user;
 
+import com.ndashimye.firstapp.error.AppEntityNotFoundException;
 import com.ndashimye.firstapp.error.InvalidTimeFormatException;
 import com.ndashimye.firstapp.userprofile.UserProfile;
-import com.ndashimye.firstapp.userprofile.UserProfileNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
-import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import com.ndashimye.firstapp.todo.Todo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,37 +23,37 @@ public class UserController {
     }
 
     @GetMapping("/id/{userId}")
-    public User getUserById(@PathVariable Long userId) throws UserNotFoundException {
+    public User getUserById(@PathVariable Long userId) throws AppEntityNotFoundException {
         return userService.getUserById(userId);
     }
 
     @GetMapping("/id/{userId}/todos")
-    public List<Todo> getTodosByUserId(@PathVariable Long userId) throws UserNotFoundException {
+    public List<Todo> getTodosByUserId(@PathVariable Long userId) throws AppEntityNotFoundException {
         return userService.getAllTodosByUserId(userId);
     }
 
     @GetMapping("/id/{userId}/todos/order-by/due-time/most-recent")
     public List<Todo> getTodosByUserIdOrderedByMostRecent(@PathVariable Long userId)
-            throws UserNotFoundException {
+            throws AppEntityNotFoundException {
         return userService.getAllTodosByUserIdOrderedByMostRecent(userId);
     }
 
     @GetMapping("/id/{userId}/todos/order-by/due-time/least-recent")
     public List<Todo> getTodosByUserIdOrderedByLeastRecent(@PathVariable Long userId)
-            throws UserNotFoundException {
+            throws AppEntityNotFoundException {
         return userService.getAllTodosByUserIdOrderedByLeastRecent(userId);
     }
 
     @GetMapping("/id/{userId}/todos/order-by/priority")
     public List<Todo> getTodosByUserIdOrderedByPriority(@PathVariable Long userId)
-            throws UserNotFoundException {
+            throws AppEntityNotFoundException {
         return userService.getAllTodosByUserIdOrderedByPriority(userId);
     }
 
     @GetMapping("/id/{userId}/todos/between")
     public List<Todo> getTodosBetweenDates
             (@PathVariable Long userId, @RequestParam String start, @RequestParam String end)
-            throws UserNotFoundException, UserSettingsNotFoundException, InvalidTimeFormatException {
+            throws AppEntityNotFoundException, InvalidTimeFormatException {
 
             return userService.getAllTodosBetweenDates(userId, start, end);
 
@@ -62,14 +61,14 @@ public class UserController {
 
     @GetMapping("/email/{emailAddress}")
     public User getUserByEmailAddress(@PathVariable String emailAddress)
-            throws UserNotFoundException {
+            throws AppEntityNotFoundException {
 
         return userService.getUserByEmailAddress(emailAddress);
     }
 
 
     @GetMapping("/username/{username}")
-    public User getUserByUsername(@PathVariable String username) throws UserNotFoundException {
+    public User getUserByUsername(@PathVariable String username) throws AppEntityNotFoundException {
         return userService.getUserByUsername(username);
     }
 
@@ -86,21 +85,21 @@ public class UserController {
 
     @PutMapping("/{userId}")
     public void updateUser(@RequestBody User updatedUser,
-                             @PathVariable Long userId) throws UserNotFoundException {
+                             @PathVariable Long userId) throws AppEntityNotFoundException {
 
         userService.updateUser(updatedUser, userId);
     }
 
     @DeleteMapping("/{userId}")
     public void deleteUser(@PathVariable Long userId)
-            throws UserNotFoundException, UserSettingsNotFoundException, UserProfileNotFoundException {
+            throws AppEntityNotFoundException {
         userService.deleteUser(userId);
     }
 
     @PutMapping("/{userId}/profile")
     public void updateUserProfile(@PathVariable Long userId,
                                     @RequestBody UserProfile updatedUserProfile)
-            throws UserNotFoundException, UserProfileNotFoundException {
+            throws AppEntityNotFoundException {
 
         userService.updateUserProfile(userId, updatedUserProfile);
     }
@@ -108,7 +107,7 @@ public class UserController {
     @PutMapping("/{userId}/settings")
     public void updateUserSettings(@PathVariable Long userId,
                                     @RequestBody UserSettings updatedUserSettings)
-            throws UserNotFoundException, UserSettingsNotFoundException {
+            throws AppEntityNotFoundException{
 
         userService.updateUserSettings(userId, updatedUserSettings);
     }

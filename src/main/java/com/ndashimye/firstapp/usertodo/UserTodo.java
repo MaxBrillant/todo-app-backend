@@ -1,8 +1,8 @@
 package com.ndashimye.firstapp.usertodo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.ndashimye.firstapp.error.AppEntityNotFoundException;
 import com.ndashimye.firstapp.user.User;
-import com.ndashimye.firstapp.user.UserNotFoundException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -38,7 +38,7 @@ public class UserTodo {
     private int priorityLevel;
 
 
-    public User getUser() throws UserNotFoundException {
-        return Optional.of(this.user).orElseThrow(() -> new UserNotFoundException());
+    public User getUser() throws AppEntityNotFoundException {
+        return Optional.of(this.user).orElseThrow(() -> new AppEntityNotFoundException(User.class));
     }
 }

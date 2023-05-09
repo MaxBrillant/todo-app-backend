@@ -2,13 +2,9 @@ package com.ndashimye.firstapp.task;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
-import com.ndashimye.firstapp.todo.TodoNotFoundException;
+import com.ndashimye.firstapp.error.AppEntityNotFoundException;
 import com.ndashimye.firstapp.todotask.TodoTask;
-import com.ndashimye.firstapp.todotask.TodoTaskNotFoundException;
-import com.ndashimye.firstapp.user.UserNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
-import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
-import com.ndashimye.firstapp.usertodo.UserTodoNotFoundException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
@@ -67,8 +63,7 @@ public class Task {
 
 
     public ZonedDateTime getDueTime()
-            throws TodoTaskNotFoundException, TodoNotFoundException
-            , UserTodoNotFoundException, UserNotFoundException, UserSettingsNotFoundException {
+            throws AppEntityNotFoundException {
 
         ZonedDateTimeAttributeConverter.setDefaultZoneId(ZoneId.of("UTC"));
         if(dueTime != null) {
@@ -81,7 +76,7 @@ public class Task {
     }
 
 
-    public TodoTask getTodoTask() throws TodoTaskNotFoundException {
-        return Optional.of(this.todoTask).orElseThrow(() -> new TodoTaskNotFoundException());
+    public TodoTask getTodoTask() throws AppEntityNotFoundException {
+        return Optional.of(this.todoTask).orElseThrow(() -> new AppEntityNotFoundException(TodoTask.class));
     }
 }

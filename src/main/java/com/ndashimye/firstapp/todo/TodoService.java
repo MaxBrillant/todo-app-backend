@@ -1,13 +1,11 @@
 package com.ndashimye.firstapp.todo;
 
+import com.ndashimye.firstapp.error.AppEntityNotFoundException;
 import com.ndashimye.firstapp.task.Task;
 import com.ndashimye.firstapp.task.TaskRepository;
 import com.ndashimye.firstapp.user.User;
-import com.ndashimye.firstapp.user.UserNotFoundException;
 import com.ndashimye.firstapp.user.UserService;
-import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import com.ndashimye.firstapp.usertodo.UserTodo;
-import com.ndashimye.firstapp.usertodo.UserTodoNotFoundException;
 import com.ndashimye.firstapp.usertodo.UserTodoRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -33,16 +31,16 @@ public class TodoService {
     @Autowired
     private TaskRepository taskRepository;
 
-    public Todo getTodoById(Long todoId) throws TodoNotFoundException {
+    public Todo getTodoById(Long todoId) throws AppEntityNotFoundException {
         log.info("Fetching todo by ID: {}...", todoId);
-        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new TodoNotFoundException());
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new AppEntityNotFoundException(Todo.class));
         log.info("Todo of ID: {} was successfully fetched.", todoId);
 
         return todo;
     }
 
 
-    public List<Task> getAllTasksByTodoId(Long todoId) throws TodoNotFoundException {
+    public List<Task> getAllTasksByTodoId(Long todoId) throws AppEntityNotFoundException {
 
         Todo todo = getTodoById(todoId);
         log.info("Fetching all tasks of todo of ID: {}...", todoId);
@@ -53,7 +51,7 @@ public class TodoService {
     }
 
 
-    public List<Task> getAllTasksByTodoIdOrderedByPriority(Long todoId) throws TodoNotFoundException {
+    public List<Task> getAllTasksByTodoIdOrderedByPriority(Long todoId) throws AppEntityNotFoundException {
 
         Todo todo = getTodoById(todoId);
         log.info("Fetching all tasks of todo of ID: {} ordered by priority...", todoId);
@@ -63,7 +61,7 @@ public class TodoService {
         return tasks;
     }
 
-    public List<Task> getCompletedTasks(Long todoId) throws TodoNotFoundException {
+    public List<Task> getCompletedTasks(Long todoId) throws AppEntityNotFoundException {
 
         Todo todo = getTodoById(todoId);
         log.info("Fetching all completed tasks of todo of ID: {}...", todoId);
@@ -73,7 +71,7 @@ public class TodoService {
         return tasks;
     }
 
-    public List<Task> getUncompletedTasks(Long todoId) throws TodoNotFoundException {
+    public List<Task> getUncompletedTasks(Long todoId) throws AppEntityNotFoundException {
 
         Todo todo = getTodoById(todoId);
         log.info("Fetching all uncompleted tasks of todo of ID: {}...", todoId);
@@ -84,7 +82,7 @@ public class TodoService {
     }
 
     public void addNewTodo(Todo todo, Long userId)
-            throws UserNotFoundException, UserTodoNotFoundException {
+            throws AppEntityNotFoundException {
 
         log.info("Adding a new todo...");
 
@@ -95,7 +93,7 @@ public class TodoService {
         todoRepository.save(todo);
         log.info("Todo of ID: {} was successfully added.", todo.getTodoId());
     }
-    public void updateTodo(Todo updatedTodo, Long todoId) throws TodoNotFoundException, UserNotFoundException, UserSettingsNotFoundException, UserTodoNotFoundException {
+    public void updateTodo(Todo updatedTodo, Long todoId) throws AppEntityNotFoundException {
 
         Todo todo = getTodoById(todoId);
         log.info("Updating todo of ID: {}...", todo.getTodoId());
@@ -119,7 +117,7 @@ public class TodoService {
 
 
     public void deleteTodo(Long todoId)
-            throws TodoNotFoundException, UserTodoNotFoundException {
+            throws AppEntityNotFoundException {
 
         Todo todo = getTodoById(todoId);
         log.info("Deleting todo of ID: {}...", todo.getTodoId());
@@ -135,7 +133,7 @@ public class TodoService {
 
 
     public void addNewUserTodo(Todo todo, UserTodo userTodo)
-            throws UserNotFoundException, UserTodoNotFoundException {
+            throws AppEntityNotFoundException {
 
         log.info("Assigning todo of ID: {} to user of ID: {} and username: {}..."
                 , todo.getTodoId(), userTodo.getUser().getUserId(), userTodo.getUser().getUsername());
@@ -148,7 +146,7 @@ public class TodoService {
     }
 
 
-    public void assignPositionToNewTodo(Todo todo) throws UserTodoNotFoundException {
+    public void assignPositionToNewTodo(Todo todo) throws AppEntityNotFoundException {
 
         log.info("Calculating the maximum position value of all existing todos...");
         // Get the maximum position value from all existing todos
@@ -169,7 +167,7 @@ public class TodoService {
                 , todo.getUserTodo().getPosition(), todo.getTodoId());
     }
 
-    public void updateUserTodo(Long todoId, UserTodo updatedUserTodo) throws TodoNotFoundException, UserNotFoundException, UserTodoNotFoundException {
+    public void updateUserTodo(Long todoId, UserTodo updatedUserTodo) throws AppEntityNotFoundException {
 
         Todo todo = getTodoById(todoId);
         log.info("Updating information related to the assignment of todo of ID: {} to a user..."
@@ -183,7 +181,7 @@ public class TodoService {
     }
 
 
-    void deleteUserTodo(Todo todo) throws UserTodoNotFoundException {
+    void deleteUserTodo(Todo todo) throws AppEntityNotFoundException {
         log.info("Deleting allocation of user to todo of ID: {}..."
                 , todo.getTodoId());
 
@@ -192,7 +190,7 @@ public class TodoService {
                 , todo.getTodoId());
     }
 
-    public void updateTodoPosition(Long todoId, int newPosition) throws TodoNotFoundException, UserTodoNotFoundException {
+    public void updateTodoPosition(Long todoId, int newPosition) throws AppEntityNotFoundException {
 
         Todo todo = getTodoById(todoId);
 

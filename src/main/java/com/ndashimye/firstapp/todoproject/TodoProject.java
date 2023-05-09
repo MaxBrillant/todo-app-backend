@@ -1,8 +1,8 @@
 package com.ndashimye.firstapp.todoproject;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.ndashimye.firstapp.error.AppEntityNotFoundException;
 import com.ndashimye.firstapp.project.Project;
-import com.ndashimye.firstapp.project.ProjectNotFoundException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -33,7 +33,7 @@ public class TodoProject {
     private int position;
 
 
-    public Project getProject() throws ProjectNotFoundException {
-        return Optional.of(this.project).orElseThrow(() -> new ProjectNotFoundException());
+    public Project getProject() throws AppEntityNotFoundException {
+        return Optional.of(this.project).orElseThrow(() -> new AppEntityNotFoundException(Project.class));
     }
 }

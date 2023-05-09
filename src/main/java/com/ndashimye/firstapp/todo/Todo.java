@@ -2,12 +2,10 @@ package com.ndashimye.firstapp.todo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
+import com.ndashimye.firstapp.error.AppEntityNotFoundException;
 import com.ndashimye.firstapp.todoproject.TodoProject;
-import com.ndashimye.firstapp.user.UserNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
-import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import com.ndashimye.firstapp.usertodo.UserTodo;
-import com.ndashimye.firstapp.usertodo.UserTodoNotFoundException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
@@ -71,12 +69,12 @@ public class Todo {
     private ZonedDateTime updatedAt;
 
 
-    public UserTodo getUserTodo() throws UserTodoNotFoundException {
-        return Optional.of(this.userTodo).orElseThrow(() -> new UserTodoNotFoundException());
+    public UserTodo getUserTodo() throws AppEntityNotFoundException {
+        return Optional.of(this.userTodo).orElseThrow(() -> new AppEntityNotFoundException(UserTodo.class));
     }
 
 
-    public ZonedDateTime getDueTime() throws UserTodoNotFoundException, UserNotFoundException, UserSettingsNotFoundException {
+    public ZonedDateTime getDueTime() throws AppEntityNotFoundException {
         ZonedDateTimeAttributeConverter.setDefaultZoneId(ZoneId.of("UTC"));
         if(dueTime != null) {
             UserSettings userSettings = this.getUserTodo().getUser().getSettings();
