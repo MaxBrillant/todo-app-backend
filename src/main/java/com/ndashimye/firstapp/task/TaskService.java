@@ -2,6 +2,7 @@ package com.ndashimye.firstapp.task;
 
 import com.ndashimye.firstapp.todo.Todo;
 import com.ndashimye.firstapp.todo.TodoNotFoundException;
+import com.ndashimye.firstapp.todo.TodoService;
 import com.ndashimye.firstapp.todotask.TodoTask;
 import com.ndashimye.firstapp.todotask.TodoTaskNotFoundException;
 import com.ndashimye.firstapp.todotask.TodoTaskRepository;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -23,6 +23,9 @@ public class TaskService {
 
     @Autowired
     private TaskRepository taskRepository;
+
+    @Autowired
+    private TodoService todoService;
 
     @Autowired
     private TodoTaskRepository todoTaskRepository;
@@ -79,8 +82,15 @@ public class TaskService {
 
 
 
-    public void addNewTask(Task task) {
+    public void addNewTask(Task task, Long todoId)
+            throws TaskNotFoundException, TodoTaskNotFoundException, TodoNotFoundException {
+
         log.info("Adding a new task...");
+
+        //Allocate a t0do to the new task
+        Todo todo = todoService.getTodoById(todoId);
+        addNewTodoTask(task, TodoTask.builder().todo(todo).build());
+
         taskRepository.save(task);
         log.info("Task of ID: {} was successfully added.", task.getTaskId());
     }
@@ -90,7 +100,6 @@ public class TaskService {
         Task task = getTaskById(taskId);
         log.info("Updating task of ID: {}...", task.getTaskId());
 
-        // TODO: 5/4/2023 Create an endpoint to set the parentTask
 //        if (!task.equals(updatedTask)) {
 //            if (Objects.nonNull(updatedTask.getParentTask())) {
 //                if (!updatedTask.getParentTask().equals("")) {
@@ -110,20 +119,66 @@ public class TaskService {
         log.info("Task of ID: {} was successfully updated.", task.getTaskId());
     }
 
-    public void deleteTask(Long taskId) throws TaskNotFoundException {
+    public void deleteTask(Long taskId)
+            throws TaskNotFoundException, TodoTaskNotFoundException {
 
         Task task = getTaskById(taskId);
         log.info("Deleting task of ID: {}...", task.getTaskId());
+        deleteTodoTask(task);
         Task deletedTask = task;
         taskRepository.delete(task);
         log.info("Task of ID: {} was successfully deleted.", deletedTask.getTaskId());
     }
 
-
-
-    public void addNewTodoTask(Long taskId, TodoTask todoTask) throws TaskNotFoundException, TodoNotFoundException, TodoTaskNotFoundException {
+    public void updateParentTask(Long taskId, Long parentTaskId, int position)
+            throws TaskNotFoundException, TodoTaskNotFoundException, TodoNotFoundException {
 
         Task task = getTaskById(taskId);
+        Task parentTask = getTaskById(parentTaskId);
+
+        if(parentTask.getTodoTask().getTodo().equals(task.getTodoTask().getTodo())) {
+            if (parentTask.equals(task)) {
+
+                log.info("Assigning a parent task of ID: {} to task of ID: {}..."
+                        , parentTask.getTaskId(), task.getTaskId());
+
+                log.info("Repositioning child tasks that belong to the old parent task...");
+                if (Objects.isNull(task.getParentTask())) {
+                    //get the very last task ranked by position
+                    TodoTask lastTask = todoTaskRepository.findTopByTodoOrderByPositionDesc(task.getTodoTask().getTodo());
+                    //checking if the task is not the only one contained within its parent task.
+                    if(lastTask.getPosition() > 1) {
+                        //Give the task the very last position within its parent task.
+                        updateTaskPosition(taskId, lastTask.getPosition() + 1);
+                    }
+                }else {
+                    List<Task> childTasks = task.getParentTask().getChildTasks();
+                    if (childTasks.size() > 1) {
+                        //get the very last task ranked by position
+                        TodoTask lastChildTask = childTasks.get(childTasks.size() - 1).getTodoTask();
+                        updateTaskPosition(taskId, lastChildTask.getPosition() + 1);
+                    }
+                }
+
+
+                task.setParentTask(parentTask);
+                taskRepository.save(task);
+                log.info("Positioning task of ID: {} into its new parent task...", taskId);
+                updateTaskPosition(taskId, position);
+                log.info("Parent task of ID: {} was successfully assigned to task of ID: {}."
+                        , parentTask.getTaskId(), task.getTaskId());
+            }else {
+                log.error("ERROR: the task must be different from its parent.");
+            }
+        }else {
+            log.error("ERROR: the parent task and the task must have the same todos.");
+        }
+    }
+
+
+    public void addNewTodoTask(Task task, TodoTask todoTask)
+            throws TaskNotFoundException, TodoNotFoundException, TodoTaskNotFoundException {
+
         log.info("Assigning task of ID: {} to todo of ID: {}..."
                 , task.getTaskId(), todoTask.getTodo().getTodoId());
 
@@ -171,9 +226,6 @@ public class TaskService {
         log.info("Updating information related to the assignment of task of ID: {} to a todo..."
                 , task.getTaskId());
 
-        if (Objects.nonNull(updatedTodoTask.getTodo()) && !updatedTodoTask.getTodo().equals("")) {
-            task.getTodoTask().setTodo(updatedTodoTask.getTodo());
-        }
         if (Objects.nonNull(updatedTodoTask.getCompletionTime()) && !updatedTodoTask.getCompletionTime().equals("")) {
             task.getTodoTask().setCompletionTime(updatedTodoTask.getCompletionTime());
         }
@@ -187,13 +239,21 @@ public class TaskService {
                 , task.getTaskId(), task.getTodoTask().getTodo().getTodoId());
     }
 
+    private void deleteTodoTask(Task task) throws TodoTaskNotFoundException {
+        log.info("Deleting allocation of todo to task of ID: {}..."
+                , task.getTaskId());
+
+        todoTaskRepository.delete(task.getTodoTask());
+        log.info("Allocation of todo to task of ID: {} was successfully deleted."
+                , task.getTaskId());
+    }
+
     public void updateTaskPosition(Long taskId, int newPosition)
             throws TaskNotFoundException, TodoTaskNotFoundException, TodoNotFoundException {
 
         Task task = getTaskById(taskId);
         TodoTask todoTask = task.getTodoTask();
         Todo todo = todoTask.getTodo();
-        // TODO: 5/2/2023 CHANGE THE GET methods for all entities.
 
         log.info("Getting the current position of task of ID: {}...", task.getTaskId());
         int currentPosition = todoTask.getPosition();
@@ -206,7 +266,7 @@ public class TaskService {
             }
             log.info("The positions of all tasks that are between position {} and {} were successfully updated."
                     , currentPosition, newPosition);
-    // TODO: 5/2/2023 REMEMBER TO CHANGE THE POSITION OF A TASK EACH TIME IT IS ASSIGNED A NEW PARENT TASK
+
         } else if (newPosition < currentPosition) {
             List<TodoTask> tasksToUpdate = todoTaskRepository.findByTodoAndPositionBetweenOrderByPositionDesc(todo, newPosition, currentPosition - 1);
             log.info("Updating positions of tasks that are between position {} and {}", newPosition, currentPosition);
@@ -220,17 +280,5 @@ public class TaskService {
         log.info("Updating the position of task of ID: {}...", task.getTaskId());
         todoTask.setPosition(newPosition);
         log.info("The position of task of ID: {} was successfully updated.", task.getTaskId());
-    }
-
-
-    public void deleteTodoTask(Long taskId) throws TaskNotFoundException, TodoTaskNotFoundException {
-
-        Task task = getTaskById(taskId);
-        log.info("Deleting information related to the assignment of task of ID: {} to a todo..."
-                , task.getTaskId());
-
-        todoTaskRepository.delete(task.getTodoTask());
-        log.info("The information related to the assignment of task of ID: {} to a todo was successfully deleted."
-                , task.getTaskId());
     }
 }

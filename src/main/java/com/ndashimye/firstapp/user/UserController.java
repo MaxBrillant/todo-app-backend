@@ -78,31 +78,6 @@ public class UserController {
         return userService.getUsersCount();
     }
 
-    @GetMapping("/check/id/{userId}")
-    public boolean checkUserExistence(@PathVariable Long userId){
-        return userService.userIdExists(userId);
-    }
-
-    @GetMapping("/check/username/{username}")
-    public boolean checkUsernameExistence(@PathVariable String username){
-        return userService.usernameExists(username);
-    }
-
-
-    @GetMapping("/check/email/{emailAddress}")
-    public boolean checkEmailExistence(@PathVariable String emailAddress){
-        return userService.emailAddressExists(emailAddress);
-    }
-
-
-    @GetMapping("/check/password/{userId}/{password}")
-    public boolean checkPassword(@PathVariable Long userId,
-                                 @PathVariable String password)
-            throws Exception {
-
-        return userService.checkPassword(userId, password);
-    }
-
 
     @PostMapping()
     public void addUser(@RequestBody User user) {
@@ -117,18 +92,9 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable Long userId) throws UserNotFoundException {
+    public void deleteUser(@PathVariable Long userId)
+            throws UserNotFoundException, UserSettingsNotFoundException, UserProfileNotFoundException {
         userService.deleteUser(userId);
-    }
-
-
-
-
-    @PostMapping("/{userId}/profile")
-    public void addUserProfile(@PathVariable Long userId, @RequestBody UserProfile userProfile)
-            throws UserNotFoundException {
-
-        userService.addNewUserProfile(userId, userProfile);
     }
 
     @PutMapping("/{userId}/profile")
@@ -139,35 +105,11 @@ public class UserController {
         userService.updateUserProfile(userId, updatedUserProfile);
     }
 
-    @DeleteMapping("/{userId}/profile")
-    public void deleteUserProfile(@PathVariable Long userId)
-            throws UserNotFoundException, UserProfileNotFoundException {
-
-        userService.deleteUserProfile(userId);
-    }
-
-
-
-
-    @PostMapping("/{userId}/settings")
-    public void addUserSettings(@PathVariable Long userId, @RequestBody UserSettings userSettings)
-            throws UserNotFoundException {
-
-        userService.addNewUserSettings(userId, userSettings);
-    }
-
     @PutMapping("/{userId}/settings")
     public void updateUserSettings(@PathVariable Long userId,
                                     @RequestBody UserSettings updatedUserSettings)
             throws UserNotFoundException, UserSettingsNotFoundException {
 
         userService.updateUserSettings(userId, updatedUserSettings);
-    }
-
-    @DeleteMapping("/{userId}/settings")
-    public void deleteUserSettings(@PathVariable Long userId)
-            throws UserNotFoundException, UserSettingsNotFoundException {
-
-        userService.deleteUserSettings(userId);
     }
 }

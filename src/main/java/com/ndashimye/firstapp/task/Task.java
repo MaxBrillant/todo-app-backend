@@ -28,7 +28,8 @@ public class Task {
     private Long taskId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "todo_task_id", unique = true)
+    @JoinColumn(name = "todo_task_id", unique = true, nullable = false)
+    @NotNull(message = "Todo task is required")
     private TodoTask todoTask;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -53,9 +54,5 @@ public class Task {
 
     public TodoTask getTodoTask() throws TodoTaskNotFoundException {
         return Optional.of(this.todoTask).orElseThrow(() -> new TodoTaskNotFoundException());
-    }
-
-    public Task getParentTask() throws TaskNotFoundException {
-        return Optional.of(this.parentTask).orElseThrow(() -> new TaskNotFoundException());
     }
 }

@@ -30,11 +30,13 @@ public class User {
     private Long userId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_profile_id", unique = true)
+    @JoinColumn(name = "user_profile_id", unique = true, nullable = false)
+    @NotNull(message = "User profile is required")
     private UserProfile profile;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_settings_id", unique = true)
+    @JoinColumn(name = "user_settings_id", unique = true, nullable = false)
+    @NotNull(message = "User settings are required")
     private UserSettings settings;
 
     @Column(name = "username", nullable = false, unique = true, length = 30)

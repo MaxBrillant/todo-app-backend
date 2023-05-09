@@ -2,7 +2,9 @@ package com.ndashimye.firstapp.todo;
 
 import com.ndashimye.firstapp.task.Task;
 import com.ndashimye.firstapp.task.TaskRepository;
+import com.ndashimye.firstapp.user.User;
 import com.ndashimye.firstapp.user.UserNotFoundException;
+import com.ndashimye.firstapp.user.UserService;
 import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import com.ndashimye.firstapp.usertodo.UserTodo;
 import com.ndashimye.firstapp.usertodo.UserTodoNotFoundException;
@@ -21,6 +23,9 @@ public class TodoService {
 
     @Autowired
     private TodoRepository todoRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private UserTodoRepository userTodoRepository;
@@ -78,13 +83,18 @@ public class TodoService {
         return tasks;
     }
 
-    public void addNewTodo(Todo todo) {
+    public void addNewTodo(Todo todo, Long userId)
+            throws UserNotFoundException, UserTodoNotFoundException {
 
         log.info("Adding a new todo...");
+
+        //Allocate a user to the new t0do.
+        User user = userService.getUserById(userId);
+        addNewUserTodo(todo, UserTodo.builder().user(user).build());
+
         todoRepository.save(todo);
         log.info("Todo of ID: {} was successfully added.", todo.getTodoId());
     }
-
     public void updateTodo(Todo updatedTodo, Long todoId) throws TodoNotFoundException, UserNotFoundException, UserSettingsNotFoundException, UserTodoNotFoundException {
 
         Todo todo = getTodoById(todoId);
@@ -107,10 +117,16 @@ public class TodoService {
         log.info("Todo of ID: {} was successfully updated.", todo.getTodoId());
     }
 
-    public void deleteTodo(Long todoId) throws TodoNotFoundException {
+
+    public void deleteTodo(Long todoId)
+            throws TodoNotFoundException, UserTodoNotFoundException {
 
         Todo todo = getTodoById(todoId);
         log.info("Deleting todo of ID: {}...", todo.getTodoId());
+
+        //Deleting the allocation of a user to this t0do
+        deleteUserTodo(todo);
+
         Todo deletedTodo = todo;
         todoRepository.delete(todo);
         log.info("Todo of ID: {} was successfully deleted.", deletedTodo.getTodoId());
@@ -118,9 +134,9 @@ public class TodoService {
 
 
 
-    public void addNewUserTodo(Long todoId, UserTodo userTodo) throws TodoNotFoundException, UserNotFoundException, UserTodoNotFoundException {
+    public void addNewUserTodo(Todo todo, UserTodo userTodo)
+            throws UserNotFoundException, UserTodoNotFoundException {
 
-        Todo todo = getTodoById(todoId);
         log.info("Assigning todo of ID: {} to user of ID: {} and username: {}..."
                 , todo.getTodoId(), userTodo.getUser().getUserId(), userTodo.getUser().getUsername());
 
@@ -159,16 +175,22 @@ public class TodoService {
         log.info("Updating information related to the assignment of todo of ID: {} to a user..."
                 , todo.getTodoId());
 
-        if (Objects.nonNull(updatedUserTodo.getUser()) && !updatedUserTodo.getUser().equals("")) {
-            todo.getUserTodo().setUser(updatedUserTodo.getUser());
-        }
         if (Objects.nonNull(updatedUserTodo.getPriorityLevel()) && !String.valueOf(updatedUserTodo.getPriorityLevel()).equals("")) {
             todo.getUserTodo().setPriorityLevel(updatedUserTodo.getPriorityLevel());
         }
         log.info("The information related to the assignment of todo of ID: {} to user of ID: {} was successfully updated."
                 , todo.getTodoId(), todo.getUserTodo().getUser().getUserId());
-        }
+    }
 
+
+    void deleteUserTodo(Todo todo) throws UserTodoNotFoundException {
+        log.info("Deleting allocation of user to todo of ID: {}..."
+                , todo.getTodoId());
+
+        userTodoRepository.delete(todo.getUserTodo());
+        log.info("Allocation of user to todo of ID: {} was successfully deleted."
+                , todo.getTodoId());
+    }
 
     public void updateTodoPosition(Long todoId, int newPosition) throws TodoNotFoundException, UserTodoNotFoundException {
 
@@ -213,16 +235,5 @@ public class TodoService {
         todo.getUserTodo().setPosition(newPosition);
         todoRepository.save(todo);
         log.info("The position of todo of ID: {} was successfully updated.", todo.getTodoId());
-    }
-
-    public void deleteUserTodo(Long todoId) throws TodoNotFoundException, UserTodoNotFoundException {
-
-        Todo todo = getTodoById(todoId);
-        log.info("Deleting information related to the assignment of todo of ID: {} to a user..."
-                , todo.getTodoId());
-
-        userTodoRepository.delete(todo.getUserTodo());
-        log.info("The information related to the assignment of todo of ID: {} to a user was successfully deleted."
-                , todo.getTodoId());
     }
 }

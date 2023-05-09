@@ -34,7 +34,8 @@ public class Todo {
 
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_todo_id", unique = true)
+    @JoinColumn(name = "user_todo_id", unique = true, nullable = false)
+    @NotNull(message = "User todo is required")
     private UserTodo userTodo;
 
     @Column(name = "name", nullable = false, length = 40)

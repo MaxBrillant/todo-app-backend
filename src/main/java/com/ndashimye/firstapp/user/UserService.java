@@ -40,7 +40,6 @@ public class UserService {
     private TodoRepository todoRepository;
 
 
-    @Autowired
     public List<User> getAllUsers(){
         log.info("Fetching all users...");
         List<User> users = userRepository.findAll();
@@ -54,6 +53,26 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
         log.info("User of ID: {} and username: {} was successfully fetched."
                 , user.getUserId(), user.getUsername());
+
+        return user;
+    }
+
+
+    public User getUserByEmailAddress(String emailAddress) throws UserNotFoundException {
+
+        log.info("Fetching user by email address: {}...", emailAddress);
+        User user = userRepository.findUserByEmailAddress(emailAddress)
+                .orElseThrow(() -> new UserNotFoundException());
+        log.info("User of email address: {} was successfully fetched.", emailAddress);
+
+        return user;
+    }
+
+    public User getUserByUsername(String username) throws UserNotFoundException {
+
+        log.info("Fetching user by username: {}...", username);
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException());
+        log.info("User of username: {} was successfully fetched.", username);
 
         return user;
     }
@@ -161,52 +180,24 @@ public class UserService {
         return todos;
     }
 
-    public User getUserByEmailAddress(String emailAddress) throws UserNotFoundException {
-
-        log.info("Fetching user by email address: {}...", emailAddress);
-        User user = userRepository.findUserByEmailAddress(emailAddress)
-                .orElseThrow(() -> new UserNotFoundException());
-        log.info("User of email address: {} was successfully fetched.", emailAddress);
-
-        return user;
-    }
-
-    public User getUserByUsername(String username) throws UserNotFoundException {
-
-        log.info("Fetching user by username: {}...", username);
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException());
-        log.info("User of username: {} was successfully fetched.", username);
-
-        return user;
-    }
-    public boolean userIdExists(Long userId){
-        return userRepository.existsByUserId(userId);
-    }
-    public boolean usernameExists(String username){
-        return userRepository.existsByUsername(username);
-    }
-
-    public boolean emailAddressExists(String emailAddress){
-        return userProfileRepository.existsByEmailAddress(emailAddress);
-    }
-
-
-    public boolean checkPassword(Long userId, String password) throws UserNotFoundException {
-        return getUserById(userId).checkPassword(password);
-    }
-
     @Autowired
     public Integer getUsersCount(){
         return Math.toIntExact(userRepository.count());
     }
 
-    public void addNewUser(User user){
+    public void addNewUser(User user) {
 
         log.info("Adding a new user of username: {}...", user.getUsername());
         user.setPassword(user.getPasswordHash());
+
+        //Adding a profile and settings to the new user
+        addNewUserProfile(user, new UserProfile());
+        addNewUserSettings(user, new UserSettings());
+
         userRepository.save(user);
         log.info("User of ID: {} and username: {} was successfully added."
                 , user.getUserId(), user.getUsername());
+
     }
 
     public void updateUser(User updatedUser, Long userId) throws UserNotFoundException {
@@ -229,10 +220,16 @@ public class UserService {
                 , user.getUserId(), updatedUser.getUsername());
     }
 
-    public void deleteUser(Long userId) throws UserNotFoundException {
+    public void deleteUser(Long userId)
+            throws UserNotFoundException, UserProfileNotFoundException, UserSettingsNotFoundException {
 
         User user = getUserById(userId);
         log.info("Deleting user of ID: {} and username: {}...", user.getUserId(), user.getUsername());
+
+        //Delete the user profile and settings
+        deleteUserProfile(user);
+        deleteUserSettings(user);
+
         User deletedUser = user;
         userRepository.delete(user);
         log.info("User of ID: {} and username: {} was successfully deleted."
@@ -242,10 +239,8 @@ public class UserService {
 
 
 
-    public void addNewUserProfile(Long userId, UserProfile userProfile)
-            throws UserNotFoundException {
+    public void addNewUserProfile(User user, UserProfile userProfile) {
 
-        User user = getUserById(userId);
         log.info("Adding a profile to user of ID: {} and username: {}..."
                 , user.getUserId(), user.getUsername());
 
@@ -279,25 +274,20 @@ public class UserService {
                 , user.getUserId(), user.getUsername());
     }
 
-    public void deleteUserProfile(Long userId) throws UserNotFoundException, UserProfileNotFoundException {
 
-        User user = getUserById(userId);
+    public void deleteUserProfile(User user) throws UserProfileNotFoundException {
 
-        log.info("Deleting the profile of user of ID: {} and username: {}..."
+        log.info("Deleting profile of user of ID: {} and username: {}..."
                 , user.getUserId(), user.getUsername());
 
         userProfileRepository.delete(user.getProfile());
         log.info("Profile of user of ID: {} and username: {} was successfully deleted."
                 , user.getUserId(), user.getUsername());
-
     }
 
 
 
-    public void addNewUserSettings(Long userId, UserSettings userSettings)
-            throws UserNotFoundException {
-
-        User user = getUserById(userId);
+    public void addNewUserSettings(User user, UserSettings userSettings) {
 
         log.info("Adding settings to user of ID: {} and username: {}..."
                 , user.getUserId(), user.getUsername());
@@ -323,16 +313,13 @@ public class UserService {
                 , user.getUserId(), user.getUsername());
     }
 
-    public void deleteUserSettings(Long userId) throws UserNotFoundException, UserSettingsNotFoundException {
+    public void deleteUserSettings(User user) throws UserSettingsNotFoundException {
 
-        User user = getUserById(userId);
-
-        log.info("Deleting the settings of user of ID: {} and username: {}..."
+        log.info("Deleting settings of user of ID: {} and username: {}..."
                 , user.getUserId(), user.getUsername());
 
         userSettingsRepository.delete(user.getSettings());
-        log.info("Settings of user of ID: {} and username: {} were successfully deleted."
+        log.info("Settings of user of ID: {} and username: {} was successfully deleted."
                 , user.getUserId(), user.getUsername());
     }
-
 }
