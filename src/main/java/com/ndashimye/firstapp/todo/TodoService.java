@@ -150,7 +150,7 @@ public class TodoService {
 
         log.info("Calculating the maximum position value of all existing todos...");
         // Get the maximum position value from all existing todos
-        Integer maxPosition = todoRepository.getMaxPosition();
+        Integer maxPosition = todoRepository.getMaxPosition(todo.getUserTodo().getUser());
 
         // If there are no existing todos, set the position to 1
         if (maxPosition == null) {
@@ -209,9 +209,9 @@ public class TodoService {
         // Get the todos with positions between the current and new positions
         List<Todo> todosToUpdate;
         if (newPosition > currentPosition) {
-            todosToUpdate = todoRepository.findTodosWithPositionsBetween(currentPosition + 1, newPosition);
+            todosToUpdate = todoRepository.findTodosWithPositionsBetween(todo.getUserTodo().getUser(), currentPosition + 1, newPosition);
         } else {
-            todosToUpdate = todoRepository.findTodosWithPositionsBetween(newPosition, currentPosition - 1);
+            todosToUpdate = todoRepository.findTodosWithPositionsBetween(todo.getUserTodo().getUser(), newPosition, currentPosition - 1);
         }
 
         log.info("Updating positions of all the todos that are between position {} and {}...", currentPosition, newPosition);

@@ -34,9 +34,9 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     List<Todo> findByUserAndDueTimeBetween(Long userId, Timestamp startDate, Timestamp endDate);
 
 
-    @Query("SELECT MAX(userTodo.position) FROM Todo")
-    Integer getMaxPosition();
+    @Query("SELECT MAX(userTodo.position) FROM Todo WHERE Todo.userTodo.user = :user")
+    Integer getMaxPosition(@Param("user") User user);
 
-    @Query("SELECT t FROM Todo t WHERE t.userTodo.position BETWEEN :start AND :end ORDER BY t.userTodo.position")
-    List<Todo> findTodosWithPositionsBetween(@Param("start") int start, @Param("end") int end);
+    @Query("SELECT t FROM Todo t WHERE t.userTodo.user = :user AND t.userTodo.position BETWEEN :start AND :end ORDER BY t.userTodo.position")
+    List<Todo> findTodosWithPositionsBetween(@Param("user")User user, @Param("start") int start, @Param("end") int end);
 }
