@@ -208,6 +208,9 @@ public class UserService {
         if (Objects.nonNull(updatedUser.getUsername()) && !updatedUser.getUsername().equals("")) {
             user.setUsername(updatedUser.getUsername());
         }
+        if (Objects.nonNull(updatedUser.getEmailAddress()) && !updatedUser.getEmailAddress().equals("")) {
+            user.setEmailAddress(updatedUser.getEmailAddress());
+        }
         if (Objects.nonNull(updatedUser.getPasswordHash()) && !updatedUser.getPasswordHash().equals("")) {
             user.setPassword(updatedUser.getPasswordHash());
         }
@@ -263,9 +266,6 @@ public class UserService {
         }
         if (Objects.nonNull(updatedUserProfile.getLastName()) && !updatedUserProfile.getLastName().equals("")) {
             user.getProfile().setLastName(updatedUserProfile.getLastName());
-        }
-        if (Objects.nonNull(updatedUserProfile.getEmailAddress()) && !updatedUserProfile.getEmailAddress().equals("")) {
-            user.getProfile().setEmailAddress(updatedUserProfile.getEmailAddress());
         }
         if (Objects.nonNull(updatedUserProfile.getProfileImageUrl()) && !updatedUserProfile.getProfileImageUrl().equals("")) {
             user.getProfile().setProfileImageUrl(updatedUserProfile.getProfileImageUrl());

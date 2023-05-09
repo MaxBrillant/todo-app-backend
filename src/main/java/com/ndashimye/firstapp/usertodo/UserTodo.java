@@ -5,8 +5,8 @@ import com.ndashimye.firstapp.user.User;
 import com.ndashimye.firstapp.user.UserNotFoundException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
-
 import java.util.Optional;
 
 @Entity
@@ -26,14 +26,15 @@ public class UserTodo {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @NotNull(message = "user is required")
+    @NotNull(message = "User is required")
     private User user;
 
     @Column(name = "position", nullable = false)
-    @NotNull(message = "position of todo of is required")
+    @NotNull(message = "Position of todo is required")
     private int position;
 
     @Column(name = "priority_level")
+    @Size(min = 1, max = 5)
     private int priorityLevel;
 
 

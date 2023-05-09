@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
 import com.ndashimye.firstapp.todo.Todo;
 import com.ndashimye.firstapp.todo.TodoNotFoundException;
-import com.ndashimye.firstapp.user.User;
 import com.ndashimye.firstapp.user.UserNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
 import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
-import com.ndashimye.firstapp.usertodo.UserTodo;
 import com.ndashimye.firstapp.usertodo.UserTodoNotFoundException;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -34,18 +34,20 @@ public class TodoTask {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id", nullable = false)
-    @NotNull(message = "todo is required")
+    @NotNull(message = "Todo is required")
     private Todo todo;
 
     @Column(name = "completion_time")
     @Convert(converter = ZonedDateTimeAttributeConverter.class)
+    @FutureOrPresent()
     private ZonedDateTime completionTime;
 
     @Column(name = "position", nullable = false)
-    @NotNull(message = "position of task is required")
+    @NotNull(message = "Position of task is required")
     private int position;
 
     @Column(name = "priority_level")
+    @Size(min = 1, max = 5)
     private Integer priorityLevel;
 
     @Column(name = "is_completed")

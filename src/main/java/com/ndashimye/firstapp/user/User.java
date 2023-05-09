@@ -30,18 +30,23 @@ public class User {
     private Long userId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_profile_id", unique = true, nullable = false)
+    @JoinColumn(name = "user_profile_id", nullable = false, unique = true)
     @NotNull(message = "User profile is required")
     private UserProfile profile;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_settings_id", unique = true, nullable = false)
+    @JoinColumn(name = "user_settings_id", nullable = false, unique = true)
     @NotNull(message = "User settings are required")
     private UserSettings settings;
 
     @Column(name = "username", nullable = false, unique = true, length = 30)
     @NotNull(message = "Username is required")
     private String username;
+
+
+    @Column(name = "email_address", nullable = false, unique = true, length = 50)
+    @NotNull(message = "User email is required")
+    private String emailAddress;
 
 
     @Column(name = "password_hash", nullable = false, unique = true, columnDefinition = "BINARY(60)")
@@ -77,10 +82,6 @@ public class User {
     public void setPassword(String password) {
         this.passwordSalt = BCrypt.gensalt();
         this.passwordHash = BCrypt.hashpw(password, this.passwordSalt);
-    }
-
-    public boolean checkPassword(String password) {
-        return BCrypt.checkpw(password, this.passwordHash);
     }
 
 }

@@ -1,7 +1,9 @@
 package com.ndashimye.firstapp.error;
 
+import com.ndashimye.firstapp.project.ProjectNotFoundException;
 import com.ndashimye.firstapp.task.TaskNotFoundException;
 import com.ndashimye.firstapp.todo.TodoNotFoundException;
+import com.ndashimye.firstapp.todoproject.TodoProjectNotFoundException;
 import com.ndashimye.firstapp.todotask.TodoTaskNotFoundException;
 import com.ndashimye.firstapp.user.UserNotFoundException;
 import com.ndashimye.firstapp.userprofile.UserProfileNotFoundException;
@@ -72,6 +74,26 @@ public class RestResponseEntityExceptionHandler
     @ExceptionHandler(UserTodoNotFoundException.class)
     public ResponseEntity<ErrorMessage> userTodoNotFoundException(UserTodoNotFoundException exception,
                                                               WebRequest request) {
+        ErrorMessage message = new ErrorMessage(HttpStatus.NOT_FOUND,
+                exception.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(message);
+    }
+
+    @ExceptionHandler(ProjectNotFoundException.class)
+    public ResponseEntity<ErrorMessage> projectNotFoundException(ProjectNotFoundException exception,
+                                                                 WebRequest request) {
+        ErrorMessage message = new ErrorMessage(HttpStatus.NOT_FOUND,
+                exception.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(message);
+    }
+
+    @ExceptionHandler(TodoProjectNotFoundException.class)
+    public ResponseEntity<ErrorMessage> todoProjectNotFoundException(TodoProjectNotFoundException exception,
+                                                                  WebRequest request) {
         ErrorMessage message = new ErrorMessage(HttpStatus.NOT_FOUND,
                 exception.getMessage());
 
