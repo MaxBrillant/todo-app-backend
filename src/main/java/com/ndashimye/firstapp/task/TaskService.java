@@ -86,12 +86,13 @@ public class TaskService {
             throws TaskNotFoundException, TodoTaskNotFoundException, TodoNotFoundException {
 
         log.info("Adding a new task...");
+
+        //Allocate a t0do to the new task
+        Todo todo = todoService.getTodoById(todoId);
+        addNewTodoTask(task, TodoTask.builder().todo(todo).build());
+
         taskRepository.save(task);
         log.info("Task of ID: {} was successfully added.", task.getTaskId());
-        addNewTodoTask(task, new TodoTask());
-        Todo todo = todoService.getTodoById(todoId);
-        task.getTodoTask().setTodo(todo);
-        todoTaskRepository.save(task.getTodoTask());
     }
 
     public void updateTask(Task updatedTask, Long taskId) throws TaskNotFoundException {
@@ -118,10 +119,12 @@ public class TaskService {
         log.info("Task of ID: {} was successfully updated.", task.getTaskId());
     }
 
-    public void deleteTask(Long taskId) throws TaskNotFoundException {
+    public void deleteTask(Long taskId)
+            throws TaskNotFoundException, TodoTaskNotFoundException {
 
         Task task = getTaskById(taskId);
         log.info("Deleting task of ID: {}...", task.getTaskId());
+        deleteTodoTask(task);
         Task deletedTask = task;
         taskRepository.delete(task);
         log.info("Task of ID: {} was successfully deleted.", deletedTask.getTaskId());
@@ -234,6 +237,15 @@ public class TaskService {
         }
         log.info("The information related to the assignment of task of ID: {} to todo of ID: {} was successfully updated."
                 , task.getTaskId(), task.getTodoTask().getTodo().getTodoId());
+    }
+
+    private void deleteTodoTask(Task task) throws TodoTaskNotFoundException {
+        log.info("Deleting allocation of todo to task of ID: {}..."
+                , task.getTaskId());
+
+        todoTaskRepository.delete(task.getTodoTask());
+        log.info("Allocation of todo to task of ID: {} was successfully deleted."
+                , task.getTaskId());
     }
 
     public void updateTaskPosition(Long taskId, int newPosition)

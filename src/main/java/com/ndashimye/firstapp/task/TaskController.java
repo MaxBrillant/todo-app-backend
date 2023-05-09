@@ -68,7 +68,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/{taskId}")
-    public void deleteTask(@PathVariable Long taskId) throws TaskNotFoundException {
+    public void deleteTask(@PathVariable Long taskId) throws TaskNotFoundException, TodoTaskNotFoundException {
         taskService.deleteTask(taskId);
     }
 

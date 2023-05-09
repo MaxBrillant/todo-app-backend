@@ -189,12 +189,15 @@ public class UserService {
 
         log.info("Adding a new user of username: {}...", user.getUsername());
         user.setPassword(user.getPasswordHash());
+
+        //Adding a profile and settings to the new user
+        addNewUserProfile(user, new UserProfile());
+        addNewUserSettings(user, new UserSettings());
+
         userRepository.save(user);
         log.info("User of ID: {} and username: {} was successfully added."
                 , user.getUserId(), user.getUsername());
 
-        addNewUserProfile(user, new UserProfile());
-        addNewUserSettings(user, new UserSettings());
     }
 
     public void updateUser(User updatedUser, Long userId) throws UserNotFoundException {
@@ -217,10 +220,16 @@ public class UserService {
                 , user.getUserId(), updatedUser.getUsername());
     }
 
-    public void deleteUser(Long userId) throws UserNotFoundException {
+    public void deleteUser(Long userId)
+            throws UserNotFoundException, UserProfileNotFoundException, UserSettingsNotFoundException {
 
         User user = getUserById(userId);
         log.info("Deleting user of ID: {} and username: {}...", user.getUserId(), user.getUsername());
+
+        //Delete the user profile and settings
+        deleteUserProfile(user);
+        deleteUserSettings(user);
+
         User deletedUser = user;
         userRepository.delete(user);
         log.info("User of ID: {} and username: {} was successfully deleted."
@@ -266,6 +275,17 @@ public class UserService {
     }
 
 
+    public void deleteUserProfile(User user) throws UserProfileNotFoundException {
+
+        log.info("Deleting profile of user of ID: {} and username: {}..."
+                , user.getUserId(), user.getUsername());
+
+        userProfileRepository.delete(user.getProfile());
+        log.info("Profile of user of ID: {} and username: {} was successfully deleted."
+                , user.getUserId(), user.getUsername());
+    }
+
+
 
     public void addNewUserSettings(User user, UserSettings userSettings) {
 
@@ -290,6 +310,16 @@ public class UserService {
             user.getSettings().setTimeZone(updatedUserSettings.getTimeZone());
         }
         log.info("Settings of user of ID: {} and username: {} were successfully updated."
+                , user.getUserId(), user.getUsername());
+    }
+
+    public void deleteUserSettings(User user) throws UserSettingsNotFoundException {
+
+        log.info("Deleting settings of user of ID: {} and username: {}..."
+                , user.getUserId(), user.getUsername());
+
+        userSettingsRepository.delete(user.getSettings());
+        log.info("Settings of user of ID: {} and username: {} was successfully deleted."
                 , user.getUserId(), user.getUsername());
     }
 }
