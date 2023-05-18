@@ -4,19 +4,16 @@ import com.ndashimye.firstapp.task.Task;
 import com.ndashimye.firstapp.task.TaskRepository;
 import com.ndashimye.firstapp.user.User;
 import com.ndashimye.firstapp.user.UserNotFoundException;
-import com.ndashimye.firstapp.user.UserRepository;
-import com.ndashimye.firstapp.user.UserService;
+import com.ndashimye.firstapp.user.UserServiceImpl;
 import com.ndashimye.firstapp.usersettings.UserSettings;
 import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
-import com.ndashimye.firstapp.usertodo.UserTodo;
-import com.ndashimye.firstapp.usertodo.UserTodoNotFoundException;
-import com.ndashimye.firstapp.usertodo.UserTodoRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.ndashimye.firstapp.blacklisteduser.BlacklistedUser;
+import com.ndashimye.firstapp.blacklisteduser.UserTodoNotFoundException;
+import com.ndashimye.firstapp.blacklisteduser.BlacklistedUserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
@@ -31,18 +28,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TodoServiceTest {
+class TodoServiceImplTest {
     @InjectMocks
-    TodoService todoService;
+    TodoServiceImpl todoServiceImpl;
 
     @Mock
-    UserService userService;
+    UserServiceImpl userServiceImpl;
 
     @Mock
     TodoRepository todoRepository;
 
     @Mock
-    UserTodoRepository userTodoRepository;
+    BlacklistedUserRepository blacklistedUserRepository;
 
     @Mock
     TaskRepository taskRepository;
@@ -57,7 +54,7 @@ class TodoServiceTest {
         when(todoRepository.findById(todoId)).thenReturn(Optional.of(expectedTodo));
 
         // When
-        Todo actualTodo = todoService.getTodoById(todoId);
+        Todo actualTodo = todoServiceImpl.getTodoById(todoId);
 
         // Then
         assertEquals(expectedTodo, actualTodo);
@@ -72,7 +69,7 @@ class TodoServiceTest {
         when(todoRepository.findById(todoId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(TodoNotFoundException.class, () -> todoService.getTodoById(todoId));
+        assertThrows(TodoNotFoundException.class, () -> todoServiceImpl.getTodoById(todoId));
         verify(todoRepository).findById(todoId);
     }
 
@@ -93,7 +90,7 @@ class TodoServiceTest {
         when(taskRepository.findByTodoTask_TodoOrderByTodoTask_PositionAsc(todo)).thenReturn(expectedTasks);
 
         // When
-        List<Task> actualTasks = todoService.getAllTasksByTodoId(todoId);
+        List<Task> actualTasks = todoServiceImpl.getAllTasksByTodoId(todoId);
 
         // Then
         assertEquals(expectedTasks, actualTasks);
@@ -117,7 +114,7 @@ class TodoServiceTest {
         when(taskRepository.findByTodoTask_TodoOrderByTodoTask_PriorityLevelDesc(todo)).thenReturn(expectedTasks);
 
         // When
-        List<Task> actualTasks = todoService.getAllTasksByTodoIdOrderedByPriority(todoId);
+        List<Task> actualTasks = todoServiceImpl.getAllTasksByTodoIdOrderedByPriority(todoId);
 
         // Then
         assertEquals(expectedTasks, actualTasks);
@@ -142,7 +139,7 @@ class TodoServiceTest {
         when(taskRepository.findByCompletedTasks(todo)).thenReturn(expectedCompletedTasks);
 
         // When
-        List<Task> actualCompletedTasks = todoService.getCompletedTasks(todoId);
+        List<Task> actualCompletedTasks = todoServiceImpl.getCompletedTasks(todoId);
 
         // Then
         assertEquals(expectedCompletedTasks, actualCompletedTasks);
@@ -167,7 +164,7 @@ class TodoServiceTest {
         when(taskRepository.findByUncompletedTasks(todo)).thenReturn(expectedUnCompletedTasks);
 
         // When
-        List<Task> actualCompletedTasks = todoService.getUncompletedTasks(todoId);
+        List<Task> actualCompletedTasks = todoServiceImpl.getUncompletedTasks(todoId);
 
         // Then
         assertEquals(expectedUnCompletedTasks, actualCompletedTasks);
@@ -185,15 +182,15 @@ class TodoServiceTest {
         User user = new User();
         user.setUserId(userId);
 
-        when(userService.getUserById(userId)).thenReturn(user);
+        when(userServiceImpl.getUserById(userId)).thenReturn(user);
         when(todoRepository.save(todo)).thenReturn(todo);
 
         // When
-        todoService.addNewTodo(todo, userId);
+        todoServiceImpl.addNewTodo(todo, userId);
 
         // Then
         assertNotNull(todo.getUserTodo());
-        verify(userService).getUserById(userId);
+        verify(userServiceImpl).getUserById(userId);
         verify(todoRepository, times(2)).save(todo);
     }
 
@@ -203,7 +200,7 @@ class TodoServiceTest {
         // Given
         Long todoId = 1L;
         Todo originalTodo = new Todo();
-        originalTodo.setUserTodo(UserTodo.builder().user(User.builder()
+        originalTodo.setUserTodo(BlacklistedUser.builder().user(User.builder()
                 .settings(UserSettings.builder().timeZone("UTC").build()).build()).build());
         originalTodo.setTodoId(todoId);
         originalTodo.setName("Original Name");
@@ -216,14 +213,14 @@ class TodoServiceTest {
         updatedTodo.setDescription("Updated Description");
         updatedTodo.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(7), ZoneId.of("UTC")));
         updatedTodo.setIsRecurrent(true);
-        updatedTodo.setUserTodo(UserTodo.builder().user(User.builder()
+        updatedTodo.setUserTodo(BlacklistedUser.builder().user(User.builder()
                 .settings(UserSettings.builder().timeZone("UTC").build()).build()).build());
 
         when(todoRepository.findById(todoId)).thenReturn(Optional.of(originalTodo));
         when(todoRepository.save(originalTodo)).thenReturn(originalTodo);
 
         // When
-        todoService.updateTodo(updatedTodo, todoId);
+        todoServiceImpl.updateTodo(updatedTodo, todoId);
 
         // Then
         assertEquals(updatedTodo.getName(), originalTodo.getName());
@@ -241,16 +238,16 @@ class TodoServiceTest {
         Long todoId = 1L;
         Todo todo = new Todo();
         todo.setTodoId(todoId);
-        todo.setUserTodo(UserTodo.builder().build());
+        todo.setUserTodo(BlacklistedUser.builder().build());
 
         when(todoRepository.findById(todoId)).thenReturn(Optional.of(todo)).thenReturn(Optional.empty());
 
         // When
-        todoService.deleteTodo(todoId);
+        todoServiceImpl.deleteTodo(todoId);
 
         // Then
         verify(todoRepository).findById(todoId);
-        verify(userTodoRepository).delete(todo.getUserTodo());
+        verify(blacklistedUserRepository).delete(todo.getUserTodo());
         verify(todoRepository).delete(todo);
 
         Optional<Todo> deletedTodo = todoRepository.findById(todoId);
@@ -263,17 +260,17 @@ class TodoServiceTest {
         Todo todo = new Todo();
         todo.setTodoId(1L);
 
-        UserTodo userTodo = new UserTodo();
-        userTodo.setUser(User.builder().userId(1L).username("testUser").build());
+        BlacklistedUser blackListedUser = new BlacklistedUser();
+        blackListedUser.setUser(User.builder().userId(1L).username("testUser").build());
 
 
         // When
-        when(userTodoRepository.save(userTodo)).thenReturn(userTodo);
-        todoService.addNewUserTodo(todo, userTodo);
+        when(blacklistedUserRepository.save(blackListedUser)).thenReturn(blackListedUser);
+        todoServiceImpl.addNewUserTodo(todo, blackListedUser);
 
         // Then
-        assertEquals(todo.getUserTodo(), userTodo);
-        verify(userTodoRepository).save(userTodo);
+        assertEquals(todo.getUserTodo(), blackListedUser);
+        verify(blacklistedUserRepository).save(blackListedUser);
         //verify(mock(TodoService.class)).assignPositionToNewTodo(todo);
     }
 
@@ -283,12 +280,12 @@ class TodoServiceTest {
 
         Todo todo = new Todo();
         todo.setTodoId(1L);
-        todo.setUserTodo(UserTodo.builder().user(User.builder().build()).build());
+        todo.setUserTodo(BlacklistedUser.builder().user(User.builder().build()).build());
 
         // When
         when(todoRepository.getMaxPosition()).thenReturn(null);
 
-        todoService.assignPositionToNewTodo(todo);
+        todoServiceImpl.assignPositionToNewTodo(todo);
 
         // Then
         assertEquals(1, todo.getUserTodo().getPosition());
@@ -301,13 +298,13 @@ class TodoServiceTest {
 
         Todo todo = new Todo();
         todo.setTodoId(1L);
-        todo.setUserTodo(UserTodo.builder().user(User.builder().build()).build());
+        todo.setUserTodo(BlacklistedUser.builder().user(User.builder().build()).build());
 
         // When
         when(todoRepository.getMaxPosition()).thenReturn(3);
 
 
-        todoService.assignPositionToNewTodo(todo);
+        todoServiceImpl.assignPositionToNewTodo(todo);
 
         // Then
         assertEquals(4, todo.getUserTodo().getPosition());
@@ -322,18 +319,18 @@ class TodoServiceTest {
         Todo todo = new Todo();
         todo.setTodoId(todoId);
 
-        UserTodo userTodo= UserTodo.builder()
+        BlacklistedUser blackListedUser = BlacklistedUser.builder()
                 .user(User.builder().userId(1L).username("testUser").build())
                 .priorityLevel(5).build();
 
-        todo.setUserTodo(userTodo);
+        todo.setUserTodo(blackListedUser);
         when(todoRepository.findById(todoId)).thenReturn(Optional.of(todo));
 
-        UserTodo updatedUserTodo = new UserTodo();
-        updatedUserTodo.setPriorityLevel(2);
+        BlacklistedUser updatedBlacklistedUser = new BlacklistedUser();
+        updatedBlacklistedUser.setPriorityLevel(2);
 
         // When
-        todoService.updateUserTodo(todoId, updatedUserTodo);
+        todoServiceImpl.updateUserTodo(todoId, updatedBlacklistedUser);
 
         // Then
         assertEquals(2, todo.getUserTodo().getPriorityLevel());
@@ -345,12 +342,12 @@ class TodoServiceTest {
         Todo todo = new Todo();
         todo.setTodoId(todoId);
 
-        UserTodo userTodo= UserTodo.builder().build();
-        todo.setUserTodo(userTodo);
+        BlacklistedUser blackListedUser = BlacklistedUser.builder().build();
+        todo.setUserTodo(blackListedUser);
 
-        todoService.deleteUserTodo(todo);
+        todoServiceImpl.deleteUserTodo(todo);
 
-        verify(userTodoRepository).delete(todo.getUserTodo());
+        verify(blacklistedUserRepository).delete(todo.getUserTodo());
     }
 
 
@@ -361,21 +358,21 @@ class TodoServiceTest {
         Todo todo = new Todo();
         todo.setTodoId(todoId);
 
-        UserTodo userTodo= UserTodo.builder().build();
-        todo.setUserTodo(userTodo);
+        BlacklistedUser blackListedUser = BlacklistedUser.builder().build();
+        todo.setUserTodo(blackListedUser);
 
         int newPosition = 3;
         Todo todoToUpdate = new Todo();
         todoToUpdate.setTodoId(2L);
-        UserTodo userTodoToUpdate = new UserTodo();
-        userTodoToUpdate.setPosition(2);
-        todoToUpdate.setUserTodo(userTodoToUpdate);
+        BlacklistedUser blacklistedUserToUpdate = new BlacklistedUser();
+        blacklistedUserToUpdate.setPosition(2);
+        todoToUpdate.setUserTodo(blacklistedUserToUpdate);
         List<Todo> todosToUpdate = Arrays.asList(todoToUpdate);
 
         when(todoRepository.findById(todo.getTodoId())).thenReturn(Optional.of(todo));
         when(todoRepository.findTodosWithPositionsBetween(anyInt(), anyInt())).thenReturn(todosToUpdate);
 
-        todoService.updateTodoPosition(todo.getTodoId(), newPosition);
+        todoServiceImpl.updateTodoPosition(todo.getTodoId(), newPosition);
 
         verify(todoRepository).findTodosWithPositionsBetween(anyInt(), anyInt());
         verify(todoRepository, times(2)).save(any(Todo.class));

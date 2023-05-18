@@ -23,16 +23,24 @@ public class Project {
     @Column(name = "project_id", nullable = false, unique = true, updatable = false)
     private Long projectId;
 
+
     @Column(name = "name", nullable = false, length = 40)
     @NotNull(message = "Name is required")
     private String name;
 
+
     @Column(name = "description", length = 255)
     private String description;
+
+
+    @Column(name = "cover_image_url", length = 255)
+    private String coverImageUrl;
+
 
     @Column(name = "created_at")
     @CreationTimestamp
     private ZonedDateTime createdAt;
+
 
     @Column(name = "updated_at")
     @UpdateTimestamp

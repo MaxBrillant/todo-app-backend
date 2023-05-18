@@ -2,7 +2,6 @@ package com.ndashimye.firstapp.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
-import com.ndashimye.firstapp.error.AppEntityNotFoundException;
 import com.ndashimye.firstapp.userprofile.UserProfile;
 import com.ndashimye.firstapp.usersettings.UserSettings;
 import jakarta.persistence.*;
@@ -12,7 +11,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.mindrot.jbcrypt.BCrypt;
 import java.time.ZonedDateTime;
-import java.util.Optional;
 
 @Entity
 @Getter
@@ -67,16 +65,6 @@ public class User {
     @Column(name = "updated_at")
     @UpdateTimestamp
     private ZonedDateTime updatedAt;
-
-
-    public UserProfile getProfile() throws AppEntityNotFoundException {
-        return Optional.of(this.profile).orElseThrow(() -> new AppEntityNotFoundException(UserProfile.class));
-    }
-
-    public UserSettings getSettings() throws AppEntityNotFoundException {
-        return Optional.of(this.settings).orElseThrow(() -> new AppEntityNotFoundException(UserSettings.class));
-    }
-
 
     public void setPassword(String password) {
         this.passwordSalt = BCrypt.gensalt();

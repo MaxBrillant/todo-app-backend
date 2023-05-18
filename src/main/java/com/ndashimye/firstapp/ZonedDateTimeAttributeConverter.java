@@ -10,10 +10,10 @@ import java.time.ZonedDateTime;
 public class ZonedDateTimeAttributeConverter implements AttributeConverter<ZonedDateTime, Timestamp> {
 
     static ZoneId utcZoneId = ZoneId.of("UTC");
-    private static ZoneId defaultZoneId = ZoneId.of("UTC");
-
-    public static void setDefaultZoneId(ZoneId zoneId) {
+    static ZoneId defaultZoneId = ZoneId.systemDefault();
+    public static ZoneId setDefaultZoneId(ZoneId zoneId) {
         defaultZoneId = zoneId;
+        return zoneId;
     }
 
     @Override
@@ -33,11 +33,6 @@ public class ZonedDateTimeAttributeConverter implements AttributeConverter<Zoned
     public static ZonedDateTime toUtcZoneId(ZonedDateTime zonedDateTime){
         return zonedDateTime.withZoneSameInstant(utcZoneId);
     }
-//
-//    public static ZonedDateTime convertToUserTimeZone(ZonedDateTime zonedDateTime, Integer userId) throws UserNotFoundException, UserSettingsNotFoundException {
-//        UserService userService = new UserService();
-//        return zonedDateTime.withZoneSameInstant(ZoneId.of(userService.getUserSettingsByUserId(userId).getTimeZone()));
-//    }
 
     public static ZonedDateTime toDefaultZoneId(ZonedDateTime zonedDateTime){
         return zonedDateTime.withZoneSameInstant(defaultZoneId);

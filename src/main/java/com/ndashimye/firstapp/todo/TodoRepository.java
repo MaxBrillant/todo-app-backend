@@ -1,6 +1,8 @@
 package com.ndashimye.firstapp.todo;
 
+import com.ndashimye.firstapp.project.Project;
 import com.ndashimye.firstapp.user.User;
+import com.ndashimye.firstapp.userproject.UserProject;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,32 +13,85 @@ import java.util.List;
 @Repository
 public interface TodoRepository extends JpaRepository<Todo, Long> {
 
-    List<Todo> findByUserTodo_UserOrderByUserTodo_PositionAsc(User user);
-
-    List<Todo> findByUserTodo_UserOrderByUserTodo_PriorityLevelDesc(User user);
+    @Query("SELECT t from Todo t " +
+            "INNER JOIN UserProject up ON t.project = up.project " +
+            "LEFT JOIN BlacklistedUser bu ON t = bu.todo " +
+            "WHERE up.user = :user " +
+            "AND bu.blacklistedUserId IS NULL " +
+            "ORDER BY t.position ASC")
+    List<Todo> findAccessibleTodosOfUserAndOrderByPositionAsc(@Param("user") User user);
 
     @Query("SELECT t from Todo t " +
-            "INNER JOIN UserTodo ut on t.userTodo = ut " +
+            "INNER JOIN UserProject up ON t.project = up.project " +
+            "LEFT JOIN BlacklistedUser bu ON t = bu.todo " +
+            "WHERE up.user = :user " +
+            "AND bu.blacklistedUserId IS NULL " +
+            "ORDER BY t.position DESC")
+    List<Todo> findAccessibleTodosOfUserAndOrderByPriorityLevelDesc(@Param("user") User user);
+
+    @Query("SELECT t from Todo t " +
+            "INNER JOIN UserProject up ON t.project = up.project " +
+            "LEFT JOIN BlacklistedUser bu ON t = bu.todo " +
+            "WHERE up.user = :user " +
+            "AND bu.blacklistedUserId IS NULL " +
             "ORDER BY t.dueTime DESC")
-    List<Todo> findByUserOrderByDueTimeDesc(User user);
+    List<Todo> findAccessibleTodosOfUserAndOrderByDueTimeDesc(@Param("user") User user);
 
     @Query("SELECT t from Todo t " +
-            "INNER JOIN UserTodo ut on t.userTodo = ut " +
+            "INNER JOIN UserProject up ON t.project = up.project " +
+            "LEFT JOIN BlacklistedUser bu ON t = bu.todo " +
+            "WHERE up.user = :user " +
+            "AND bu.blacklistedUserId IS NULL " +
             "ORDER BY t.dueTime ASC")
-    List<Todo> findByUserOrderByDueTimeAsc(User user);
+    List<Todo> findAccessibleTodosOfUserAndOrderByDueTimeAsc(@Param("user") User user);
 
-    @Query(value = "SELECT t.* FROM todo t " +
-            "INNER JOIN user_todo ut ON ut.user_todo_id = t.user_todo_id " +
-            "WHERE ut.user_id = :userId " +
+    @Query(value = "SELECT t.* from todo t " +
+            "INNER JOIN user_project up ON t.project_id = up.project_id " +
+            "LEFT JOIN blacklisted_user AS bu ON t.todo_id = bu.todo_id " +
+            "WHERE up.user_id = :userId " +
             "AND t.due_time BETWEEN :startDate AND :endDate " +
-            "ORDER BY ut.position ASC",
+            "AND bu.blacklisted_user_id IS NULL "+
+            "ORDER BY t.due_time ASC",
             nativeQuery = true)
-    List<Todo> findByUserAndDueTimeBetween(Long userId, Timestamp startDate, Timestamp endDate);
+    List<Todo> findAccessibleTodosOfUserAndDueTimeBetween(Long userId, Timestamp startDate, Timestamp endDate);
+
+    @Query("SELECT MAX(t.position) AS max_position " +
+            "FROM Todo AS t " +
+            "INNER JOIN UserProject AS up ON t.project = up.project " +
+            "LEFT JOIN BlacklistedUser AS bu ON t = bu.todo " +
+            "WHERE up.project = :project " +
+            "AND bu.blacklistedUserId IS NULL")
+    Integer getMaxPosition(@Param("project") Project project);
+
+    @Query("SELECT t FROM Todo t " +
+            "INNER JOIN UserProject up ON t.project = up.project " +
+            "LEFT JOIN BlacklistedUser bu ON t = bu.todo " +
+            "WHERE up.project = :project " +
+            "AND t.position BETWEEN :start AND :end " +
+            "AND bu.blacklistedUserId IS NULL " +
+            "ORDER BY t.position ASC")
+    List<Todo> findAccessibleTodosOfUserWithPositionsBetween
+            (@Param("project") Project project, @Param("start") int start, @Param("end") int end);
 
 
-    @Query("SELECT MAX(userTodo.position) FROM Todo WHERE Todo.userTodo.user = :user")
-    Integer getMaxPosition(@Param("user") User user);
 
-    @Query("SELECT t FROM Todo t WHERE t.userTodo.user = :user AND t.userTodo.position BETWEEN :start AND :end ORDER BY t.userTodo.position")
-    List<Todo> findTodosWithPositionsBetween(@Param("user")User user, @Param("start") int start, @Param("end") int end);
+    @Query("FROM Todo AS t " +
+            "INNER JOIN UserProject up ON t.project = up.project " +
+            "LEFT JOIN BlacklistedUser AS bu ON t = bu.todo " +
+            "WHERE up.user = :user " +
+            "AND t.project = :project " +
+            "AND bu.blacklistedUserId IS NULL " +
+            "ORDER BY t.position ASC")
+    List<Todo> findByProjectAndUserAndOrderByPositionAsc
+            (@Param("user") User user, @Param("project") Project project);
+
+
+
+    @Query("SELECT t from Todo t " +
+            "INNER JOIN BlacklistedUser bu ON t = bu.todo " +
+            "INNER JOIN UserProject up ON bu.userProject = up " +
+            "WHERE bu = :userProject " +
+            "ORDER BY t.position ASC")
+    List<Todo> findBlacklistedTodosOfUserAndOrderByPositionAsc(@Param("userProject") UserProject userProject);
+
 }
