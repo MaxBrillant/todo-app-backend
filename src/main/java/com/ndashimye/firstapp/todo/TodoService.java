@@ -10,7 +10,8 @@ public interface TodoService {
     //Service methods that handle all the operations related to todos
     Todo getTodoById(Long todoId) throws AppEntityNotFoundException;
 
-    void updateTodo(Todo updatedTodo, Long todoId) throws AppEntityNotFoundException;
+    void updateTodo(Todo updatedTodo, Long todoId)
+            throws AppEntityNotFoundException;
 
     void deleteTodo(Long todoId)
             throws AppEntityNotFoundException;
@@ -19,7 +20,8 @@ public interface TodoService {
     Service methods that handle all the operations
     related to the relationship between todos and projects
     */
-    List<Todo> getAllTodosOfUserByProjectId(Long userId, Long projectId) throws AppEntityNotFoundException;
+    List<Todo> getAllTodosOfUserByProjectId(Long userId, Long projectId)
+            throws AppEntityNotFoundException;
 
     void addNewTodoToProject(Todo todo, Long projectId)
             throws AppEntityNotFoundException;

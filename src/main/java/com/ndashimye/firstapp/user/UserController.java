@@ -27,11 +27,7 @@ public class UserController {
 
 
 
-    /*
-
-    HTTP endpoints that handle all the operations related to users
-
-    */
+    //HTTP endpoints that handle all the operations related to users
 
     @PostMapping()
     public void addUser(@RequestBody User user) {
@@ -40,7 +36,8 @@ public class UserController {
 
     @PutMapping("/{userId}")
     public void updateUser(@RequestBody User updatedUser,
-                           @PathVariable Long userId) throws AppEntityNotFoundException {
+                           @PathVariable Long userId)
+            throws AppEntityNotFoundException {
 
         userService.updateUser(updatedUser, userId);
     }
@@ -58,7 +55,9 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User getUserById(@PathVariable Long userId) throws AppEntityNotFoundException {
+    public User getUserById(@PathVariable Long userId)
+            throws AppEntityNotFoundException {
+
         return userService.getUserById(userId);
     }
 
@@ -70,7 +69,9 @@ public class UserController {
     }
 
     @GetMapping("/username/{username}")
-    public User getUserByUsername(@PathVariable String username) throws AppEntityNotFoundException {
+    public User getUserByUsername(@PathVariable String username)
+            throws AppEntityNotFoundException {
+
         return userService.getUserByUsername(username);
     }
 
@@ -117,7 +118,9 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/projects")
-    public List<Project> getProjectsByUserId(@PathVariable Long userId) throws AppEntityNotFoundException {
+    public List<Project> getProjectsByUserId(@PathVariable Long userId)
+            throws AppEntityNotFoundException {
+
         return projectService.getAllProjectsByUserId(userId);
     }
 
@@ -131,31 +134,37 @@ public class UserController {
     */
 
     @GetMapping("/{userId}/todos")
-    public List<Todo> getTodosByUserId(@PathVariable Long userId) throws AppEntityNotFoundException {
+    public List<Todo> getTodosByUserId(@PathVariable Long userId)
+            throws AppEntityNotFoundException {
+
         return todoService.getAllTodosByUserId(userId);
     }
 
     @GetMapping("/{userId}/todos/order-by/priority")
     public List<Todo> getTodosByUserIdOrderedByPriority(@PathVariable Long userId)
             throws AppEntityNotFoundException {
+
         return todoService.getAllTodosByUserIdOrderedByPriority(userId);
     }
 
     @GetMapping("/{userId}/todos/order-by/due-time/most-recent")
     public List<Todo> getTodosByUserIdOrderedByMostRecent(@PathVariable Long userId)
             throws AppEntityNotFoundException {
+
         return todoService.getAllTodosByUserIdOrderedByMostRecent(userId);
     }
 
     @GetMapping("/{userId}/todos/order-by/due-time/least-recent")
     public List<Todo> getTodosByUserIdOrderedByLeastRecent(@PathVariable Long userId)
             throws AppEntityNotFoundException {
+
         return todoService.getAllTodosByUserIdOrderedByLeastRecent(userId);
     }
 
     @GetMapping("/{userId}/todos/between")
     public List<Todo> getTodosBetweenDates
-            (@PathVariable Long userId, @RequestParam String start, @RequestParam String end)
+            (@PathVariable Long userId
+                    , @RequestParam String start, @RequestParam String end)
             throws AppEntityNotFoundException, InvalidTimeFormatException {
 
             return todoService.getAllTodosByUserIdBetweenDates(userId, start, end);
@@ -182,7 +191,8 @@ public class UserController {
 
     @PutMapping("/{userId}/projects/{projectId}/todos/{todoId}/restrict-access")
     public void restrictUserFromAccessingTodoInProject
-            (@PathVariable Long userId, @PathVariable Long projectId, @PathVariable Long todoId)
+            (@PathVariable Long userId, @PathVariable Long projectId
+                    , @PathVariable Long todoId)
             throws AppEntityNotFoundException {
 
         blackListedUserService.restrictUserFromAccessingTodoInProject(userId, projectId, todoId);

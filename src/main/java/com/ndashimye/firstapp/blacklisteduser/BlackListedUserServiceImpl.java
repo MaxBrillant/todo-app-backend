@@ -36,12 +36,16 @@ public class BlackListedUserServiceImpl implements BlackListedUserService {
     public List<Todo> getRestrictedTodosOfUserInProject(Long projectId, Long userId)
             throws AppEntityNotFoundException {
 
-        UserProject userProject = userProjectService.getUserProjectByUserIdAndProjectId(userId, projectId);
+        UserProject userProject = userProjectService
+                .getUserProjectByUserIdAndProjectId(userId, projectId);
+
         log.info("Fetching all blacklisted todos of user of ID: {} and username: {} in project of ID: {}..."
                 , userProject.getUser().getUserId(), userProject.getUser().getUsername()
                 , userProject.getProject().getProjectId());
 
-        List<Todo> blackListedTodos = todoRepository.findBlacklistedTodosOfUserAndOrderByPositionAsc(userProject);
+        List<Todo> blackListedTodos = todoRepository
+                .findBlacklistedTodosOfUserAndOrderByPositionAsc(userProject);
+
         log.info("All blacklisted todos of user of ID: {} and username: {} in project of ID: {}" +
                         " were successfully fetched."
                 , userProject.getUser().getUserId(), userProject.getUser().getUsername()
@@ -54,7 +58,9 @@ public class BlackListedUserServiceImpl implements BlackListedUserService {
     public void restrictUserFromAccessingTodoInProject(Long userId, Long projectId, Long todoId)
             throws AppEntityNotFoundException {
 
-        UserProject userProject = userProjectService.getUserProjectByUserIdAndProjectId(userId, projectId);
+        UserProject userProject = userProjectService
+                .getUserProjectByUserIdAndProjectId(userId, projectId);
+
         Todo todo = todoService.getTodoById(todoId);
         log.info("Restricting user of ID: {} and username: {} from accessing todo of ID: {}..."
                 , userProject.getUser().getUserId(), userProject.getUser().getUsername(), todo.getTodoId());

@@ -39,7 +39,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getCompletedTasks(Long todoId) throws AppEntityNotFoundException {
+    public List<Task> getCompletedTasks(Long todoId)
+            throws AppEntityNotFoundException {
 
         Todo todo = todoService.getTodoById(todoId);
         log.info("Fetching all completed tasks of todo of ID: {}...", todoId);
@@ -50,7 +51,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getUncompletedTasks(Long todoId) throws AppEntityNotFoundException {
+    public List<Task> getUncompletedTasks(Long todoId)
+            throws AppEntityNotFoundException {
 
         Todo todo = todoService.getTodoById(todoId);
         log.info("Fetching all uncompleted tasks of todo of ID: {}...", todoId);
@@ -61,7 +63,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void updateTask(Task updatedTask, Long taskId) throws AppEntityNotFoundException {
+    public void updateTask(Task updatedTask, Long taskId)
+            throws AppEntityNotFoundException {
 
         Task task = getTaskById(taskId);
         log.info("Updating task of ID: {}...", task.getTaskId());
@@ -93,13 +96,16 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void completeTask(Long userId, Long taskId) throws AppEntityNotFoundException {
+    public void completeTask(Long userId, Long taskId)
+            throws AppEntityNotFoundException {
+
         Task task = getTaskById(taskId);
         User user = userService.getUserById(userId);
 
         log.info("Completing the task...");
         task.setCompletedByUser(user);
-        task.setCompletionTime(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of(user.getSettings().getTimeZone())));
+        task.setCompletionTime(ZonedDateTime.of(LocalDateTime.now()
+                , ZoneId.of(user.getSettings().getTimeZone())));
         log.info("Task of ID: {} was successfully completed by user of ID: {} and username: {}."
                 , task.getTaskId(), user.getUserId(), user.getUsername());
     }
@@ -117,7 +123,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void assignPositionToNewTask(Task task) throws AppEntityNotFoundException {
+    public void assignPositionToNewTask(Task task)
+            throws AppEntityNotFoundException {
 
         if (Objects.isNull(task.getParentTask())) {
             log.info("Calculating the maximum position value...");
@@ -219,7 +226,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getAllTasksByTodoIdOrderedByPriority(Long todoId) throws AppEntityNotFoundException {
+    public List<Task> getAllTasksByTodoIdOrderedByPriority(Long todoId)
+            throws AppEntityNotFoundException {
 
         Todo todo = todoService.getTodoById(todoId);
         log.info("Fetching all tasks of todo of ID: {} ordered by priority...", todoId);
@@ -295,7 +303,8 @@ public class TaskServiceImpl implements TaskService {
     */
 
     @Override
-    public List<Task> getAllChildTasksByTaskId(Long taskId) throws AppEntityNotFoundException {
+    public List<Task> getAllChildTasksByTaskId(Long taskId)
+            throws AppEntityNotFoundException {
 
         Task task = getTaskById(taskId);
         log.info("Fetching all child tasks of task of ID: {}...", taskId);
@@ -306,7 +315,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getAllChildTasksByTaskIdOrderedByPriority(Long taskId) throws AppEntityNotFoundException {
+    public List<Task> getAllChildTasksByTaskIdOrderedByPriority(Long taskId)
+            throws AppEntityNotFoundException {
 
         Task task = getTaskById(taskId);
         log.info("Fetching all child tasks of task of ID: {} ordered by priority...", taskId);
@@ -317,7 +327,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getCompletedChildTasks(Long taskId) throws AppEntityNotFoundException {
+    public List<Task> getCompletedChildTasks(Long taskId)
+            throws AppEntityNotFoundException {
 
         Task task = getTaskById(taskId);
         log.info("Fetching all completed child tasks of task of ID: {}...", taskId);
@@ -328,7 +339,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getUncompletedChildTasks(Long taskId) throws AppEntityNotFoundException {
+    public List<Task> getUncompletedChildTasks(Long taskId)
+            throws AppEntityNotFoundException {
 
         Task task = getTaskById(taskId);
         log.info("Fetching all uncompleted child tasks of task of ID: {}...", taskId);

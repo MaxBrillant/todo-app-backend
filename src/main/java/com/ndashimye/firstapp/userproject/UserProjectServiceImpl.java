@@ -33,7 +33,8 @@ public class UserProjectServiceImpl implements UserProjectService {
     */
 
     @Override
-    public UserProject getUserProjectByUserIdAndProjectId(Long userId, Long projectId)
+    public UserProject getUserProjectByUserIdAndProjectId
+            (Long userId, Long projectId)
             throws AppEntityNotFoundException {
 
         User user = userService.getUserById(userId);
@@ -50,7 +51,9 @@ public class UserProjectServiceImpl implements UserProjectService {
     }
 
     @Override
-    public void addNewProjectToUser(Long userId, Project project) throws AppEntityNotFoundException {
+    public void addNewProjectToUser(Long userId, Project project)
+            throws AppEntityNotFoundException {
+
         User user = userService.getUserById(userId);
         log.info("Adding a new project...");
         assignPositionToNewProject(UserProject.builder()
@@ -63,7 +66,9 @@ public class UserProjectServiceImpl implements UserProjectService {
     }
 
     @Override
-    public void addExistingProjectToUser(Long userId, Long projectId) throws AppEntityNotFoundException {
+    public void addExistingProjectToUser(Long userId, Long projectId)
+            throws AppEntityNotFoundException {
+
         User user = userService.getUserById(userId);
         Project project = projectService.getProjectById(projectId);
 
@@ -146,7 +151,8 @@ public class UserProjectServiceImpl implements UserProjectService {
                     (userProject.getUser(), newPosition, currentPosition - 1);
         }
 
-        log.info("Updating positions of all the projects that are between position {} and {}...", currentPosition, newPosition);
+        log.info("Updating positions of all the projects that are between position {} and {}..."
+                , currentPosition, newPosition);
         // Update the positions of the affected projects
         for (UserProject projectToUpdate : projectsToUpdate) {
             if (newPosition > currentPosition) {

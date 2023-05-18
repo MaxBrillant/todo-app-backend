@@ -16,15 +16,12 @@ public class ProjectController {
 
 
 
-    /*
-
-    HTTP endpoints that handle all the operations related to projects
-
-    */
+    //HTTP endpoints that handle all the operations related to projects
 
     @PutMapping("/{projectId}")
     public void updateProject(@PathVariable Long projectId,
-                              @RequestBody Project updatedProject) throws AppEntityNotFoundException {
+                              @RequestBody Project updatedProject)
+            throws AppEntityNotFoundException {
 
         projectService.updateProject(projectId, updatedProject);
     }

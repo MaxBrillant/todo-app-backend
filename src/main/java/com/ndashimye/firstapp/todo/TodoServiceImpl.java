@@ -37,14 +37,16 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public Todo getTodoById(Long todoId) throws AppEntityNotFoundException {
         log.info("Fetching todo by ID: {}...", todoId);
-        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new AppEntityNotFoundException(Todo.class));
+        Todo todo = todoRepository.findById(todoId)
+                .orElseThrow(() -> new AppEntityNotFoundException(Todo.class));
         log.info("Todo of ID: {} was successfully fetched.", todoId);
 
         return todo;
     }
 
     @Override
-    public void updateTodo(Todo updatedTodo, Long todoId) throws AppEntityNotFoundException {
+    public void updateTodo(Todo updatedTodo, Long todoId)
+            throws AppEntityNotFoundException {
 
         Todo todo = getTodoById(todoId);
         log.info("Updating todo of ID: {}...", todo.getTodoId());
@@ -91,7 +93,8 @@ public class TodoServiceImpl implements TodoService {
     */
 
     @Override
-    public List<Todo> getAllTodosOfUserByProjectId(Long userId, Long projectId) throws AppEntityNotFoundException {
+    public List<Todo> getAllTodosOfUserByProjectId(Long userId, Long projectId)
+            throws AppEntityNotFoundException {
 
         User user = userService.getUserById(userId);
         Project project = projectService.getProjectById(projectId);
@@ -215,7 +218,8 @@ public class TodoServiceImpl implements TodoService {
     */
 
     @Override
-    public List<Todo> getAllTodosByUserId(Long userId) throws AppEntityNotFoundException {
+    public List<Todo> getAllTodosByUserId(Long userId)
+            throws AppEntityNotFoundException {
 
         User user = userService.getUserById(userId);
         log.info("Fetching all todos of user of ID: {} and username: {}..."

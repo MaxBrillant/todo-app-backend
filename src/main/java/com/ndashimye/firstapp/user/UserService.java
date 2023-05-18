@@ -13,13 +13,15 @@ public interface UserService {
 
     User getUserById(Long userId) throws AppEntityNotFoundException;
 
-    User getUserByEmailAddress(String emailAddress) throws AppEntityNotFoundException;
+    User getUserByEmailAddress(String emailAddress)
+            throws AppEntityNotFoundException;
 
     User getUserByUsername(String username) throws AppEntityNotFoundException;
 
     void addNewUser(User user);
 
-    void updateUser(User updatedUser, Long userId) throws AppEntityNotFoundException;
+    void updateUser(User updatedUser, Long userId)
+            throws AppEntityNotFoundException;
 
     void deleteUser(Long userId) throws AppEntityNotFoundException;
 

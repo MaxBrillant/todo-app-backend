@@ -17,11 +17,7 @@ public class TodoController {
 
 
 
-    /*
-
-    HTTP endpoints that handle all the operations related to todos
-
-    */
+    //HTTP endpoints that handle all the operations related to todos
 
     @PutMapping("/{todoId}")
     public void updateTodo(@PathVariable Long todoId, @RequestBody Todo updatedTodo)
@@ -46,7 +42,9 @@ public class TodoController {
     }
 
     @GetMapping("/{todoId}")
-    public Todo getTodoById(@PathVariable Long todoId) throws AppEntityNotFoundException {
+    public Todo getTodoById(@PathVariable Long todoId)
+            throws AppEntityNotFoundException {
+
         return todoService.getTodoById(todoId);
     }
 
@@ -84,24 +82,31 @@ public class TodoController {
     }
 
     @GetMapping("/{todoId}/tasks")
-    public List<Task> getTasksByTodoId(@PathVariable Long todoId) throws AppEntityNotFoundException {
+    public List<Task> getTasksByTodoId(@PathVariable Long todoId)
+            throws AppEntityNotFoundException {
+
         return taskService.getAllTasksByTodoId(todoId);
     }
 
     @GetMapping("/{todoId}/tasks/order-by/priority")
-    public List<Task> getTasksByTodoIdOrderedByPriority(@PathVariable Long todoId)
+    public List<Task> getTasksByTodoIdOrderedByPriority
+            (@PathVariable Long todoId)
             throws AppEntityNotFoundException {
 
         return taskService.getAllTasksByTodoIdOrderedByPriority(todoId);
     }
 
     @GetMapping("/{todoId}/tasks/completed")
-    public List<Task> getCompletedTasks(@PathVariable Long todoId) throws AppEntityNotFoundException {
+    public List<Task> getCompletedTasks(@PathVariable Long todoId)
+            throws AppEntityNotFoundException {
+
         return taskService.getCompletedTasks(todoId);
     }
 
     @GetMapping("/{todoId}/tasks/uncompleted")
-    public List<Task> getUncompletedTasks(@PathVariable Long todoId) throws AppEntityNotFoundException {
+    public List<Task> getUncompletedTasks(@PathVariable Long todoId)
+            throws AppEntityNotFoundException {
+
         return taskService.getUncompletedTasks(todoId);
     }
 }

@@ -40,7 +40,8 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Long userId) throws AppEntityNotFoundException {
 
         log.info("Fetching user by ID: {}...", userId);
-        User user = userRepository.findById(userId).orElseThrow(() -> new AppEntityNotFoundException(User.class));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppEntityNotFoundException(User.class));
         log.info("User of ID: {} and username: {} was successfully fetched."
                 , user.getUserId(), user.getUsername());
 
@@ -48,7 +49,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByEmailAddress(String emailAddress) throws AppEntityNotFoundException {
+    public User getUserByEmailAddress(String emailAddress)
+            throws AppEntityNotFoundException {
 
         log.info("Fetching user by email address: {}...", emailAddress);
         User user = userRepository.findUserByEmailAddress(emailAddress)
@@ -59,7 +61,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByUsername(String username) throws AppEntityNotFoundException {
+    public User getUserByUsername(String username)
+            throws AppEntityNotFoundException {
 
         log.info("Fetching user by username: {}...", username);
         User user = userRepository.findByUsername(username).orElseThrow(
@@ -94,7 +97,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUser(User updatedUser, Long userId) throws AppEntityNotFoundException {
+    public void updateUser(User updatedUser, Long userId)
+            throws AppEntityNotFoundException {
 
         User user = getUserById(userId);
         log.info("Updating user of ID: {} and username: {}...", user.getUserId(), user.getUsername());
