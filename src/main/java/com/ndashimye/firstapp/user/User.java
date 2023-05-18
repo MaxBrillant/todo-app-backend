@@ -3,9 +3,7 @@ package com.ndashimye.firstapp.user;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
 import com.ndashimye.firstapp.userprofile.UserProfile;
-import com.ndashimye.firstapp.userprofile.UserProfileNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettings;
-import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -13,7 +11,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.mindrot.jbcrypt.BCrypt;
 import java.time.ZonedDateTime;
-import java.util.Optional;
 
 @Entity
 @Getter
@@ -30,18 +27,23 @@ public class User {
     private Long userId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_profile_id", unique = true, nullable = false)
+    @JoinColumn(name = "user_profile_id", nullable = false, unique = true)
     @NotNull(message = "User profile is required")
     private UserProfile profile;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_settings_id", unique = true, nullable = false)
+    @JoinColumn(name = "user_settings_id", nullable = false, unique = true)
     @NotNull(message = "User settings are required")
     private UserSettings settings;
 
     @Column(name = "username", nullable = false, unique = true, length = 30)
     @NotNull(message = "Username is required")
     private String username;
+
+
+    @Column(name = "email_address", nullable = false, unique = true, length = 50)
+    @NotNull(message = "User email is required")
+    private String emailAddress;
 
 
     @Column(name = "password_hash", nullable = false, unique = true, columnDefinition = "BINARY(60)")
@@ -64,23 +66,9 @@ public class User {
     @UpdateTimestamp
     private ZonedDateTime updatedAt;
 
-
-    public UserProfile getProfile() throws UserProfileNotFoundException {
-        return Optional.of(this.profile).orElseThrow(() -> new UserProfileNotFoundException());
-    }
-
-    public UserSettings getSettings() throws UserSettingsNotFoundException {
-        return Optional.of(this.settings).orElseThrow(() -> new UserSettingsNotFoundException());
-    }
-
-
     public void setPassword(String password) {
         this.passwordSalt = BCrypt.gensalt();
         this.passwordHash = BCrypt.hashpw(password, this.passwordSalt);
-    }
-
-    public boolean checkPassword(String password) {
-        return BCrypt.checkpw(password, this.passwordHash);
     }
 
 }

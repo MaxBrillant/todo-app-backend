@@ -1,284 +1,58 @@
 package com.ndashimye.firstapp.task;
 
-import com.ndashimye.firstapp.todo.Todo;
-import com.ndashimye.firstapp.todo.TodoNotFoundException;
-import com.ndashimye.firstapp.todo.TodoService;
-import com.ndashimye.firstapp.todotask.TodoTask;
-import com.ndashimye.firstapp.todotask.TodoTaskNotFoundException;
-import com.ndashimye.firstapp.todotask.TodoTaskRepository;
-import com.ndashimye.firstapp.user.UserNotFoundException;
-import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
-import com.ndashimye.firstapp.usertodo.UserTodoNotFoundException;
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.ndashimye.firstapp.error.AppEntityNotFoundException;
 import java.util.List;
-import java.util.Objects;
 
-@Service
-@Transactional
-@Slf4j
-public class TaskService {
+public interface TaskService {
 
-    @Autowired
-    private TaskRepository taskRepository;
+    //Service methods that handle all the operations related to tasks
+    Task getTaskById(Long taskId) throws AppEntityNotFoundException;
 
-    @Autowired
-    private TodoService todoService;
+    List<Task> getCompletedTasks(Long todoId) throws AppEntityNotFoundException;
 
-    @Autowired
-    private TodoTaskRepository todoTaskRepository;
+    List<Task> getUncompletedTasks(Long todoId) throws AppEntityNotFoundException;
 
-    public Task getTaskById(Long taskId) throws TaskNotFoundException {
-        log.info("Fetching task by ID: {}...", taskId);
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException());
-        log.info("Task of ID: {} was successfully fetched.", taskId);
+    void updateTask(Task updatedTask, Long taskId) throws AppEntityNotFoundException;
 
-        return task;
-    }
+    void deleteTask(Long taskId)
+            throws AppEntityNotFoundException;
 
+    void completeTask(Long taskId, Long userId) throws AppEntityNotFoundException;
 
-    public List<Task> getAllChildTasksByTaskId(Long taskId) throws TaskNotFoundException {
+    void unCompleteTask(Long taskId) throws AppEntityNotFoundException;
 
-        Task task = getTaskById(taskId);
-        log.info("Fetching all child tasks of task of ID: {}...", taskId);
-        List<Task> tasks = taskRepository.findByParentTaskOrderByTodoTask_PositionAsc(task);
-        log.info("All child tasks of task of ID: {} were successfully fetched.", taskId);
+    void assignPositionToNewTask(Task task) throws AppEntityNotFoundException;
 
-        return tasks;
-    }
+    void updateTaskPosition(Long taskId, int newPosition)
+            throws AppEntityNotFoundException;
 
+    /*
+    Service methods that handle all the operations
+    related to the relationship between tasks and todos
+    */
+    void addNewTaskToTodo(Task task, Long todoId)
+            throws AppEntityNotFoundException;
 
-    public List<Task> getAllChildTasksByTaskIdOrderedByPriority(Long taskId) throws TaskNotFoundException {
+    List<Task> getAllTasksByTodoId(Long todoId) throws AppEntityNotFoundException;
 
-        Task task = getTaskById(taskId);
-        log.info("Fetching all child tasks of task of ID: {} ordered by priority...", taskId);
-        List<Task> tasks = taskRepository.findByParentTaskOrderByTodoTask_PriorityLevelDesc(task);
-        log.info("All child tasks of task of ID: {} ordered by priority were successfully fetched.", taskId);
+    List<Task> getAllTasksByTodoIdOrderedByPriority(Long todoId) throws AppEntityNotFoundException;
 
-        return tasks;
-    }
+    /*
+    Service methods that handle all the operations
+    related to the relationship between tasks and their parent tasks
+    */
+    void updateParentTask(Long taskId, Long parentTaskId, int position)
+            throws AppEntityNotFoundException;
 
-    public List<Task> getCompletedChildTasks(Long taskId) throws TaskNotFoundException {
+    /*
+    Service methods that handle all the operations
+    related to the relationship between tasks and their children tasks (sub-tasks)
+    */
+    List<Task> getAllChildTasksByTaskId(Long taskId) throws AppEntityNotFoundException;
 
-        Task task = getTaskById(taskId);
-        log.info("Fetching all completed child tasks of task of ID: {}...", taskId);
-        List<Task> tasks = taskRepository.findByCompletedChildTasks(task);
-        log.info("All completed child tasks of task of ID: {} were successfully fetched.", taskId);
+    List<Task> getAllChildTasksByTaskIdOrderedByPriority(Long taskId) throws AppEntityNotFoundException;
 
-        return tasks;
-    }
+    List<Task> getCompletedChildTasks(Long taskId) throws AppEntityNotFoundException;
 
-    public List<Task> getUncompletedChildTasks(Long taskId) throws TaskNotFoundException {
-
-        Task task = getTaskById(taskId);
-        log.info("Fetching all uncompleted child tasks of task of ID: {}...", taskId);
-        List<Task> tasks = taskRepository.findByUncompletedChildTasks(task);
-        log.info("All uncompleted child tasks of task of ID: {} were successfully fetched.", taskId);
-
-        return tasks;
-    }
-
-
-
-    public void addNewTask(Task task, Long todoId)
-            throws TaskNotFoundException, TodoTaskNotFoundException, TodoNotFoundException {
-
-        log.info("Adding a new task...");
-
-        //Allocate a t0do to the new task
-        Todo todo = todoService.getTodoById(todoId);
-        addNewTodoTask(task, TodoTask.builder().todo(todo).build());
-
-        taskRepository.save(task);
-        log.info("Task of ID: {} was successfully added.", task.getTaskId());
-    }
-
-    public void updateTask(Task updatedTask, Long taskId) throws TaskNotFoundException {
-
-        Task task = getTaskById(taskId);
-        log.info("Updating task of ID: {}...", task.getTaskId());
-
-//        if (!task.equals(updatedTask)) {
-//            if (Objects.nonNull(updatedTask.getParentTask())) {
-//                if (!updatedTask.getParentTask().equals("")) {
-//                    task.setParentTask(updatedTask.getParentTask());
-//                }
-//            } else {
-//                task.setParentTask(updatedTask.getParentTask());
-//            }
-//        }
-
-
-        if (Objects.nonNull(updatedTask.getName()) && !updatedTask.getName().equals("")) {
-            task.setName(updatedTask.getName());
-        }
-
-        taskRepository.save(task);
-        log.info("Task of ID: {} was successfully updated.", task.getTaskId());
-    }
-
-    public void deleteTask(Long taskId)
-            throws TaskNotFoundException, TodoTaskNotFoundException {
-
-        Task task = getTaskById(taskId);
-        log.info("Deleting task of ID: {}...", task.getTaskId());
-        deleteTodoTask(task);
-        Task deletedTask = task;
-        taskRepository.delete(task);
-        log.info("Task of ID: {} was successfully deleted.", deletedTask.getTaskId());
-    }
-
-    public void updateParentTask(Long taskId, Long parentTaskId, int position)
-            throws TaskNotFoundException, TodoTaskNotFoundException, TodoNotFoundException {
-
-        Task task = getTaskById(taskId);
-        Task parentTask = getTaskById(parentTaskId);
-
-        if(parentTask.getTodoTask().getTodo().equals(task.getTodoTask().getTodo())) {
-            if (parentTask.equals(task)) {
-
-                log.info("Assigning a parent task of ID: {} to task of ID: {}..."
-                        , parentTask.getTaskId(), task.getTaskId());
-
-                log.info("Repositioning child tasks that belong to the old parent task...");
-                if (Objects.isNull(task.getParentTask())) {
-                    //get the very last task ranked by position
-                    TodoTask lastTask = todoTaskRepository.findTopByTodoOrderByPositionDesc(task.getTodoTask().getTodo());
-                    //checking if the task is not the only one contained within its parent task.
-                    if(lastTask.getPosition() > 1) {
-                        //Give the task the very last position within its parent task.
-                        updateTaskPosition(taskId, lastTask.getPosition() + 1);
-                    }
-                }else {
-                    List<Task> childTasks = task.getParentTask().getChildTasks();
-                    if (childTasks.size() > 1) {
-                        //get the very last task ranked by position
-                        TodoTask lastChildTask = childTasks.get(childTasks.size() - 1).getTodoTask();
-                        updateTaskPosition(taskId, lastChildTask.getPosition() + 1);
-                    }
-                }
-
-
-                task.setParentTask(parentTask);
-                taskRepository.save(task);
-                log.info("Positioning task of ID: {} into its new parent task...", taskId);
-                updateTaskPosition(taskId, position);
-                log.info("Parent task of ID: {} was successfully assigned to task of ID: {}."
-                        , parentTask.getTaskId(), task.getTaskId());
-            }else {
-                log.error("ERROR: the task must be different from its parent.");
-            }
-        }else {
-            log.error("ERROR: the parent task and the task must have the same todos.");
-        }
-    }
-
-
-    public void addNewTodoTask(Task task, TodoTask todoTask)
-            throws TaskNotFoundException, TodoNotFoundException, TodoTaskNotFoundException {
-
-        log.info("Assigning task of ID: {} to todo of ID: {}..."
-                , task.getTaskId(), todoTask.getTodo().getTodoId());
-
-        todoTaskRepository.save(todoTask);
-        task.setTodoTask(todoTask);
-        assignPositionToNewTask(task);
-        log.info("Task of ID: {} was successfully assigned to todo of ID: {}."
-                , task.getTaskId(), todoTask.getTodo().getTodoId());
-    }
-
-    public void assignPositionToNewTask(Task task) throws TaskNotFoundException, TodoTaskNotFoundException, TodoNotFoundException {
-
-        if (Objects.isNull(task.getParentTask())) {
-            log.info("Calculating the maximum position value...");
-            TodoTask lastTask = todoTaskRepository.findTopByTodoOrderByPositionDesc(task.getTodoTask().getTodo());
-            log.info("Assigning a position to task of ID: {}...", task.getTaskId());
-            if (Objects.isNull(lastTask)) {
-                task.getTodoTask().setPosition(1);
-            } else {
-                task.getTodoTask().setPosition(lastTask.getPosition() + 1);
-            }
-        } else {
-            log.info("Calculating the maximum position value of all tasks that have as parent the task of ID: {}..."
-                    , task.getParentTask().getTaskId());
-
-            List<Task> childTasks = task.getParentTask().getChildTasks();
-            log.info("Assigning a position to task of ID: {} and parent of ID: {}..."
-                    , task.getTaskId(), task.getParentTask().getTaskId());
-
-            if (childTasks.isEmpty()) {
-                task.getTodoTask().setPosition(1);
-            } else {
-                Task lastChildTask = childTasks.get(childTasks.size() - 1);
-                task.getTodoTask().setPosition(lastChildTask.getTodoTask().getPosition() + 1);
-            }
-        }
-        log.info("Position of value: {} was successfully assigned to the new task of ID: {}."
-                , task.getTodoTask().getPosition(), task.getTaskId());
-    }
-
-
-    public void updateTodoTask(Long taskId, TodoTask updatedTodoTask) throws TaskNotFoundException, TodoNotFoundException, TodoTaskNotFoundException, UserNotFoundException, UserSettingsNotFoundException, UserTodoNotFoundException {
-
-        Task task = getTaskById(taskId);
-        log.info("Updating information related to the assignment of task of ID: {} to a todo..."
-                , task.getTaskId());
-
-        if (Objects.nonNull(updatedTodoTask.getCompletionTime()) && !updatedTodoTask.getCompletionTime().equals("")) {
-            task.getTodoTask().setCompletionTime(updatedTodoTask.getCompletionTime());
-        }
-        if (Objects.nonNull(updatedTodoTask.getPriorityLevel()) && !String.valueOf(updatedTodoTask.getPriorityLevel()).equals("")) {
-            task.getTodoTask().setPriorityLevel(updatedTodoTask.getPriorityLevel());
-        }
-        if (Objects.nonNull(updatedTodoTask.getIsCompleted()) && !String.valueOf(updatedTodoTask.getIsCompleted()).equals("")) {
-            task.getTodoTask().setIsCompleted(updatedTodoTask.getIsCompleted());
-        }
-        log.info("The information related to the assignment of task of ID: {} to todo of ID: {} was successfully updated."
-                , task.getTaskId(), task.getTodoTask().getTodo().getTodoId());
-    }
-
-    private void deleteTodoTask(Task task) throws TodoTaskNotFoundException {
-        log.info("Deleting allocation of todo to task of ID: {}..."
-                , task.getTaskId());
-
-        todoTaskRepository.delete(task.getTodoTask());
-        log.info("Allocation of todo to task of ID: {} was successfully deleted."
-                , task.getTaskId());
-    }
-
-    public void updateTaskPosition(Long taskId, int newPosition)
-            throws TaskNotFoundException, TodoTaskNotFoundException, TodoNotFoundException {
-
-        Task task = getTaskById(taskId);
-        TodoTask todoTask = task.getTodoTask();
-        Todo todo = todoTask.getTodo();
-
-        log.info("Getting the current position of task of ID: {}...", task.getTaskId());
-        int currentPosition = todoTask.getPosition();
-
-        if (newPosition > currentPosition) {
-            List<TodoTask> tasksToUpdate = todoTaskRepository.findByTodoAndPositionBetweenOrderByPositionAsc(todo, currentPosition + 1, newPosition);
-            log.info("Updating positions of tasks that are between position {} and {}", currentPosition, newPosition);
-            for (TodoTask taskToUpdate : tasksToUpdate) {
-                taskToUpdate.setPosition(taskToUpdate.getPosition() - 1);
-            }
-            log.info("The positions of all tasks that are between position {} and {} were successfully updated."
-                    , currentPosition, newPosition);
-
-        } else if (newPosition < currentPosition) {
-            List<TodoTask> tasksToUpdate = todoTaskRepository.findByTodoAndPositionBetweenOrderByPositionDesc(todo, newPosition, currentPosition - 1);
-            log.info("Updating positions of tasks that are between position {} and {}", newPosition, currentPosition);
-            for (TodoTask taskToUpdate : tasksToUpdate) {
-                taskToUpdate.setPosition(taskToUpdate.getPosition() + 1);
-            }
-            log.info("The positions of all tasks that are between position {} and {} were successfully updated."
-                    , newPosition, currentPosition);
-        }
-
-        log.info("Updating the position of task of ID: {}...", task.getTaskId());
-        todoTask.setPosition(newPosition);
-        log.info("The position of task of ID: {} was successfully updated.", task.getTaskId());
-    }
+    List<Task> getUncompletedChildTasks(Long taskId) throws AppEntityNotFoundException;
 }

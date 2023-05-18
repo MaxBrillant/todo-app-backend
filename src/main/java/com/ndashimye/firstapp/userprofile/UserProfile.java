@@ -2,6 +2,7 @@ package com.ndashimye.firstapp.userprofile;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,13 +26,12 @@ public class UserProfile {
     private Long userProfileId;
 
     @Column(name = "first_name", nullable = false, length = 40)
+    @NotNull(message = "First name is required")
     private String firstName;
 
     @Column(name = "last_name", nullable = false, length = 40)
+    @NotNull(message = "Last name is required")
     private String lastName;
-
-    @Column(name = "email_address", nullable = false, unique = true, length = 50)
-    private String emailAddress;
 
     @Column(name = "profile_image_url", length = 255)
     private String profileImageUrl;

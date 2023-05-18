@@ -30,6 +30,18 @@ public class UserSettings {
     private String timeZone;
 
 
+    @Column(name = "theme", nullable = false)
+    @NotNull(message = "Theme is required")
+    @Enumerated(EnumType.STRING)
+    private Theme theme;
+
+
+    @Column(name = "language", nullable = false)
+    @NotNull(message = "Language is required")
+    @Enumerated(EnumType.STRING)
+    private Language language;
+
+
     @Column(name = "created_at")
     @CreationTimestamp
     private ZonedDateTime createdAt;

@@ -4,12 +4,10 @@ import com.ndashimye.firstapp.error.InvalidTimeFormatException;
 import com.ndashimye.firstapp.todo.Todo;
 import com.ndashimye.firstapp.todo.TodoRepository;
 import com.ndashimye.firstapp.userprofile.UserProfile;
-import com.ndashimye.firstapp.userprofile.UserProfileNotFoundException;
 import com.ndashimye.firstapp.userprofile.UserProfileRepository;
 import com.ndashimye.firstapp.usersettings.UserSettings;
-import com.ndashimye.firstapp.usersettings.UserSettingsNotFoundException;
 import com.ndashimye.firstapp.usersettings.UserSettingsRepository;
-import com.ndashimye.firstapp.usertodo.UserTodo;
+import com.ndashimye.firstapp.blacklisteduser.BlacklistedUser;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
@@ -42,7 +40,7 @@ class UserServiceTest {
     private UserSettingsRepository userSettingsRepository;
 
     @InjectMocks
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
 
     @Test
@@ -54,7 +52,7 @@ class UserServiceTest {
         when(userRepository.findAll()).thenReturn(expectedUsers);
 
         // Call the getAllUsers method in UserService
-        List<User> actualUsers = userService.getAllUsers();
+        List<User> actualUsers = userServiceImpl.getAllUsers();
 
         // Check if the returned list matches the expected list
         assertEquals(expectedUsers, actualUsers, "The returned list of users should match the expected list");
@@ -73,7 +71,7 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // Call the getUserById method in UserService
-        User actualUser = userService.getUserById(userId);
+        User actualUser = userServiceImpl.getUserById(userId);
 
         // Check if the returned User matches the expected User
         assertEquals(user, actualUser, "The returned user should match the expected user");
@@ -94,7 +92,7 @@ class UserServiceTest {
 
         when(userRepository.findUserByEmailAddress(email)).thenReturn(Optional.of(user));
 
-        User actualUser = userService.getUserByEmailAddress(email);
+        User actualUser = userServiceImpl.getUserByEmailAddress(email);
 
         // Check if the returned User matches the expected User
         assertEquals(user, actualUser, "The returned user should match the expected user");
@@ -114,7 +112,7 @@ class UserServiceTest {
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 
-        User actualUser = userService.getUserByUsername(username);
+        User actualUser = userServiceImpl.getUserByUsername(username);
 
         // Check if the returned User matches the expected User
         assertEquals(user, actualUser, "The returned user should match the expected user");
@@ -129,7 +127,7 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // Call the getUserById method in UserService and assert that it throws UserNotFoundException
-        assertThrows(UserNotFoundException.class, () -> userService.getUserById(userId),
+        assertThrows(UserNotFoundException.class, () -> userServiceImpl.getUserById(userId),
                 "getUserById should throw UserNotFoundException when the user is not found");
 
         // Verify the mock UserRepository's findById method was called exactly once with the correct userId
@@ -145,16 +143,16 @@ class UserServiceTest {
 
         List<Todo> todos = new ArrayList<>();
         todos.add(Todo.builder().todoId(1L).name("Test Todo 1")
-                .userTodo(new UserTodo().builder().user(user).build()).build());
+                .userTodo(new BlacklistedUser().builder().user(user).build()).build());
         todos.add(Todo.builder().todoId(2L).name("Test Todo 2")
-                .userTodo(new UserTodo().builder().user(user).build()).build());
+                .userTodo(new BlacklistedUser().builder().user(user).build()).build());
 
         // When
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(todoRepository.findByUserTodo_UserOrderByUserTodo_PositionAsc(user)).thenReturn(todos);
+        when(todoRepository.findByUserOrderByUserTodoPositionAsc(user)).thenReturn(todos);
 
         // Then
-        List<Todo> result = userService.getAllTodosByUserId(userId);
+        List<Todo> result = userServiceImpl.getAllTodosByUserId(userId);
         assertEquals(2, result.size());
         assertEquals(todos, result);
         assertEquals("Test Todo 1", result.get(0).getName());
@@ -170,12 +168,12 @@ class UserServiceTest {
         Todo todo1 = new Todo();
         todo1.setTodoId(1L);
         todo1.setName("Todo1");
-        todo1.setUserTodo(UserTodo.builder().priorityLevel(2).build());
+        todo1.setUserTodo(BlacklistedUser.builder().priorityLevel(2).build());
 
         Todo todo2 = new Todo();
         todo2.setTodoId(2L);
         todo2.setName("Todo2");
-        todo2.setUserTodo(UserTodo.builder().priorityLevel(3).build());
+        todo2.setUserTodo(BlacklistedUser.builder().priorityLevel(3).build());
 
         List<Todo> expectedTodos = new ArrayList<>();
         expectedTodos.add(todo1);
@@ -183,9 +181,9 @@ class UserServiceTest {
 
         // When
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(todoRepository.findByUserTodo_UserOrderByUserTodo_PriorityLevelDesc(user)).thenReturn(expectedTodos);
+        when(todoRepository.findByUserOrderByTodoPriorityLevelDesc(user)).thenReturn(expectedTodos);
 
-        List<Todo> todos = userService.getAllTodosByUserIdOrderedByPriority(userId);
+        List<Todo> todos = userServiceImpl.getAllTodosByUserIdOrderedByPriority(userId);
 
         // Then
         assertEquals(2, todos.size());
@@ -203,13 +201,13 @@ class UserServiceTest {
         Todo todo1 = new Todo();
         todo1.setTodoId(1L);
         todo1.setName("Todo1");
-        todo1.setUserTodo(UserTodo.builder().priorityLevel(2).build());
+        todo1.setUserTodo(BlacklistedUser.builder().priorityLevel(2).build());
         todo1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(3), ZoneId.of("UTC")));
 
         Todo todo2 = new Todo();
         todo2.setTodoId(2L);
         todo2.setName("Todo2");
-        todo2.setUserTodo(UserTodo.builder().priorityLevel(3).build());
+        todo2.setUserTodo(BlacklistedUser.builder().priorityLevel(3).build());
         todo1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(7), ZoneId.of("UTC")));
 
         List<Todo> expectedTodos = new ArrayList<>();
@@ -220,7 +218,7 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(todoRepository.findByUserOrderByDueTimeDesc(user)).thenReturn(expectedTodos);
 
-        List<Todo> todos = userService.getAllTodosByUserIdOrderedByMostRecent(userId);
+        List<Todo> todos = userServiceImpl.getAllTodosByUserIdOrderedByMostRecent(userId);
 
         // Then
         assertEquals(2, todos.size());
@@ -239,13 +237,13 @@ class UserServiceTest {
         Todo todo1 = new Todo();
         todo1.setTodoId(1L);
         todo1.setName("Todo1");
-        todo1.setUserTodo(UserTodo.builder().priorityLevel(2).build());
+        todo1.setUserTodo(BlacklistedUser.builder().priorityLevel(2).build());
         todo1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(3), ZoneId.of("UTC")));
 
         Todo todo2 = new Todo();
         todo2.setTodoId(2L);
         todo2.setName("Todo2");
-        todo2.setUserTodo(UserTodo.builder().priorityLevel(3).build());
+        todo2.setUserTodo(BlacklistedUser.builder().priorityLevel(3).build());
         todo1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(7), ZoneId.of("UTC")));
 
         List<Todo> expectedTodos = new ArrayList<>();
@@ -256,7 +254,7 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(todoRepository.findByUserOrderByDueTimeAsc(user)).thenReturn(expectedTodos);
 
-        List<Todo> todos = userService.getAllTodosByUserIdOrderedByLeastRecent(userId);
+        List<Todo> todos = userServiceImpl.getAllTodosByUserIdOrderedByLeastRecent(userId);
 
         // Then
         assertEquals(2, todos.size());
@@ -276,13 +274,13 @@ class UserServiceTest {
         Todo todo1 = new Todo();
         todo1.setTodoId(1L);
         todo1.setName("Todo1");
-        todo1.setUserTodo(UserTodo.builder().priorityLevel(2).build());
+        todo1.setUserTodo(BlacklistedUser.builder().priorityLevel(2).build());
         todo1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(3), ZoneId.of("UTC")));
 
         Todo todo2 = new Todo();
         todo2.setTodoId(2L);
         todo2.setName("Todo2");
-        todo2.setUserTodo(UserTodo.builder().priorityLevel(3).build());
+        todo2.setUserTodo(BlacklistedUser.builder().priorityLevel(3).build());
         todo1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(7), ZoneId.of("UTC")));
 
         List<Todo> expectedTodos = new ArrayList<>();
@@ -298,7 +296,7 @@ class UserServiceTest {
 
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        List<Todo> todos = userService.getAllTodosBetweenDates
+        List<Todo> todos = userServiceImpl.getAllTodosBetweenDates
                 (userId, LocalDateTime.now().minusDays(3).format(formatter)
                         , LocalDateTime.now().minusDays(7).format(formatter));
 
@@ -325,7 +323,7 @@ class UserServiceTest {
         when(userSettingsRepository.save(userSettings)).thenReturn(userSettings);
 
         // When
-        userService.addNewUser(user);
+        userServiceImpl.addNewUser(user);
         // Then
         verify(userRepository, times(1)).save(user);
         verify(userProfileRepository, times(1)).save(userProfile);
@@ -349,7 +347,7 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(originalUser));
 
         // When
-        userService.updateUser(updatedUser, userId);
+        userServiceImpl.updateUser(updatedUser, userId);
 
         // Then
         assertEquals(updatedUser.getUsername(), originalUser.getUsername());
@@ -373,7 +371,7 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user)).thenReturn(Optional.empty());
 
         // When
-        userService.deleteUser(userId);
+        userServiceImpl.deleteUser(userId);
 
         // Then
         verify(userRepository, times(1)).findById(userId);
@@ -400,7 +398,7 @@ class UserServiceTest {
         userProfile.setLastName("Doe");
 
         // When
-        userService.addNewUserProfile(user, userProfile);
+        userServiceImpl.addNewUserProfile(user, userProfile);
 
         // Then
         assertNotNull(user.getProfile());
@@ -435,7 +433,7 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // When
-        userService.updateUserProfile(userId, updatedUserProfile);
+        userServiceImpl.updateUserProfile(userId, updatedUserProfile);
 
         // Then
         assertEquals(updatedUserProfile.getFirstName(), user.getProfile().getFirstName());
@@ -460,7 +458,7 @@ class UserServiceTest {
         user.setProfile(userProfile);
 
         // When
-        userService.deleteUserProfile(user);
+        userServiceImpl.deleteUserProfile(user);
 
         // Then
         verify(userProfileRepository, times(1)).delete(userProfile);
@@ -482,7 +480,7 @@ class UserServiceTest {
         userSettings.setTimeZone("UTC");
 
         // When
-        userService.addNewUserSettings(user, userSettings);
+        userServiceImpl.addNewUserSettings(user, userSettings);
 
         // Then
         assertNotNull(user.getSettings());
@@ -511,7 +509,7 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // When
-        userService.updateUserSettings(userId, updatedUserSettings);
+        userServiceImpl.updateUserSettings(userId, updatedUserSettings);
 
         // Then
         assertEquals(updatedUserSettings.getTimeZone(), user.getSettings().getTimeZone());
@@ -532,7 +530,7 @@ class UserServiceTest {
         user.setSettings(userSettings);
 
         // When
-        userService.deleteUserSettings(user);
+        userServiceImpl.deleteUserSettings(user);
 
         // Then
         verify(userSettingsRepository, times(1)).delete(userSettings);
