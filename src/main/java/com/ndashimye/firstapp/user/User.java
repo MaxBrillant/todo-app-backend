@@ -5,7 +5,7 @@ import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
 import com.ndashimye.firstapp.userprofile.UserProfile;
 import com.ndashimye.firstapp.usersettings.UserSettings;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -28,26 +28,34 @@ public class User {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_profile_id", nullable = false, unique = true)
-    @NotNull(message = "User profile is required")
+    @NotBlank(message = "The user profile is required")
     private UserProfile profile;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_settings_id", nullable = false, unique = true)
-    @NotNull(message = "User settings are required")
+    @NotBlank(message = "The user settings are required")
     private UserSettings settings;
 
-    @Column(name = "username", nullable = false, unique = true, length = 30)
-    @NotNull(message = "Username is required")
+    @Column(name = "username", nullable = false, unique = true)
+    @Pattern(regexp = "^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$"
+            , message = "The username should be 8 to 20 characters long. " +
+            "It should start with an alphanumeric character and can contain lowercase letters, digits, and special characters '_' and '.'." +
+            "The special characters '_' and '.' should not appear consecutively or at the beginning or end of the username")
     private String username;
 
 
-    @Column(name = "email_address", nullable = false, unique = true, length = 50)
-    @NotNull(message = "User email is required")
+    @Column(name = "email_address", nullable = false, unique = true)
+    @NotBlank(message = "The user email is required.")
+    @Size(min = 10, message = "The email address must at least 10 characters long")
+    @Email(message = "The email address must be valid and have the appropriate format")
     private String emailAddress;
 
 
     @Column(name = "password_hash", nullable = false, unique = true, columnDefinition = "BINARY(60)")
-    @NotNull(message = "User password is required")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–_[{}]:;',?/*~$^+=<>]).{8,20}$"
+            , message = "The password should be 8 to 20 characters long. " +
+            "It should contain at least one lowercase letter, one uppercase letter, one digit, " +
+            "and one special character")
     private String passwordHash;
 
     @Column(name = "password_salt", unique = true, length = 40, columnDefinition = "BINARY(40)")
@@ -65,10 +73,4 @@ public class User {
     @Column(name = "updated_at")
     @UpdateTimestamp
     private ZonedDateTime updatedAt;
-
-    public void setPassword(String password) {
-        this.passwordSalt = BCrypt.gensalt();
-        this.passwordHash = BCrypt.hashpw(password, this.passwordSalt);
-    }
-
 }

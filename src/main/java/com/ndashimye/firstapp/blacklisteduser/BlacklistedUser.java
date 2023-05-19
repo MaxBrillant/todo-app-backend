@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.todo.Todo;
 import com.ndashimye.firstapp.userproject.UserProject;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -25,12 +26,12 @@ public class BlacklistedUser {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_project_id", nullable = false)
-    @NotNull(message = "User project is required")
+    @NotBlank(message = "The user project is required")
     private UserProject userProject;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id", nullable = false)
-    @NotNull(message = "Todo is required")
+    @NotBlank(message = "The todo is required")
     private Todo todo;
 }

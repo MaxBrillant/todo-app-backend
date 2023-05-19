@@ -10,6 +10,8 @@ import com.ndashimye.firstapp.usersettings.UserSettingsService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +25,7 @@ public class UserServiceImpl implements UserService {
     private final UserProfileService userProfileService;
     private final UserSettingsService userSettingsService;
     private UserRepository userRepository;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
 
@@ -76,7 +79,10 @@ public class UserServiceImpl implements UserService {
     public void addNewUser(User user) {
 
         log.info("Adding a new user of username: {}...", user.getUsername());
-        user.setPassword(user.getPasswordHash());
+
+        user.setPasswordSalt(BCrypt.gensalt());
+        user.setPasswordHash(bCryptPasswordEncoder
+                .encode(user.getPasswordHash()+user.getPasswordSalt()));
 
         //Adding a profile and settings to the new user
         userProfileService.addNewUserProfile(user
@@ -110,10 +116,9 @@ public class UserServiceImpl implements UserService {
             user.setEmailAddress(updatedUser.getEmailAddress());
         }
         if (Objects.nonNull(updatedUser.getPasswordHash()) && !updatedUser.getPasswordHash().equals("")) {
-            user.setPassword(updatedUser.getPasswordHash());
-        }
-        if (Objects.nonNull(updatedUser.getLastLogin()) && !updatedUser.getLastLogin().equals("")) {
-            user.setLastLogin(updatedUser.getLastLogin());
+            user.setPasswordSalt(BCrypt.gensalt());
+            user.setPasswordHash(bCryptPasswordEncoder
+                    .encode(updatedUser.getPasswordHash()+user.getPasswordSalt()));
         }
 
         userRepository.save(user);

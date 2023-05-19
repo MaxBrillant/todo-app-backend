@@ -2,7 +2,9 @@ package com.ndashimye.firstapp.usersettings;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,18 +28,21 @@ public class UserSettings {
     private Long userSettingsId;
 
     @Column(name = "time_zone", nullable = false, length = 60)
-    @NotNull(message = "time zone is required")
+    @NotBlank(message = "The time zone is required")
+    @Pattern(regexp = "^UTC[+-](1[0-4]|0\\d)(:00)?$"
+            , message = "timezone offsets in the format of 'UTC±N' or 'UTC±N:00'" +
+            ", where N represents the offset in hours from -14 to +14.")
     private String timeZone;
 
 
     @Column(name = "theme", nullable = false)
-    @NotNull(message = "Theme is required")
+    @NotBlank(message = "The theme is required")
     @Enumerated(EnumType.STRING)
     private Theme theme;
 
 
     @Column(name = "language", nullable = false)
-    @NotNull(message = "Language is required")
+    @NotBlank(message = "The language is required")
     @Enumerated(EnumType.STRING)
     private Language language;
 
