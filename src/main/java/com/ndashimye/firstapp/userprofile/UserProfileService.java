@@ -11,5 +11,5 @@ public interface UserProfileService {
     */
     void addNewUserProfile(User user, UserProfile userProfile);
 
-    void deleteUserProfile(User user) throws AppEntityNotFoundException;
+    void deleteUserProfile(User user);
 }

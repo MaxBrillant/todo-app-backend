@@ -12,12 +12,14 @@ public interface TaskService {
 
     List<Task> getUncompletedTasks(Long todoId) throws AppEntityNotFoundException;
 
-    void updateTask(Task updatedTask, Long taskId) throws AppEntityNotFoundException;
+    void updateTask(Task updatedTask, Long taskId)
+            throws AppEntityNotFoundException;
 
     void deleteTask(Long taskId)
             throws AppEntityNotFoundException;
 
-    void completeTask(Long taskId, Long userId) throws AppEntityNotFoundException;
+    void completeTask(Long taskId, Long userId)
+            throws AppEntityNotFoundException;
 
     void unCompleteTask(Long taskId) throws AppEntityNotFoundException;
 
@@ -35,7 +37,8 @@ public interface TaskService {
 
     List<Task> getAllTasksByTodoId(Long todoId) throws AppEntityNotFoundException;
 
-    List<Task> getAllTasksByTodoIdOrderedByPriority(Long todoId) throws AppEntityNotFoundException;
+    List<Task> getAllTasksByTodoIdOrderedByPriority(Long todoId)
+            throws AppEntityNotFoundException;
 
     /*
     Service methods that handle all the operations
@@ -48,9 +51,11 @@ public interface TaskService {
     Service methods that handle all the operations
     related to the relationship between tasks and their children tasks (sub-tasks)
     */
-    List<Task> getAllChildTasksByTaskId(Long taskId) throws AppEntityNotFoundException;
+    List<Task> getAllChildTasksByTaskId(Long taskId)
+            throws AppEntityNotFoundException;
 
-    List<Task> getAllChildTasksByTaskIdOrderedByPriority(Long taskId) throws AppEntityNotFoundException;
+    List<Task> getAllChildTasksByTaskIdOrderedByPriority(Long taskId)
+            throws AppEntityNotFoundException;
 
     List<Task> getCompletedChildTasks(Long taskId) throws AppEntityNotFoundException;
 

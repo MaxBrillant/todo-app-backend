@@ -38,7 +38,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
 
     @Override
-    public void deleteUserProfile(User user) throws AppEntityNotFoundException {
+    public void deleteUserProfile(User user) {
 
         log.info("Deleting profile of user of ID: {} and username: {}..."
                 , user.getUserId(), user.getUsername());

@@ -10,9 +10,12 @@ public interface BlackListedUserService {
     Service methods that handle all the operations
     related to the relationship between users and their restricted todos
     */
-    List<Todo> getRestrictedTodosOfUserInProject(Long projectId, Long userId)
+    List<Todo> getRestrictedTodosOfUserInProject(Long userId, Long projectId)
             throws AppEntityNotFoundException;
 
     void restrictUserFromAccessingTodoInProject(Long userId, Long projectId, Long todoId)
+            throws AppEntityNotFoundException;
+
+    void unrestrictUserFromAccessingTodoInProject(Long userId, Long projectId, Long todoId)
             throws AppEntityNotFoundException;
 }

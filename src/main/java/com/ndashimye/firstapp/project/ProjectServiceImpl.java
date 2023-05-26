@@ -26,14 +26,16 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Project getProjectById(Long projectId) throws AppEntityNotFoundException {
         log.info("Fetching project by ID: {}...", projectId);
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new AppEntityNotFoundException(Project.class));
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new AppEntityNotFoundException(Project.class));
         log.info("Project of ID: {} was successfully fetched.", project.getProjectId());
 
         return project;
     }
 
     @Override
-    public void updateProject(Long projectId, Project updatedProject) throws AppEntityNotFoundException {
+    public void updateProject(Long projectId, Project updatedProject)
+            throws AppEntityNotFoundException {
 
         Project project = getProjectById(projectId);
         log.info("Updating project of ID: {}...", project.getProjectId());

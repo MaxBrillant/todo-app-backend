@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.todo.Todo;
 import com.ndashimye.firstapp.userproject.UserProject;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -25,12 +28,14 @@ public class BlacklistedUser {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_project_id", nullable = false)
-    @NotNull(message = "User project is required")
+    @NotNull(message = "The user project is required")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserProject userProject;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id", nullable = false)
-    @NotNull(message = "Todo is required")
+    @NotNull(message = "The todo is required")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Todo todo;
 }

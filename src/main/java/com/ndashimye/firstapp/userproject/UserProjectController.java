@@ -23,14 +23,16 @@ public class UserProjectController {
 
     @PostMapping()
     public void addNewProjectToUser(@PathVariable Long userId,
-                           @RequestBody Project project) throws AppEntityNotFoundException {
+                           @RequestBody Project project)
+            throws AppEntityNotFoundException {
 
         userProjectService.addNewProjectToUser(userId, project);
     }
 
     @PostMapping("/{projectId}")
     public void addExistingProjectToUser(@PathVariable Long userId,
-                                 @PathVariable Long projectId) throws AppEntityNotFoundException {
+                                 @PathVariable Long projectId)
+            throws AppEntityNotFoundException {
 
         userProjectService.addExistingProjectToUser(userId, projectId);
     }
@@ -38,7 +40,8 @@ public class UserProjectController {
     @PutMapping("/{projectId}/update/role")
     public void updateProjectRole(@PathVariable Long userId,
                                       @PathVariable Long projectId,
-                                      @RequestParam String role) throws AppEntityNotFoundException {
+                                      @RequestParam String role)
+            throws AppEntityNotFoundException {
 
         userProjectService.updateUserProjectRole(userId, projectId, role);
     }
@@ -46,7 +49,8 @@ public class UserProjectController {
     @PutMapping("/{projectId}/update/position")
     public void updateProjectPosition(@PathVariable Long userId,
                            @PathVariable Long projectId,
-                           @RequestParam int newPosition) throws AppEntityNotFoundException {
+                           @RequestParam int newPosition)
+            throws AppEntityNotFoundException {
 
         userProjectService.updateProjectPosition(userId, projectId, newPosition);
     }

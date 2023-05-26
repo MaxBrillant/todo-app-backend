@@ -5,12 +5,14 @@ import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
 import com.ndashimye.firstapp.todo.Todo;
 import com.ndashimye.firstapp.user.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.Range;
+
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -32,7 +34,8 @@ public class Task {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id", nullable = false)
-    @NotNull(message = "Todo is required")
+    @NotNull(message = "The todo is required")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Todo todo;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,33 +45,38 @@ public class Task {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "completed_by_user")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User CompletedByUser;
 
 
-    @Column(name = "name", nullable = false, length = 40)
-    @NotNull(message = "Name is required")
+    @Column(name = "name", nullable = false)
+    @Pattern(regexp = "^[a-zA-Z]([a-zA-Z0-9]|[-_. ](?![._-])){1,48}[a-zA-Z0-9]$"
+            , message = "The task name should be 3 to 50 characters long." +
+            "It should start with an uppercase or lowercase letter." +
+            "It can contain uppercase letters, lowercase letters, digits, spaces, and special characters '-', '_', and '.'." +
+            "The special characters '-', '_', and '.' must not appear consecutively or at the beginning or end of the task name.")
     private String name;
 
     @Column(name = "due_time")
     @Convert(converter = ZonedDateTimeAttributeConverter.class)
-    @FutureOrPresent()
+    @FutureOrPresent(message = "The due time must have a value of a present or future date/time.")
     private ZonedDateTime dueTime;
 
 
     @Column(name = "completion_time")
     @Convert(converter = ZonedDateTimeAttributeConverter.class)
-    @FutureOrPresent()
+    @FutureOrPresent(message = "The completion time must have a value of a present or future date/time.")
     private ZonedDateTime completionTime;
 
 
     @Column(name = "priority_level")
-    @Size(min = 1, max = 5)
+    @Range(min = 1, max = 5, message = "The priority level must be between 1 and 5")
     private Integer priorityLevel;
 
 
     @Column(name = "position", nullable = false)
-    @NotNull(message = "Position is required")
-    private int position;
+    @NotNull(message = "The position is required")
+    private Integer position;
 
 
     @OneToMany(mappedBy = "parentTask", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -84,19 +92,4 @@ public class Task {
     @Column(name = "updated_at")
     @UpdateTimestamp
     private ZonedDateTime updatedAt;
-
-//
-//
-//    public ZonedDateTime getDueTime()
-//            throws AppEntityNotFoundException {
-//
-//        ZonedDateTimeAttributeConverter.setDefaultZoneId(ZoneId.of("UTC"));
-//        if(dueTime != null) {
-//            UserSettings userSettings = this.getUserTask().getTodo().getUserTodo().getUser().getSettings();
-//            ZoneId userTimeZone = ZoneId.of(userSettings.getTimeZone());
-//            ZonedDateTimeAttributeConverter.setDefaultZoneId(userTimeZone);
-//            return ZonedDateTimeAttributeConverter.toDefaultZoneId(dueTime);
-//        }
-//        return null;
-//    }
 }

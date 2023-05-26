@@ -90,7 +90,7 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     @Query("SELECT t from Todo t " +
             "INNER JOIN BlacklistedUser bu ON t = bu.todo " +
             "INNER JOIN UserProject up ON bu.userProject = up " +
-            "WHERE bu = :userProject " +
+            "WHERE bu.userProject = :userProject " +
             "ORDER BY t.position ASC")
     List<Todo> findBlacklistedTodosOfUserAndOrderByPositionAsc(@Param("userProject") UserProject userProject);
 

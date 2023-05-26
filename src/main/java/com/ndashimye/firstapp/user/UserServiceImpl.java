@@ -10,6 +10,8 @@ import com.ndashimye.firstapp.usersettings.UserSettingsService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +25,7 @@ public class UserServiceImpl implements UserService {
     private final UserProfileService userProfileService;
     private final UserSettingsService userSettingsService;
     private UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
 
 
 
@@ -40,7 +43,8 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Long userId) throws AppEntityNotFoundException {
 
         log.info("Fetching user by ID: {}...", userId);
-        User user = userRepository.findById(userId).orElseThrow(() -> new AppEntityNotFoundException(User.class));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppEntityNotFoundException(User.class));
         log.info("User of ID: {} and username: {} was successfully fetched."
                 , user.getUserId(), user.getUsername());
 
@@ -48,7 +52,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByEmailAddress(String emailAddress) throws AppEntityNotFoundException {
+    public User getUserByEmailAddress(String emailAddress)
+            throws AppEntityNotFoundException {
 
         log.info("Fetching user by email address: {}...", emailAddress);
         User user = userRepository.findUserByEmailAddress(emailAddress)
@@ -59,7 +64,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByUsername(String username) throws AppEntityNotFoundException {
+    public User getUserByUsername(String username)
+            throws AppEntityNotFoundException {
 
         log.info("Fetching user by username: {}...", username);
         User user = userRepository.findByUsername(username).orElseThrow(
@@ -73,7 +79,10 @@ public class UserServiceImpl implements UserService {
     public void addNewUser(User user) {
 
         log.info("Adding a new user of username: {}...", user.getUsername());
-        user.setPassword(user.getPasswordHash());
+
+        user.setPasswordSalt(BCrypt.gensalt());
+//        user.setPasswordHash(passwordEncoder
+//                .encode(user.getPasswordHash()+user.getPasswordSalt()));
 
         //Adding a profile and settings to the new user
         userProfileService.addNewUserProfile(user
@@ -82,7 +91,7 @@ public class UserServiceImpl implements UserService {
 
         userSettingsService.addNewUserSettings(user
                 , UserSettings.builder()
-                        .timeZone("UTC")
+                        .timeZone("UTC+00")
                         .theme(Theme.LIGHT)
                         .language(Language.en_EN)
                         .build());
@@ -94,7 +103,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUser(User updatedUser, Long userId) throws AppEntityNotFoundException {
+    public void updateUser(User updatedUser, Long userId)
+            throws AppEntityNotFoundException {
 
         User user = getUserById(userId);
         log.info("Updating user of ID: {} and username: {}...", user.getUserId(), user.getUsername());
@@ -106,10 +116,10 @@ public class UserServiceImpl implements UserService {
             user.setEmailAddress(updatedUser.getEmailAddress());
         }
         if (Objects.nonNull(updatedUser.getPasswordHash()) && !updatedUser.getPasswordHash().equals("")) {
-            user.setPassword(updatedUser.getPasswordHash());
-        }
-        if (Objects.nonNull(updatedUser.getLastLogin()) && !updatedUser.getLastLogin().equals("")) {
-            user.setLastLogin(updatedUser.getLastLogin());
+            user.setPasswordSalt(BCrypt.gensalt());
+            user.setPasswordHash(updatedUser.getPasswordHash());
+//            user.setPasswordHash(passwordEncoder
+//                    .encode(updatedUser.getPasswordHash()+user.getPasswordSalt()));
         }
 
         userRepository.save(user);

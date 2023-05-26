@@ -14,11 +14,7 @@ public class TaskController {
 
 
 
-    /*
-
-    HTTP endpoints that handle all the operations related to projects
-
-    */
+    //HTTP endpoints that handle all the operations related to projects
 
     @PutMapping("/{taskId}")
     public void updateTask(@RequestBody Task updatedTask, @PathVariable Long taskId)
@@ -28,7 +24,9 @@ public class TaskController {
     }
 
     @DeleteMapping("/{taskId}")
-    public void deleteTask(@PathVariable Long taskId) throws AppEntityNotFoundException {
+    public void deleteTask(@PathVariable Long taskId)
+            throws AppEntityNotFoundException {
+
         taskService.deleteTask(taskId);
     }
 
@@ -39,7 +37,7 @@ public class TaskController {
         taskService.unCompleteTask(taskId);
     }
 
-    @PutMapping("/{taskId}/update/position")
+    @PutMapping("/{taskId}/update")
     public void updateTaskPosition(@PathVariable Long taskId,
                                    @RequestParam Integer position)
             throws AppEntityNotFoundException {
@@ -48,7 +46,9 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}")
-    public Task getTaskById(@PathVariable Long taskId) throws AppEntityNotFoundException {
+    public Task getTaskById(@PathVariable Long taskId)
+            throws AppEntityNotFoundException {
+
         return taskService.getTaskById(taskId);
     }
 
@@ -63,7 +63,8 @@ public class TaskController {
 
     @PutMapping("/{taskId}/parent-task/{parentTaskId}/update")
     public void updateParentTask(@PathVariable Long taskId,
-                                 @PathVariable Long parentTaskId, @RequestParam int position)
+                                 @PathVariable Long parentTaskId,
+                                 @RequestParam int position)
             throws AppEntityNotFoundException {
 
         taskService.updateParentTask(taskId, parentTaskId, position);
