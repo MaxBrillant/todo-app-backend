@@ -7,6 +7,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -26,23 +29,25 @@ public class UserProject {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @NotBlank(message = "The user is required")
+    @NotNull(message = "The user is required")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
-    @NotBlank(message = "The project is required")
+    @NotNull(message = "The project is required")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Project project;
 
 
     @Column(name = "role", nullable = false)
-    @NotBlank(message = "The project role is required")
+    @NotNull(message = "The project role is required")
     @Enumerated(EnumType.STRING)
     private ProjectRole projectRole;
 
 
     @Column(name = "position", nullable = false)
-    @NotBlank(message = "The position is required")
-    private int position;
+    @NotNull(message = "The position is required")
+    private Integer position;
 }

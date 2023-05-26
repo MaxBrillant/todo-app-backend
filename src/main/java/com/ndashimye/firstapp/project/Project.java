@@ -28,7 +28,7 @@ public class Project {
 
 
     @Column(name = "name", nullable = false)
-    @Pattern(regexp = "^[a-zA-Z]([a-zA-Z0-9]|[-_.](?![._-])){1,48}[a-zA-Z0-9]$"
+    @Pattern(regexp = "^[a-zA-Z]([a-zA-Z0-9]|[-_. ](?![._-])){1,48}[a-zA-Z0-9]$"
             , message = "The project name should be 3 to 50 characters long." +
             "It should start with an uppercase or lowercase letter." +
             "It can contain uppercase letters, lowercase letters, digits, spaces, and special characters '-', '_', and '.'." +

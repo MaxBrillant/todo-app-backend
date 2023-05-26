@@ -11,7 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     private final UserProfileService userProfileService;
     private final UserSettingsService userSettingsService;
     private UserRepository userRepository;
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private PasswordEncoder passwordEncoder;
 
 
 
@@ -81,8 +81,8 @@ public class UserServiceImpl implements UserService {
         log.info("Adding a new user of username: {}...", user.getUsername());
 
         user.setPasswordSalt(BCrypt.gensalt());
-        user.setPasswordHash(bCryptPasswordEncoder
-                .encode(user.getPasswordHash()+user.getPasswordSalt()));
+//        user.setPasswordHash(passwordEncoder
+//                .encode(user.getPasswordHash()+user.getPasswordSalt()));
 
         //Adding a profile and settings to the new user
         userProfileService.addNewUserProfile(user
@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
 
         userSettingsService.addNewUserSettings(user
                 , UserSettings.builder()
-                        .timeZone("UTC")
+                        .timeZone("UTC+00")
                         .theme(Theme.LIGHT)
                         .language(Language.en_EN)
                         .build());
@@ -117,8 +117,9 @@ public class UserServiceImpl implements UserService {
         }
         if (Objects.nonNull(updatedUser.getPasswordHash()) && !updatedUser.getPasswordHash().equals("")) {
             user.setPasswordSalt(BCrypt.gensalt());
-            user.setPasswordHash(bCryptPasswordEncoder
-                    .encode(updatedUser.getPasswordHash()+user.getPasswordSalt()));
+            user.setPasswordHash(updatedUser.getPasswordHash());
+//            user.setPasswordHash(passwordEncoder
+//                    .encode(updatedUser.getPasswordHash()+user.getPasswordSalt()));
         }
 
         userRepository.save(user);

@@ -28,12 +28,12 @@ public class User {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_profile_id", nullable = false, unique = true)
-    @NotBlank(message = "The user profile is required")
+    @NotNull(message = "The user profile is required")
     private UserProfile profile;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_settings_id", nullable = false, unique = true)
-    @NotBlank(message = "The user settings are required")
+    @NotNull(message = "The user settings are required")
     private UserSettings settings;
 
     @Column(name = "username", nullable = false, unique = true)
@@ -52,7 +52,7 @@ public class User {
 
 
     @Column(name = "password_hash", nullable = false, unique = true, columnDefinition = "BINARY(60)")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–_[{}]:;',?/*~$^+=<>]).{8,20}$"
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()_[-{}]:;',?/*~$^+=<>]).{8,20}$"
             , message = "The password should be 8 to 20 characters long. " +
             "It should contain at least one lowercase letter, one uppercase letter, one digit, " +
             "and one special character")

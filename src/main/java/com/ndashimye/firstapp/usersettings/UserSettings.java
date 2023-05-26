@@ -36,13 +36,13 @@ public class UserSettings {
 
 
     @Column(name = "theme", nullable = false)
-    @NotBlank(message = "The theme is required")
+    @NotNull(message = "The theme is required")
     @Enumerated(EnumType.STRING)
     private Theme theme;
 
 
     @Column(name = "language", nullable = false)
-    @NotBlank(message = "The language is required")
+    @NotNull(message = "The language is required")
     @Enumerated(EnumType.STRING)
     private Language language;
 

@@ -33,7 +33,7 @@ public class BlackListedUserServiceImpl implements BlackListedUserService {
     */
 
     @Override
-    public List<Todo> getRestrictedTodosOfUserInProject(Long projectId, Long userId)
+    public List<Todo> getRestrictedTodosOfUserInProject(Long userId, Long projectId)
             throws AppEntityNotFoundException {
 
         UserProject userProject = userProjectService
@@ -71,6 +71,27 @@ public class BlackListedUserServiceImpl implements BlackListedUserService {
                 .build());
 
         log.info("User of ID: {} and username: {} was successfully restricted from accessing todo of ID: {}."
+                , userProject.getUser().getUserId(), userProject.getUser().getUsername(), todo.getTodoId());
+    }
+
+    @Override
+    public void unrestrictUserFromAccessingTodoInProject(Long userId, Long projectId, Long todoId)
+            throws AppEntityNotFoundException {
+
+        UserProject userProject = userProjectService
+                .getUserProjectByUserIdAndProjectId(userId, projectId);
+
+        Todo todo = todoService.getTodoById(todoId);
+        log.info("Unrestricting user of ID: {} and username: {} from accessing todo of ID: {}..."
+                , userProject.getUser().getUserId(), userProject.getUser().getUsername(), todo.getTodoId());
+
+        BlacklistedUser blacklistedUser =
+                blacklistedUserRepository.findByUserProjectAndTodo(userProject, todo)
+                        .orElseThrow(()-> new AppEntityNotFoundException(BlacklistedUser.class));
+
+        blacklistedUserRepository.delete(blacklistedUser);
+
+        log.info("User of ID: {} and username: {} was successfully unrestricted from accessing todo of ID: {}."
                 , userProject.getUser().getUserId(), userProject.getUser().getUsername(), todo.getTodoId());
     }
 }

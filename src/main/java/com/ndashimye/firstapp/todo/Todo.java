@@ -7,7 +7,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.Range;
+
 import java.time.ZonedDateTime;
 
 @Entity
@@ -28,12 +32,13 @@ public class Todo {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
-    @NotBlank(message = "The project is required")
+    @NotNull(message = "The project is required")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Project project;
 
 
     @Column(name = "name", nullable = false)
-    @Pattern(regexp = "^[a-zA-Z]([a-zA-Z0-9]|[-_.](?![._-])){1,48}[a-zA-Z0-9]$"
+    @Pattern(regexp = "^[a-zA-Z]([a-zA-Z0-9]|[-_. ](?![._-])){1,48}[a-zA-Z0-9]$"
             , message = "The todo name should be 3 to 50 characters long." +
             "It should start with an uppercase or lowercase letter." +
             "It can contain uppercase letters, lowercase letters, digits, spaces, and special characters '-', '_', and '.'." +
@@ -55,13 +60,13 @@ public class Todo {
 
 
     @Column(name = "priority_level")
-    @Size(min = 1, max = 5, message = "The priority level must be between 1 and 5")
-    private int priorityLevel;
+    @Range(min = 1, max = 5, message = "The priority level must be between 1 and 5")
+    private Integer priorityLevel;
 
 
     @Column(name = "position", nullable = false)
-    @NotBlank(message = "The position is required")
-    private int position;
+    @NotNull(message = "The position is required")
+    private Integer position;
 
 
     @Column(name = "is_recurrent")

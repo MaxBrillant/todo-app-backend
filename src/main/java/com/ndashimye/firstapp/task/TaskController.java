@@ -37,7 +37,7 @@ public class TaskController {
         taskService.unCompleteTask(taskId);
     }
 
-    @PutMapping("/{taskId}/update/position")
+    @PutMapping("/{taskId}/update")
     public void updateTaskPosition(@PathVariable Long taskId,
                                    @RequestParam Integer position)
             throws AppEntityNotFoundException {

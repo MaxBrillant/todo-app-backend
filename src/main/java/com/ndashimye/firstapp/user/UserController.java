@@ -198,6 +198,15 @@ public class UserController {
         blackListedUserService.restrictUserFromAccessingTodoInProject(userId, projectId, todoId);
     }
 
+    @PutMapping("/{userId}/projects/{projectId}/todos/{todoId}/unrestrict")
+    public void unrestrictUserFromAccessingTodoInProject
+            (@PathVariable Long userId, @PathVariable Long projectId
+                    , @PathVariable Long todoId)
+            throws AppEntityNotFoundException {
+
+        blackListedUserService.unrestrictUserFromAccessingTodoInProject(userId, projectId, todoId);
+    }
+
 
     @PutMapping("/{userId}/tasks/{taskId}/complete")
     public void completeTask(@PathVariable Long taskId, @PathVariable Long userId)

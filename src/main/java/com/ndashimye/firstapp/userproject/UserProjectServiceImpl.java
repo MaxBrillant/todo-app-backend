@@ -56,12 +56,14 @@ public class UserProjectServiceImpl implements UserProjectService {
 
         User user = userService.getUserById(userId);
         log.info("Adding a new project...");
+
+        projectRepository.save(project);
+
         assignPositionToNewProject(UserProject.builder()
                 .user(user)
                 .project(project)
                 .projectRole(ProjectRole.CREATOR)
                 .build());
-        projectRepository.save(project);
         log.info("Project of ID: {} was successfully added.", project.getProjectId());
     }
 

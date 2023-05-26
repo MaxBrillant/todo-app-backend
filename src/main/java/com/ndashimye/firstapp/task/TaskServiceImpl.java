@@ -208,8 +208,11 @@ public class TaskServiceImpl implements TaskService {
         Todo todo = todoService.getTodoById(todoId);
         log.info("Adding a new task to todo of ID: {}...", todo.getTodoId());
         task.setTodo(todo);
-        assignPositionToNewTask(task);
+
+
         taskRepository.save(task);
+
+        assignPositionToNewTask(task);
         log.info("Task of ID: {} was successfully added to todo of ID: {}."
                 , task.getTaskId(), todo.getTodoId());
     }
