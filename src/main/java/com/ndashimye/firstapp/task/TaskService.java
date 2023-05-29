@@ -5,14 +5,16 @@ import java.util.List;
 
 public interface TaskService {
 
+    TaskDTO getTaskDTOById(Long taskId) throws AppEntityNotFoundException;
+
     //Service methods that handle all the operations related to tasks
     Task getTaskById(Long taskId) throws AppEntityNotFoundException;
 
-    List<Task> getCompletedTasks(Long todoId) throws AppEntityNotFoundException;
+    List<TaskDTO> getCompletedTasks(Long todoId) throws AppEntityNotFoundException;
 
-    List<Task> getUncompletedTasks(Long todoId) throws AppEntityNotFoundException;
+    List<TaskDTO> getUncompletedTasks(Long todoId) throws AppEntityNotFoundException;
 
-    void updateTask(Task updatedTask, Long taskId)
+    void updateTask(TaskCreationDTO updatedTask, Long taskId)
             throws AppEntityNotFoundException;
 
     void deleteTask(Long taskId)
@@ -32,12 +34,12 @@ public interface TaskService {
     Service methods that handle all the operations
     related to the relationship between tasks and todos
     */
-    void addNewTaskToTodo(Task task, Long todoId)
+    void addNewTaskToTodo(TaskCreationDTO task, Long todoId)
             throws AppEntityNotFoundException;
 
-    List<Task> getAllTasksByTodoId(Long todoId) throws AppEntityNotFoundException;
+    List<TaskDTO> getAllTasksByTodoId(Long todoId) throws AppEntityNotFoundException;
 
-    List<Task> getAllTasksByTodoIdOrderedByPriority(Long todoId)
+    List<TaskDTO> getAllTasksByTodoIdOrderedByPriority(Long todoId)
             throws AppEntityNotFoundException;
 
     /*
@@ -51,13 +53,13 @@ public interface TaskService {
     Service methods that handle all the operations
     related to the relationship between tasks and their children tasks (sub-tasks)
     */
-    List<Task> getAllChildTasksByTaskId(Long taskId)
+    List<TaskDTO> getAllChildTasksByTaskId(Long taskId)
             throws AppEntityNotFoundException;
 
-    List<Task> getAllChildTasksByTaskIdOrderedByPriority(Long taskId)
+    List<TaskDTO> getAllChildTasksByTaskIdOrderedByPriority(Long taskId)
             throws AppEntityNotFoundException;
 
-    List<Task> getCompletedChildTasks(Long taskId) throws AppEntityNotFoundException;
+    List<TaskDTO> getCompletedChildTasks(Long taskId) throws AppEntityNotFoundException;
 
-    List<Task> getUncompletedChildTasks(Long taskId) throws AppEntityNotFoundException;
+    List<TaskDTO> getUncompletedChildTasks(Long taskId) throws AppEntityNotFoundException;
 }

@@ -1,9 +1,7 @@
 package com.ndashimye.firstapp.blacklisteduser;
 
 import com.ndashimye.firstapp.error.AppEntityNotFoundException;
-import com.ndashimye.firstapp.todo.Todo;
-import com.ndashimye.firstapp.todo.TodoRepository;
-import com.ndashimye.firstapp.todo.TodoService;
+import com.ndashimye.firstapp.todo.*;
 import com.ndashimye.firstapp.userproject.UserProject;
 import com.ndashimye.firstapp.userproject.UserProjectService;
 import jakarta.transaction.Transactional;
@@ -11,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -20,6 +19,7 @@ public class BlackListedUserServiceImpl implements BlackListedUserService {
 
     private final UserProjectService userProjectService;
     private final TodoService todoService;
+    private final TodoDTOMapper todoDTOMapper;
     private TodoRepository todoRepository;
     private BlacklistedUserRepository blacklistedUserRepository;
 
@@ -33,7 +33,7 @@ public class BlackListedUserServiceImpl implements BlackListedUserService {
     */
 
     @Override
-    public List<Todo> getRestrictedTodosOfUserInProject(Long userId, Long projectId)
+    public List<TodoDTO> getRestrictedTodosOfUserInProject(Long userId, Long projectId)
             throws AppEntityNotFoundException {
 
         UserProject userProject = userProjectService
@@ -51,7 +51,9 @@ public class BlackListedUserServiceImpl implements BlackListedUserService {
                 , userProject.getUser().getUserId(), userProject.getUser().getUsername()
                 , userProject.getProject().getProjectId());
 
-        return blackListedTodos;
+        return blackListedTodos.stream()
+                .map(todoDTOMapper)
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -17,7 +17,7 @@ public class TaskController {
     //HTTP endpoints that handle all the operations related to projects
 
     @PutMapping("/{taskId}")
-    public void updateTask(@RequestBody Task updatedTask, @PathVariable Long taskId)
+    public void updateTask(@RequestBody TaskCreationDTO updatedTask, @PathVariable Long taskId)
             throws AppEntityNotFoundException {
 
         taskService.updateTask(updatedTask, taskId);
@@ -46,10 +46,10 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}")
-    public Task getTaskById(@PathVariable Long taskId)
+    public TaskDTO getTaskById(@PathVariable Long taskId)
             throws AppEntityNotFoundException {
 
-        return taskService.getTaskById(taskId);
+        return taskService.getTaskDTOById(taskId);
     }
 
 
@@ -80,28 +80,28 @@ public class TaskController {
     */
 
     @GetMapping("/{taskId}/sub-tasks")
-    public List<Task> getChildTasksByTaskId(@PathVariable Long taskId)
+    public List<TaskDTO> getChildTasksByTaskId(@PathVariable Long taskId)
             throws AppEntityNotFoundException {
 
         return taskService.getAllChildTasksByTaskId(taskId);
     }
 
     @GetMapping("/{taskId}/sub-tasks/order-by/priority")
-    public List<Task> getChildTasksByTaskIdOrderedByPriority(@PathVariable Long taskId)
+    public List<TaskDTO> getChildTasksByTaskIdOrderedByPriority(@PathVariable Long taskId)
             throws AppEntityNotFoundException {
 
         return taskService.getAllChildTasksByTaskIdOrderedByPriority(taskId);
     }
 
     @GetMapping("/{taskId}/sub-tasks/completed")
-    public List<Task> getCompletedChildTasks(@PathVariable Long taskId)
+    public List<TaskDTO> getCompletedChildTasks(@PathVariable Long taskId)
             throws AppEntityNotFoundException {
 
         return taskService.getCompletedChildTasks(taskId);
     }
 
     @GetMapping("/{taskId}/sub-tasks/uncompleted")
-    public List<Task> getUncompletedChildTasks(@PathVariable Long taskId)
+    public List<TaskDTO> getUncompletedChildTasks(@PathVariable Long taskId)
             throws AppEntityNotFoundException {
 
         return taskService.getUncompletedChildTasks(taskId);

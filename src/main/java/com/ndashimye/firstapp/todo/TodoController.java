@@ -2,6 +2,8 @@ package com.ndashimye.firstapp.todo;
 
 import com.ndashimye.firstapp.error.AppEntityNotFoundException;
 import com.ndashimye.firstapp.task.Task;
+import com.ndashimye.firstapp.task.TaskCreationDTO;
+import com.ndashimye.firstapp.task.TaskDTO;
 import com.ndashimye.firstapp.task.TaskService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +22,7 @@ public class TodoController {
     //HTTP endpoints that handle all the operations related to todos
 
     @PutMapping("/{todoId}")
-    public void updateTodo(@PathVariable Long todoId, @RequestBody Todo updatedTodo)
+    public void updateTodo(@PathVariable Long todoId, @RequestBody TodoCreationDTO updatedTodo)
             throws AppEntityNotFoundException {
 
         todoService.updateTodo(updatedTodo, todoId);
@@ -42,10 +44,10 @@ public class TodoController {
     }
 
     @GetMapping("/{todoId}")
-    public Todo getTodoById(@PathVariable Long todoId)
+    public TodoDTO getTodoById(@PathVariable Long todoId)
             throws AppEntityNotFoundException {
 
-        return todoService.getTodoById(todoId);
+        return todoService.getTodoDTOById(todoId);
     }
 
 
@@ -75,21 +77,21 @@ public class TodoController {
     */
 
     @PostMapping("/{todoId}/tasks")
-    public void addTaskToTodo(@RequestBody Task task, @PathVariable Long todoId)
+    public void addTaskToTodo(@RequestBody TaskCreationDTO task, @PathVariable Long todoId)
             throws AppEntityNotFoundException {
 
         taskService.addNewTaskToTodo(task, todoId);
     }
 
     @GetMapping("/{todoId}/tasks")
-    public List<Task> getTasksByTodoId(@PathVariable Long todoId)
+    public List<TaskDTO> getTasksByTodoId(@PathVariable Long todoId)
             throws AppEntityNotFoundException {
 
         return taskService.getAllTasksByTodoId(todoId);
     }
 
     @GetMapping("/{todoId}/tasks/order-by/priority")
-    public List<Task> getTasksByTodoIdOrderedByPriority
+    public List<TaskDTO> getTasksByTodoIdOrderedByPriority
             (@PathVariable Long todoId)
             throws AppEntityNotFoundException {
 
@@ -97,14 +99,14 @@ public class TodoController {
     }
 
     @GetMapping("/{todoId}/tasks/completed")
-    public List<Task> getCompletedTasks(@PathVariable Long todoId)
+    public List<TaskDTO> getCompletedTasks(@PathVariable Long todoId)
             throws AppEntityNotFoundException {
 
         return taskService.getCompletedTasks(todoId);
     }
 
     @GetMapping("/{todoId}/tasks/uncompleted")
-    public List<Task> getUncompletedTasks(@PathVariable Long todoId)
+    public List<TaskDTO> getUncompletedTasks(@PathVariable Long todoId)
             throws AppEntityNotFoundException {
 
         return taskService.getUncompletedTasks(todoId);

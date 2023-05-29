@@ -9,30 +9,21 @@ import java.util.List;
 public interface UserService {
 
     //Service methods that handle all the operations related to users
-    List<User> getAllUsers();
+    List<UserDTO> getAllUsers();
 
     User getUserById(Long userId) throws AppEntityNotFoundException;
 
-    User getUserByEmailAddress(String emailAddress)
+    UserDTO getUserDTOById(Long userId) throws AppEntityNotFoundException;
+
+    UserDTO getUserByEmailAddress(String emailAddress)
             throws AppEntityNotFoundException;
 
-    User getUserByUsername(String username) throws AppEntityNotFoundException;
+    UserDTO getUserByUsername(String username) throws AppEntityNotFoundException;
 
-    void addNewUser(User user);
+    void addNewUser(UserRegistrationDTO userRegistrationDTO);
 
-    void updateUser(User updatedUser, Long userId)
+    void updateUser(UserRegistrationDTO updatedUser, Long userId)
             throws AppEntityNotFoundException;
 
     void deleteUser(Long userId) throws AppEntityNotFoundException;
-
-
-    /*
-    Service methods that handle all the operations
-    related to the relationship between users and their profiles/settings
-    */
-    void updateUserProfile(Long userId, UserProfile updatedUserProfile)
-            throws AppEntityNotFoundException;
-
-    void updateUserSettings(Long userId, UserSettings updatedUserSettings)
-            throws AppEntityNotFoundException;
 }

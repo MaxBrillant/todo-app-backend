@@ -2,6 +2,7 @@ package com.ndashimye.firstapp.userproject;
 
 import com.ndashimye.firstapp.error.AppEntityNotFoundException;
 import com.ndashimye.firstapp.project.Project;
+import com.ndashimye.firstapp.project.ProjectCreationDTO;
 import com.ndashimye.firstapp.project.ProjectRepository;
 import com.ndashimye.firstapp.project.ProjectService;
 import com.ndashimye.firstapp.user.User;
@@ -11,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -20,6 +22,7 @@ public class UserProjectServiceImpl implements UserProjectService {
 
     private final UserService userService;
     private final ProjectService projectService;
+    private final UserProjectDTOMapper userProjectDTOMapper;
     private UserProjectRepository userProjectRepository;
     private ProjectRepository projectRepository;
 
@@ -51,11 +54,35 @@ public class UserProjectServiceImpl implements UserProjectService {
     }
 
     @Override
-    public void addNewProjectToUser(Long userId, Project project)
+    public List<UserProjectDTO> getAllUserProjects(Long userId) throws AppEntityNotFoundException {
+
+        User user = userService.getUserById(userId);
+        log.info("Fetching all projects of user of ID: {} and username: {}..."
+                , user.getUserId(), user.getUsername());
+
+        List<UserProject> userProjects = userProjectRepository
+                .findUserProjectsOfUserAndOrderByPositionAsc(user);
+        log.info("All projects of user of ID: {} and username: {} were " +
+                "successfully fetched.", user.getUserId(), user.getUsername());
+
+        return userProjects.stream()
+                .map(userProjectDTOMapper)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void addNewProjectToUser(Long userId, ProjectCreationDTO projectCreationDTO)
             throws AppEntityNotFoundException {
 
         User user = userService.getUserById(userId);
         log.info("Adding a new project...");
+
+        Project project = Project
+                .builder()
+                .name(projectCreationDTO.name())
+                .description(projectCreationDTO.description())
+                .coverImageUrl(projectCreationDTO.coverURL())
+                .build();
 
         projectRepository.save(project);
 
@@ -84,6 +111,38 @@ public class UserProjectServiceImpl implements UserProjectService {
                 .build());
         projectRepository.save(project);
         log.info("Project of ID: {} was successfully added.", project.getProjectId());
+    }
+
+    @Override
+    public void updateProject(long userId, long projectId, ProjectCreationDTO updatedProject)
+            throws AppEntityNotFoundException {
+
+        UserProject userProject = getUserProjectByUserIdAndProjectId(userId, projectId);
+
+        if (!userProject.getProjectRole().equals(ProjectRole.CONTRIBUTOR)) {
+            log.info("Updating project of ID: {}...", userProject.getProject().getProjectId());
+
+            userProject.getProject().setName(updatedProject.name());
+            userProject.getProject().setDescription(updatedProject.description());
+            userProject.getProject().setCoverImageUrl(updatedProject.coverURL());
+
+            //projectRepository.save(project);
+            log.info("Project of ID: {} was successfully updated.", userProject.getProject().getProjectId());
+        }
+    }
+
+    @Override
+    public void deleteProject(long userId, long projectId)
+            throws AppEntityNotFoundException {
+
+        UserProject userProject = getUserProjectByUserIdAndProjectId(userId, projectId);
+
+        if (!userProject.getProjectRole().equals(ProjectRole.CONTRIBUTOR)) {
+            log.info("Deleting project of ID: {}...", userProject.getProject().getProjectId());
+            Project deletedProject = userProject.getProject();
+            projectRepository.delete(userProject.getProject());
+            log.info("Project of ID: {} was successfully deleted.", deletedProject.getProjectId());
+        }
     }
 
     @Override

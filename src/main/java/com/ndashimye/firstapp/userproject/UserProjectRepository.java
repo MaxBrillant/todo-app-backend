@@ -11,6 +11,12 @@ import java.util.Optional;
 public interface UserProjectRepository extends JpaRepository<UserProject, Long> {
     Optional<UserProject> findByUserAndProject(User user, Project project);
 
+    @Query("SELECT up from UserProject up " +
+            "INNER JOIN Project p ON p = up.project " +
+            "WHERE up.user = :user " +
+            "ORDER BY up.position ASC")
+    List<UserProject> findUserProjectsOfUserAndOrderByPositionAsc(@Param("user") User user);
+
     @Query("SELECT MAX(up.position) AS max_position " +
             "FROM UserProject AS up " +
             "WHERE up.user = :user")

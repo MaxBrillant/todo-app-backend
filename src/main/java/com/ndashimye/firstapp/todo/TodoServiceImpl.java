@@ -19,6 +19,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -28,6 +29,7 @@ public class TodoServiceImpl implements TodoService {
 
     private final UserService userService;
     private final ProjectService projectService;
+    private final TodoDTOMapper todoDTOMapper;
     private TodoRepository todoRepository;
 
 
@@ -35,37 +37,33 @@ public class TodoServiceImpl implements TodoService {
     //Service methods that handle all the operations related to todos
 
     @Override
-    public Todo getTodoById(Long todoId) throws AppEntityNotFoundException {
+    public TodoDTO getTodoDTOById(Long todoId) throws AppEntityNotFoundException {
         log.info("Fetching todo by ID: {}...", todoId);
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new AppEntityNotFoundException(Todo.class));
         log.info("Todo of ID: {} was successfully fetched.", todoId);
 
-        return todo;
+        return todoDTOMapper.apply(todo);
     }
 
     @Override
-    public void updateTodo(Todo updatedTodo, Long todoId)
+    public Todo getTodoById(Long todoId) throws AppEntityNotFoundException {
+        return todoRepository.findById(todoId)
+                .orElseThrow(() -> new AppEntityNotFoundException(Todo.class));
+    }
+
+    @Override
+    public void updateTodo(TodoCreationDTO updatedTodo, Long todoId)
             throws AppEntityNotFoundException {
 
         Todo todo = getTodoById(todoId);
         log.info("Updating todo of ID: {}...", todo.getTodoId());
 
-        if (Objects.nonNull(updatedTodo.getName()) && !updatedTodo.getName().equals("")) {
-            todo.setName(updatedTodo.getName());
-        }
-        if (Objects.nonNull(updatedTodo.getDescription()) && !updatedTodo.getDescription().equals("")) {
-            todo.setDescription(updatedTodo.getDescription());
-        }
-        if (Objects.nonNull(updatedTodo.getDueTime()) && !updatedTodo.getDueTime().equals("")) {
-            todo.setDueTime(updatedTodo.getDueTime());
-        }
-        if (Objects.nonNull(updatedTodo.getPriorityLevel()) && !String.valueOf(updatedTodo.getPriorityLevel()).equals("")) {
-            todo.setPriorityLevel(updatedTodo.getPriorityLevel());
-        }
-        if (Objects.nonNull(updatedTodo.getIsRecurrent()) && !String.valueOf(updatedTodo.getIsRecurrent()).equals("")) {
-            todo.setIsRecurrent(updatedTodo.getIsRecurrent());
-        }
+        todo.setName(updatedTodo.name());
+        todo.setDescription(updatedTodo.description());
+        todo.setDueTime(updatedTodo.dueTime());
+        todo.setPriorityLevel(updatedTodo.priorityLevel());
+        todo.setIsRecurrent(updatedTodo.isRecurrent());
 
         todoRepository.save(todo);
         log.info("Todo of ID: {} was successfully updated.", todo.getTodoId());
@@ -93,7 +91,7 @@ public class TodoServiceImpl implements TodoService {
     */
 
     @Override
-    public List<Todo> getAllTodosOfUserByProjectId(Long userId, Long projectId)
+    public List<TodoDTO> getAllTodosOfUserByProjectId(Long userId, Long projectId)
             throws AppEntityNotFoundException {
 
         User user = userService.getUserById(userId);
@@ -102,17 +100,27 @@ public class TodoServiceImpl implements TodoService {
         List<Todo> todos = todoRepository.findByProjectAndUserAndOrderByPositionAsc(user, project);
         log.info("All todos of project of ID: {} were successfully fetched.", project.getProjectId());
 
-        return todos;
+        return todos.stream()
+                .map(todoDTOMapper)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void addNewTodoToProject(Todo todo, Long projectId)
+    public void addNewTodoToProject(TodoCreationDTO todoCreationDTO, Long projectId)
             throws AppEntityNotFoundException {
 
         log.info("Adding a new todo to project of ID: {}...", projectId);
 
         //Checking if the project exists and assigning it to the new todo
         Project project = projectService.getProjectById(projectId);
+        Todo todo = Todo.builder()
+                .name(todoCreationDTO.name())
+                .description(todoCreationDTO.description())
+                .dueTime(todoCreationDTO.dueTime())
+                .priorityLevel(todoCreationDTO.priorityLevel())
+                .isRecurrent(todoCreationDTO.isRecurrent())
+                .build();
+
         todo.setProject(project);
 
         //Assign position to new todo
@@ -218,7 +226,7 @@ public class TodoServiceImpl implements TodoService {
     */
 
     @Override
-    public List<Todo> getAllTodosByUserId(Long userId)
+    public List<TodoDTO> getAllTodosByUserId(Long userId)
             throws AppEntityNotFoundException {
 
         User user = userService.getUserById(userId);
@@ -229,11 +237,13 @@ public class TodoServiceImpl implements TodoService {
         log.info("All todos of user of ID: {} and username: {} were " +
                 "successfully fetched.", user.getUserId(), user.getUsername());
 
-        return todos;
+        return todos.stream()
+                .map(todoDTOMapper)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Todo> getAllTodosByUserIdOrderedByPriority(Long userId)
+    public List<TodoDTO> getAllTodosByUserIdOrderedByPriority(Long userId)
             throws AppEntityNotFoundException {
 
         User user = userService.getUserById(userId);
@@ -244,11 +254,13 @@ public class TodoServiceImpl implements TodoService {
         log.info("All todos of user of ID: {} and username: {} ordered by priority " +
                 "were successfully fetched.", user.getUserId(), user.getUsername());
 
-        return todos;
+        return todos.stream()
+                .map(todoDTOMapper)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Todo> getAllTodosByUserIdOrderedByMostRecent(Long userId)
+    public List<TodoDTO> getAllTodosByUserIdOrderedByMostRecent(Long userId)
             throws AppEntityNotFoundException {
 
         User user = userService.getUserById(userId);
@@ -259,11 +271,13 @@ public class TodoServiceImpl implements TodoService {
         log.info("All todos of user of ID: {} and username: {} ordered from most to " +
                 "least recent were successfully fetched.", user.getUserId(), user.getUsername());
 
-        return todos;
+        return todos.stream()
+                .map(todoDTOMapper)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Todo> getAllTodosByUserIdOrderedByLeastRecent(Long userId)
+    public List<TodoDTO> getAllTodosByUserIdOrderedByLeastRecent(Long userId)
             throws AppEntityNotFoundException {
 
         User user = userService.getUserById(userId);
@@ -274,11 +288,13 @@ public class TodoServiceImpl implements TodoService {
         log.info("All todos of user of ID: {} and username: {} ordered from least to " +
                 "most recent were successfully fetched.", user.getUserId(), user.getUsername());
 
-        return todos;
+        return todos.stream()
+                .map(todoDTOMapper)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Todo> getAllTodosByUserIdBetweenDates
+    public List<TodoDTO> getAllTodosByUserIdBetweenDates
             (Long userId, String start, String end)
             throws AppEntityNotFoundException, InvalidTimeFormatException {
 
@@ -318,6 +334,8 @@ public class TodoServiceImpl implements TodoService {
         log.info("All todos of user of ID: {} and username: {} between {} and {} " +
                 "were successfully fetched.", user.getUserId(), user.getUsername(), start, end);
 
-        return todos;
+        return todos.stream()
+                .map(todoDTOMapper)
+                .collect(Collectors.toList());
     }
 }

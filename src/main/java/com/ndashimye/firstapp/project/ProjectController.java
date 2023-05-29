@@ -2,6 +2,7 @@ package com.ndashimye.firstapp.project;
 
 import com.ndashimye.firstapp.error.AppEntityNotFoundException;
 import com.ndashimye.firstapp.todo.Todo;
+import com.ndashimye.firstapp.todo.TodoCreationDTO;
 import com.ndashimye.firstapp.todo.TodoService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,24 +17,6 @@ public class ProjectController {
 
 
 
-    //HTTP endpoints that handle all the operations related to projects
-
-    @PutMapping("/{projectId}")
-    public void updateProject(@PathVariable Long projectId,
-                              @RequestBody Project updatedProject)
-            throws AppEntityNotFoundException {
-
-        projectService.updateProject(projectId, updatedProject);
-    }
-
-    @DeleteMapping("/{projectId}")
-    public void deleteProject(@PathVariable Long projectId)
-            throws AppEntityNotFoundException {
-        projectService.deleteProject(projectId);
-    }
-
-
-
     /*
 
     HTTP endpoints that handle all the operations
@@ -42,9 +25,9 @@ public class ProjectController {
     */
 
     @PostMapping("/{projectId}/todos")
-    public void addTodoToProject(@RequestBody Todo todo, @PathVariable Long projectId)
+    public void addTodoToProject(@RequestBody TodoCreationDTO todoCreationDTO, @PathVariable Long projectId)
             throws AppEntityNotFoundException {
 
-        todoService.addNewTodoToProject(todo, projectId);
+        todoService.addNewTodoToProject(todoCreationDTO, projectId);
     }
 }
