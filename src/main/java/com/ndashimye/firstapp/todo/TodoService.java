@@ -8,9 +8,11 @@ import java.util.List;
 public interface TodoService {
 
     //Service methods that handle all the operations related to todos
+    TodoDTO getTodoDTOById(Long todoId) throws AppEntityNotFoundException;
+
     Todo getTodoById(Long todoId) throws AppEntityNotFoundException;
 
-    void updateTodo(Todo updatedTodo, Long todoId)
+    void updateTodo(TodoCreationDTO updatedTodo, Long todoId)
             throws AppEntityNotFoundException;
 
     void deleteTodo(Long todoId)
@@ -20,10 +22,10 @@ public interface TodoService {
     Service methods that handle all the operations
     related to the relationship between todos and projects
     */
-    List<Todo> getAllTodosOfUserByProjectId(Long userId, Long projectId)
+    List<TodoDTO> getAllTodosOfUserByProjectId(Long userId, Long projectId)
             throws AppEntityNotFoundException;
 
-    void addNewTodoToProject(Todo todo, Long projectId)
+    void addNewTodoToProject(TodoCreationDTO todoCreationDTO, Long projectId)
             throws AppEntityNotFoundException;
 
 
@@ -39,18 +41,18 @@ public interface TodoService {
     Service methods that handle all the operations
     related to the relationship between todos and users
     */
-    List<Todo> getAllTodosByUserId(Long userId) throws AppEntityNotFoundException;
+    List<TodoDTO> getAllTodosByUserId(Long userId) throws AppEntityNotFoundException;
 
-    List<Todo> getAllTodosByUserIdOrderedByPriority(Long userId)
+    List<TodoDTO> getAllTodosByUserIdOrderedByPriority(Long userId)
             throws AppEntityNotFoundException;
 
-    List<Todo> getAllTodosByUserIdOrderedByMostRecent(Long userId)
+    List<TodoDTO> getAllTodosByUserIdOrderedByMostRecent(Long userId)
             throws AppEntityNotFoundException;
 
-    List<Todo> getAllTodosByUserIdOrderedByLeastRecent(Long userId)
+    List<TodoDTO> getAllTodosByUserIdOrderedByLeastRecent(Long userId)
             throws AppEntityNotFoundException;
 
-    List<Todo> getAllTodosByUserIdBetweenDates
+    List<TodoDTO> getAllTodosByUserIdBetweenDates
             (Long userId, String start, String end)
             throws AppEntityNotFoundException, InvalidTimeFormatException;
 }

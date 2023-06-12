@@ -14,6 +14,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -22,6 +23,7 @@ import java.util.Objects;
 public class TaskServiceImpl implements TaskService {
     private final UserService userService;
     private final TodoService todoService;
+    private final TaskDTOMapper taskDTOMapper;
     private TaskRepository taskRepository;
 
 
@@ -29,17 +31,23 @@ public class TaskServiceImpl implements TaskService {
     //Service methods that handle all the operations related to tasks
 
     @Override
-    public Task getTaskById(Long taskId) throws AppEntityNotFoundException {
+    public TaskDTO getTaskDTOById(Long taskId) throws AppEntityNotFoundException {
         log.info("Fetching task by ID: {}...", taskId);
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new AppEntityNotFoundException(Task.class));
         log.info("Task of ID: {} was successfully fetched.", taskId);
 
-        return task;
+        return taskDTOMapper.apply(task);
     }
 
     @Override
-    public List<Task> getCompletedTasks(Long todoId)
+    public Task getTaskById(Long taskId) throws AppEntityNotFoundException {
+        return taskRepository.findById(taskId)
+                .orElseThrow(() -> new AppEntityNotFoundException(Task.class));
+    }
+
+    @Override
+    public List<TaskDTO> getCompletedTasks(Long todoId)
             throws AppEntityNotFoundException {
 
         Todo todo = todoService.getTodoById(todoId);
@@ -47,11 +55,13 @@ public class TaskServiceImpl implements TaskService {
         List<Task> tasks = taskRepository.findByCompletedTasks(todo);
         log.info("All completed tasks of todo of ID: {} were successfully fetched.", todoId);
 
-        return tasks;
+        return tasks.stream()
+                .map(taskDTOMapper)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Task> getUncompletedTasks(Long todoId)
+    public List<TaskDTO> getUncompletedTasks(Long todoId)
             throws AppEntityNotFoundException {
 
         Todo todo = todoService.getTodoById(todoId);
@@ -59,26 +69,21 @@ public class TaskServiceImpl implements TaskService {
         List<Task> tasks = taskRepository.findByUncompletedTasks(todo);
         log.info("All uncompleted tasks of todo of ID: {} were successfully fetched.", todoId);
 
-        return tasks;
+        return tasks.stream()
+                .map(taskDTOMapper)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void updateTask(Task updatedTask, Long taskId)
+    public void updateTask(TaskCreationDTO updatedTask, Long taskId)
             throws AppEntityNotFoundException {
 
         Task task = getTaskById(taskId);
         log.info("Updating task of ID: {}...", task.getTaskId());
 
-
-        if (Objects.nonNull(updatedTask.getName()) && !updatedTask.getName().equals("")) {
-            task.setName(updatedTask.getName());
-        }
-        if (Objects.nonNull(updatedTask.getDueTime()) && !updatedTask.getDueTime().equals("")) {
-            task.setDueTime(updatedTask.getDueTime());
-        }
-        if (Objects.nonNull(updatedTask.getPriorityLevel()) && !String.valueOf(updatedTask.getPriorityLevel()).equals("")) {
-            task.setPriorityLevel(updatedTask.getPriorityLevel());
-        }
+        task.setName(updatedTask.name());
+        task.setDueTime(updatedTask.dueTime());
+        task.setPriorityLevel(updatedTask.priorityLevel());
 
         taskRepository.save(task);
         log.info("Task of ID: {} was successfully updated.", task.getTaskId());
@@ -202,13 +207,19 @@ public class TaskServiceImpl implements TaskService {
     */
 
     @Override
-    public void addNewTaskToTodo(Task task, Long todoId)
+    public void addNewTaskToTodo(TaskCreationDTO taskCreationDTO, Long todoId)
             throws AppEntityNotFoundException {
 
         Todo todo = todoService.getTodoById(todoId);
         log.info("Adding a new task to todo of ID: {}...", todo.getTodoId());
-        task.setTodo(todo);
 
+        Task task = Task.builder()
+                .todo(todo)
+                .parentTask(getTaskById(taskCreationDTO.parentTaskId()))
+                .name(taskCreationDTO.name())
+                .dueTime(taskCreationDTO.dueTime())
+                .priorityLevel(taskCreationDTO.priorityLevel())
+                .build();
 
         taskRepository.save(task);
 
@@ -218,18 +229,20 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getAllTasksByTodoId(Long todoId) throws AppEntityNotFoundException {
+    public List<TaskDTO> getAllTasksByTodoId(Long todoId) throws AppEntityNotFoundException {
 
         Todo todo = todoService.getTodoById(todoId);
         log.info("Fetching all tasks of todo of ID: {}...", todoId);
         List<Task> tasks = taskRepository.findByTodoAndOrderByPositionAsc(todo);
         log.info("All tasks of todo of ID: {} were successfully fetched.", todoId);
 
-        return tasks;
+        return tasks.stream()
+                .map(taskDTOMapper)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Task> getAllTasksByTodoIdOrderedByPriority(Long todoId)
+    public List<TaskDTO> getAllTasksByTodoIdOrderedByPriority(Long todoId)
             throws AppEntityNotFoundException {
 
         Todo todo = todoService.getTodoById(todoId);
@@ -237,7 +250,9 @@ public class TaskServiceImpl implements TaskService {
         List<Task> tasks = taskRepository.findByTodoAndOrderByPriorityLevelDesc(todo);
         log.info("All tasks of todo of ID: {} ordered by priority were successfully fetched.", todoId);
 
-        return tasks;
+        return tasks.stream()
+                .map(taskDTOMapper)
+                .collect(Collectors.toList());
     }
 
 
@@ -306,7 +321,7 @@ public class TaskServiceImpl implements TaskService {
     */
 
     @Override
-    public List<Task> getAllChildTasksByTaskId(Long taskId)
+    public List<TaskDTO> getAllChildTasksByTaskId(Long taskId)
             throws AppEntityNotFoundException {
 
         Task task = getTaskById(taskId);
@@ -314,11 +329,13 @@ public class TaskServiceImpl implements TaskService {
         List<Task> tasks = taskRepository.findByParentTaskAndOrderByPositionAsc(task);
         log.info("All child tasks of task of ID: {} were successfully fetched.", taskId);
 
-        return tasks;
+        return tasks.stream()
+                .map(taskDTOMapper)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Task> getAllChildTasksByTaskIdOrderedByPriority(Long taskId)
+    public List<TaskDTO> getAllChildTasksByTaskIdOrderedByPriority(Long taskId)
             throws AppEntityNotFoundException {
 
         Task task = getTaskById(taskId);
@@ -326,11 +343,13 @@ public class TaskServiceImpl implements TaskService {
         List<Task> tasks = taskRepository.findByParentTaskAndOrderByPriorityLevelDesc(task);
         log.info("All child tasks of task of ID: {} ordered by priority were successfully fetched.", taskId);
 
-        return tasks;
+        return tasks.stream()
+                .map(taskDTOMapper)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Task> getCompletedChildTasks(Long taskId)
+    public List<TaskDTO> getCompletedChildTasks(Long taskId)
             throws AppEntityNotFoundException {
 
         Task task = getTaskById(taskId);
@@ -338,11 +357,13 @@ public class TaskServiceImpl implements TaskService {
         List<Task> tasks = taskRepository.findByCompletedChildTasks(task);
         log.info("All completed child tasks of task of ID: {} were successfully fetched.", taskId);
 
-        return tasks;
+        return tasks.stream()
+                .map(taskDTOMapper)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Task> getUncompletedChildTasks(Long taskId)
+    public List<TaskDTO> getUncompletedChildTasks(Long taskId)
             throws AppEntityNotFoundException {
 
         Task task = getTaskById(taskId);
@@ -350,6 +371,8 @@ public class TaskServiceImpl implements TaskService {
         List<Task> tasks = taskRepository.findByUncompletedChildTasks(task);
         log.info("All uncompleted child tasks of task of ID: {} were successfully fetched.", taskId);
 
-        return tasks;
+        return tasks.stream()
+                .map(taskDTOMapper)
+                .collect(Collectors.toList());
     }
 }

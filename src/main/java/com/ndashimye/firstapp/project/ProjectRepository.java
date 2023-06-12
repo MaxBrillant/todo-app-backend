@@ -9,10 +9,4 @@ import java.util.List;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-
-    @Query("SELECT p from Project p " +
-            "INNER JOIN UserProject up ON p = up.project " +
-            "WHERE up.user = :user " +
-            "ORDER BY up.position ASC")
-    List<Project> findProjectsOfUserAndOrderByPositionAsc(@Param("user") User user);
 }

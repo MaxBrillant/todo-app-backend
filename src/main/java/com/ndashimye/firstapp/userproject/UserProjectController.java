@@ -2,6 +2,7 @@ package com.ndashimye.firstapp.userproject;
 
 import com.ndashimye.firstapp.error.AppEntityNotFoundException;
 import com.ndashimye.firstapp.project.Project;
+import com.ndashimye.firstapp.project.ProjectCreationDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,10 +24,10 @@ public class UserProjectController {
 
     @PostMapping()
     public void addNewProjectToUser(@PathVariable Long userId,
-                           @RequestBody Project project)
+                           @RequestBody ProjectCreationDTO projectCreationDTO)
             throws AppEntityNotFoundException {
 
-        userProjectService.addNewProjectToUser(userId, project);
+        userProjectService.addNewProjectToUser(userId, projectCreationDTO);
     }
 
     @PostMapping("/{projectId}")
@@ -35,6 +36,23 @@ public class UserProjectController {
             throws AppEntityNotFoundException {
 
         userProjectService.addExistingProjectToUser(userId, projectId);
+    }
+
+    @PutMapping("/{projectId}")
+    public void updateProject(@PathVariable Long userId,
+                              @PathVariable Long projectId,
+                              @RequestBody ProjectCreationDTO updatedProject)
+            throws AppEntityNotFoundException {
+
+        userProjectService.updateProject(userId, projectId, updatedProject);
+    }
+
+    @DeleteMapping("/{projectId}")
+    public void deleteProject(@PathVariable Long userId,
+                              @PathVariable Long projectId)
+            throws AppEntityNotFoundException {
+
+        userProjectService.deleteProject(userId, projectId);
     }
 
     @PutMapping("/{projectId}/update/role")

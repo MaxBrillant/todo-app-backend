@@ -7,9 +7,11 @@ import com.ndashimye.firstapp.project.Project;
 import com.ndashimye.firstapp.project.ProjectService;
 import com.ndashimye.firstapp.task.TaskService;
 import com.ndashimye.firstapp.todo.Todo;
+import com.ndashimye.firstapp.todo.TodoDTO;
 import com.ndashimye.firstapp.todo.TodoService;
-import com.ndashimye.firstapp.userprofile.UserProfile;
-import com.ndashimye.firstapp.usersettings.UserSettings;
+import com.ndashimye.firstapp.userproject.UserProject;
+import com.ndashimye.firstapp.userproject.UserProjectDTO;
+import com.ndashimye.firstapp.userproject.UserProjectService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -22,7 +24,7 @@ public class UserController {
     private final UserService userService;
     private final TodoService todoService;
     private final TaskService taskService;
-    private final ProjectService projectService;
+    private final UserProjectService userProjectService;
     private final BlackListedUserService blackListedUserService;
 
 
@@ -30,12 +32,12 @@ public class UserController {
     //HTTP endpoints that handle all the operations related to users
 
     @PostMapping()
-    public void addUser(@RequestBody User user) {
-        userService.addNewUser(user);
+    public void addUser(@RequestBody UserRegistrationDTO userRegistrationDTO) {
+        userService.addNewUser(userRegistrationDTO);
     }
 
     @PutMapping("/{userId}")
-    public void updateUser(@RequestBody User updatedUser,
+    public void updateUser(@RequestBody UserRegistrationDTO updatedUser,
                            @PathVariable Long userId)
             throws AppEntityNotFoundException {
 
@@ -50,54 +52,29 @@ public class UserController {
 
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{userId}")
-    public User getUserById(@PathVariable Long userId)
+    public UserDTO getUserById(@PathVariable Long userId)
             throws AppEntityNotFoundException {
 
-        return userService.getUserById(userId);
+        return userService.getUserDTOById(userId);
     }
 
     @GetMapping("/email/{emailAddress}")
-    public User getUserByEmailAddress(@PathVariable String emailAddress)
+    public UserDTO getUserByEmailAddress(@PathVariable String emailAddress)
             throws AppEntityNotFoundException {
 
         return userService.getUserByEmailAddress(emailAddress);
     }
 
     @GetMapping("/username/{username}")
-    public User getUserByUsername(@PathVariable String username)
+    public UserDTO getUserByUsername(@PathVariable String username)
             throws AppEntityNotFoundException {
 
         return userService.getUserByUsername(username);
-    }
-
-
-
-    /*
-
-    HTTP endpoints that handle all the operations
-    related to the relationship between users and their profiles/settings
-
-    */
-
-    @PutMapping("/{userId}/profile")
-    public void updateUserProfile(@PathVariable Long userId,
-                                  @RequestBody UserProfile updatedUserProfile)
-            throws AppEntityNotFoundException {
-
-        userService.updateUserProfile(userId, updatedUserProfile);
-    }
-
-    @PutMapping("/{userId}/settings")
-    public void updateUserSettings(@PathVariable Long userId,
-                                   @RequestBody UserSettings updatedUserSettings)
-            throws AppEntityNotFoundException {
-
-        userService.updateUserSettings(userId, updatedUserSettings);
     }
 
 
@@ -110,18 +87,18 @@ public class UserController {
     */
 
     @GetMapping("/{userId}/projects/{projectId}/todos")
-    public List<Todo> getTodosOfUserByProjectId(@PathVariable Long userId,
-                                          @PathVariable Long projectId)
+    public List<TodoDTO> getTodosOfUserByProjectId(@PathVariable Long userId,
+                                                   @PathVariable Long projectId)
             throws AppEntityNotFoundException {
 
         return todoService.getAllTodosOfUserByProjectId(userId, projectId);
     }
 
     @GetMapping("/{userId}/projects")
-    public List<Project> getProjectsByUserId(@PathVariable Long userId)
+    public List<UserProjectDTO> getProjectsByUserId(@PathVariable Long userId)
             throws AppEntityNotFoundException {
 
-        return projectService.getAllProjectsByUserId(userId);
+        return userProjectService.getAllUserProjects(userId);
     }
 
 
@@ -134,35 +111,35 @@ public class UserController {
     */
 
     @GetMapping("/{userId}/todos")
-    public List<Todo> getTodosByUserId(@PathVariable Long userId)
+    public List<TodoDTO> getTodosByUserId(@PathVariable Long userId)
             throws AppEntityNotFoundException {
 
         return todoService.getAllTodosByUserId(userId);
     }
 
     @GetMapping("/{userId}/todos/order-by/priority")
-    public List<Todo> getTodosByUserIdOrderedByPriority(@PathVariable Long userId)
+    public List<TodoDTO> getTodosByUserIdOrderedByPriority(@PathVariable Long userId)
             throws AppEntityNotFoundException {
 
         return todoService.getAllTodosByUserIdOrderedByPriority(userId);
     }
 
     @GetMapping("/{userId}/todos/order-by/due-time/most-recent")
-    public List<Todo> getTodosByUserIdOrderedByMostRecent(@PathVariable Long userId)
+    public List<TodoDTO> getTodosByUserIdOrderedByMostRecent(@PathVariable Long userId)
             throws AppEntityNotFoundException {
 
         return todoService.getAllTodosByUserIdOrderedByMostRecent(userId);
     }
 
     @GetMapping("/{userId}/todos/order-by/due-time/least-recent")
-    public List<Todo> getTodosByUserIdOrderedByLeastRecent(@PathVariable Long userId)
+    public List<TodoDTO> getTodosByUserIdOrderedByLeastRecent(@PathVariable Long userId)
             throws AppEntityNotFoundException {
 
         return todoService.getAllTodosByUserIdOrderedByLeastRecent(userId);
     }
 
     @GetMapping("/{userId}/todos/between")
-    public List<Todo> getTodosBetweenDates
+    public List<TodoDTO> getTodosBetweenDates
             (@PathVariable Long userId
                     , @RequestParam String start, @RequestParam String end)
             throws AppEntityNotFoundException, InvalidTimeFormatException {
@@ -181,7 +158,7 @@ public class UserController {
     */
 
     @GetMapping("/{userId}/projects/{projectId}/restricted-todos")
-    public List<Todo> getRestrictedTodosOfUserInProject
+    public List<TodoDTO> getRestrictedTodosOfUserInProject
             (@PathVariable Long userId, @PathVariable Long projectId)
             throws AppEntityNotFoundException {
 
