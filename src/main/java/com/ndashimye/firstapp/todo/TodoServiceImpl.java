@@ -18,7 +18,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -99,6 +98,21 @@ public class TodoServiceImpl implements TodoService {
         log.info("Fetching all todos of project of ID: {}...", projectId);
         List<Todo> todos = todoRepository.findByProjectAndUserAndOrderByPositionAsc(user, project);
         log.info("All todos of project of ID: {} were successfully fetched.", project.getProjectId());
+
+        return todos.stream()
+                .map(todoDTOMapper)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TodoDTO> getLastTodosOfUserByProjectId(Long userId, Long projectId)
+            throws AppEntityNotFoundException {
+
+        User user = userService.getUserById(userId);
+        Project project = projectService.getProjectById(projectId);
+        log.info("Fetching the last todos of project of ID: {}...", projectId);
+        List<Todo> todos = todoRepository.findByProjectAndUserAndOrderByPositionDesc(user, project);
+        log.info("The last todos of project of ID: {} were successfully fetched.", project.getProjectId());
 
         return todos.stream()
                 .map(todoDTOMapper)

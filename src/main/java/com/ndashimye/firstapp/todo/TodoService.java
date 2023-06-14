@@ -25,6 +25,9 @@ public interface TodoService {
     List<TodoDTO> getAllTodosOfUserByProjectId(Long userId, Long projectId)
             throws AppEntityNotFoundException;
 
+    List<TodoDTO> getLastTodosOfUserByProjectId(Long userId, Long projectId)
+            throws AppEntityNotFoundException;
+
     void addNewTodoToProject(TodoCreationDTO todoCreationDTO, Long projectId)
             throws AppEntityNotFoundException;
 
