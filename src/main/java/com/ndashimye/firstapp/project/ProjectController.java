@@ -1,7 +1,6 @@
 package com.ndashimye.firstapp.project;
 
 import com.ndashimye.firstapp.error.AppEntityNotFoundException;
-import com.ndashimye.firstapp.todo.Todo;
 import com.ndashimye.firstapp.todo.TodoCreationDTO;
 import com.ndashimye.firstapp.todo.TodoService;
 import lombok.AllArgsConstructor;
@@ -11,8 +10,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/v1/projects")
 @AllArgsConstructor
 public class ProjectController {
-
-    private final ProjectService projectService;
     private final TodoService todoService;
 
 

@@ -39,6 +39,8 @@ public interface TaskService {
 
     List<TaskDTO> getAllTasksByTodoId(Long todoId) throws AppEntityNotFoundException;
 
+    List<TaskDTO> getLastTasksByTodoId(Long todoId) throws AppEntityNotFoundException;
+
     List<TaskDTO> getAllTasksByTodoIdOrderedByPriority(Long todoId)
             throws AppEntityNotFoundException;
 
@@ -54,6 +56,9 @@ public interface TaskService {
     related to the relationship between tasks and their children tasks (sub-tasks)
     */
     List<TaskDTO> getAllChildTasksByTaskId(Long taskId)
+            throws AppEntityNotFoundException;
+
+    List<TaskDTO> getLastChildTasksByTaskId(Long taskId)
             throws AppEntityNotFoundException;
 
     List<TaskDTO> getAllChildTasksByTaskIdOrderedByPriority(Long taskId)

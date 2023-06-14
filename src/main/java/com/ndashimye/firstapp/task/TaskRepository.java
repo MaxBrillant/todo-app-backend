@@ -21,6 +21,12 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("SELECT t FROM Task t " +
             "WHERE t.todo = :todo " +
             "AND t.parentTask IS NULL " +
+            "ORDER BY t.position DESC")
+    List<Task> findByTodoAndOrderByPositionDesc(@Param("todo") Todo todo);
+
+    @Query("SELECT t FROM Task t " +
+            "WHERE t.todo = :todo " +
+            "AND t.parentTask IS NULL " +
             "ORDER BY t.priorityLevel DESC")
     List<Task> findByTodoAndOrderByPriorityLevelDesc(@Param("todo") Todo todo);
 
@@ -44,6 +50,11 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             "WHERE t.parentTask = :task " +
             "ORDER BY t.position ASC")
     List<Task> findByParentTaskAndOrderByPositionAsc(@Param("task") Task task);
+
+    @Query("SELECT t FROM Task t " +
+            "WHERE t.parentTask = :task " +
+            "ORDER BY t.position DESC")
+    List<Task> findByParentTaskAndOrderByPositionDesc(@Param("task") Task task);
 
     @Query("SELECT t FROM Task t " +
             "WHERE t.parentTask = :task " +

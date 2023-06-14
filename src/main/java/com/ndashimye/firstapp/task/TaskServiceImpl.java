@@ -14,6 +14,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -133,13 +134,13 @@ public class TaskServiceImpl implements TaskService {
 
         if (Objects.isNull(task.getParentTask())) {
             log.info("Calculating the maximum position value...");
-            Task lastTask = taskRepository.findLastTaskByTodoAndNoParentTaskAndOrderByPosition
-                    (task.getTodo()).orElseThrow(() -> new AppEntityNotFoundException(Task.class));
+            Optional<Task> lastTask = taskRepository.findLastTaskByTodoAndNoParentTaskAndOrderByPosition
+                    (task.getTodo());
             log.info("Assigning a position to task of ID: {}...", task.getTaskId());
-            if (Objects.isNull(lastTask)) {
+            if (lastTask.isEmpty()) {
                 task.setPosition(1);
             } else {
-                task.setPosition(lastTask.getPosition() + 1);
+                task.setPosition(lastTask.get().getPosition() + 1);
             }
         } else {
             log.info("Calculating the maximum position value of all tasks " +
@@ -215,15 +216,16 @@ public class TaskServiceImpl implements TaskService {
 
         Task task = Task.builder()
                 .todo(todo)
-                .parentTask(getTaskById(taskCreationDTO.parentTaskId()))
+                .parentTask(taskCreationDTO.parentTaskId()==null?null:getTaskById(taskCreationDTO.parentTaskId()))
                 .name(taskCreationDTO.name())
                 .dueTime(taskCreationDTO.dueTime())
                 .priorityLevel(taskCreationDTO.priorityLevel())
                 .build();
 
+        assignPositionToNewTask(task);
+
         taskRepository.save(task);
 
-        assignPositionToNewTask(task);
         log.info("Task of ID: {} was successfully added to todo of ID: {}."
                 , task.getTaskId(), todo.getTodoId());
     }
@@ -235,6 +237,19 @@ public class TaskServiceImpl implements TaskService {
         log.info("Fetching all tasks of todo of ID: {}...", todoId);
         List<Task> tasks = taskRepository.findByTodoAndOrderByPositionAsc(todo);
         log.info("All tasks of todo of ID: {} were successfully fetched.", todoId);
+
+        return tasks.stream()
+                .map(taskDTOMapper)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TaskDTO> getLastTasksByTodoId(Long todoId) throws AppEntityNotFoundException {
+
+        Todo todo = todoService.getTodoById(todoId);
+        log.info("Fetching the last tasks of todo of ID: {}...", todoId);
+        List<Task> tasks = taskRepository.findByTodoAndOrderByPositionDesc(todo);
+        log.info("The last tasks of todo of ID: {} were successfully fetched.", todoId);
 
         return tasks.stream()
                 .map(taskDTOMapper)
@@ -328,6 +343,20 @@ public class TaskServiceImpl implements TaskService {
         log.info("Fetching all child tasks of task of ID: {}...", taskId);
         List<Task> tasks = taskRepository.findByParentTaskAndOrderByPositionAsc(task);
         log.info("All child tasks of task of ID: {} were successfully fetched.", taskId);
+
+        return tasks.stream()
+                .map(taskDTOMapper)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TaskDTO> getLastChildTasksByTaskId(Long taskId)
+            throws AppEntityNotFoundException {
+
+        Task task = getTaskById(taskId);
+        log.info("Fetching the last child tasks of task of ID: {}...", taskId);
+        List<Task> tasks = taskRepository.findByParentTaskAndOrderByPositionDesc(task);
+        log.info("The last child tasks of task of ID: {} were successfully fetched.", taskId);
 
         return tasks.stream()
                 .map(taskDTOMapper)
