@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @AllArgsConstructor
 public class TaskGenerationService {
+    private final String API_KEY = System.getenv("OPENAI_API_KEY");
     private final TodoService todoService;
     private final TaskService taskService;
     private final GeneratedTaskDTOMapper generatedTaskDTOMapper;
@@ -86,7 +87,7 @@ public class TaskGenerationService {
         String json = gson.toJson(lastChildTasks);
 
         String prompt = "Here is a task of ID: '" + task.id() + "'" +
-                ", name: '" + task.name() + "'" +
+                ", name: '" + task.name() + "' " +
                 "The task belongs to a todo of ID: " + todo.id() + ". " +
                 "Understand the specific task and Generate " + numberOfChildTasks + "" +
                 " child tasks or sub-tasks that will need to be executed in order to complete the task" +
@@ -107,7 +108,7 @@ public class TaskGenerationService {
         ChatMessage message = new ChatMessage("user", prompt);
         chatMessages.add(message);
 
-        OpenAiService service = new OpenAiService("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", Duration.ofMinutes(1));
+        OpenAiService service = new OpenAiService(API_KEY, Duration.ofMinutes(1));
         ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
                 .model("gpt-3.5-turbo")
                 .messages(chatMessages)
