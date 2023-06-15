@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @AllArgsConstructor
 public class TodoGenerationService {
+    private final String API_KEY = System.getenv("OPENAI_API_KEY");
     private final UserProjectService userProjectService;
     private final TodoService todoService;
     private final GeneratedTodoDTOMapper generatedTodoDTOMapper;
@@ -85,7 +86,7 @@ public class TodoGenerationService {
         ChatMessage message = new ChatMessage("user", prompt);
         chatMessages.add(message);
 
-        OpenAiService service = new OpenAiService("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", Duration.ofMinutes(1));
+        OpenAiService service = new OpenAiService(API_KEY, Duration.ofMinutes(1));
         ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
                 .model("gpt-3.5-turbo")
                 .messages(chatMessages)
