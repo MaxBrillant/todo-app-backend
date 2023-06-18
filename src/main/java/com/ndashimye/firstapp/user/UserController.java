@@ -117,13 +117,6 @@ public class UserController {
         return todoService.getAllTodosByUserId(userId);
     }
 
-    @GetMapping("/{userId}/todos/order-by/priority")
-    public List<TodoDTO> getTodosByUserIdOrderedByPriority(@PathVariable Long userId)
-            throws AppEntityNotFoundException {
-
-        return todoService.getAllTodosByUserIdOrderedByPriority(userId);
-    }
-
     @GetMapping("/{userId}/todos/order-by/due-time/most-recent")
     public List<TodoDTO> getTodosByUserIdOrderedByMostRecent(@PathVariable Long userId)
             throws AppEntityNotFoundException {

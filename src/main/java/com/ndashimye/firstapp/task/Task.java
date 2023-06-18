@@ -69,6 +69,10 @@ public class Task {
     private ZonedDateTime completionTime;
 
 
+    @Column(name = "is_recurrent")
+    private Boolean isRecurrent = false;
+
+
     @Column(name = "priority_level")
     @Range(min = 1, max = 5, message = "The priority level must be between 1 and 5")
     private Integer priorityLevel;

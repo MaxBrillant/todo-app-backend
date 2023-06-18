@@ -6,6 +6,7 @@ public record TaskCreationDTO(Long todoId,
                               Long parentTaskId,
                               String name,
                               ZonedDateTime dueTime,
+                              boolean isRecurrent,
                               Integer priorityLevel
 ) {
 }

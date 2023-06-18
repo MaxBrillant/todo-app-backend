@@ -87,7 +87,7 @@ public class TaskGenerationService {
         String json = gson.toJson(lastChildTasks);
 
         String prompt = "Here is a task of ID: '" + task.id() + "'" +
-                ", name: '" + task.name() + "' " +
+                ", name: '" + task.name() + "'. " +
                 "The task belongs to a todo of ID: " + todo.id() + ". " +
                 "Understand the specific task and Generate " + numberOfChildTasks + "" +
                 " child tasks or sub-tasks that will need to be executed in order to complete the task" +

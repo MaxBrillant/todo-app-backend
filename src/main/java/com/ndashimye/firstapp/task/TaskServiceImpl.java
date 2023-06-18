@@ -84,6 +84,7 @@ public class TaskServiceImpl implements TaskService {
 
         task.setName(updatedTask.name());
         task.setDueTime(updatedTask.dueTime());
+        task.setIsRecurrent(updatedTask.isRecurrent());
         task.setPriorityLevel(updatedTask.priorityLevel());
 
         taskRepository.save(task);
@@ -219,6 +220,7 @@ public class TaskServiceImpl implements TaskService {
                 .parentTask(taskCreationDTO.parentTaskId()==null?null:getTaskById(taskCreationDTO.parentTaskId()))
                 .name(taskCreationDTO.name())
                 .dueTime(taskCreationDTO.dueTime())
+                .isRecurrent(taskCreationDTO.isRecurrent())
                 .priorityLevel(taskCreationDTO.priorityLevel())
                 .build();
 

@@ -10,6 +10,7 @@ public record TaskDTO(Long id,
                       String name,
                       ZonedDateTime dueTime,
                       ZonedDateTime completionTime,
+                      boolean isRecurrent,
                       Integer priorityLevel,
                       Integer position,
                       List<TaskDTO> childTasks

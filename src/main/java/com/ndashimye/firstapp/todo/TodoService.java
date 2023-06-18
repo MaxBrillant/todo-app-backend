@@ -46,9 +46,6 @@ public interface TodoService {
     */
     List<TodoDTO> getAllTodosByUserId(Long userId) throws AppEntityNotFoundException;
 
-    List<TodoDTO> getAllTodosByUserIdOrderedByPriority(Long userId)
-            throws AppEntityNotFoundException;
-
     List<TodoDTO> getAllTodosByUserIdOrderedByMostRecent(Long userId)
             throws AppEntityNotFoundException;
 

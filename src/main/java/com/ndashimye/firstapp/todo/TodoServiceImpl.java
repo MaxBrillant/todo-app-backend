@@ -61,8 +61,6 @@ public class TodoServiceImpl implements TodoService {
         todo.setName(updatedTodo.name());
         todo.setDescription(updatedTodo.description());
         todo.setDueTime(updatedTodo.dueTime());
-        todo.setPriorityLevel(updatedTodo.priorityLevel());
-        todo.setIsRecurrent(updatedTodo.isRecurrent());
 
         todoRepository.save(todo);
         log.info("Todo of ID: {} was successfully updated.", todo.getTodoId());
@@ -131,8 +129,6 @@ public class TodoServiceImpl implements TodoService {
                 .name(todoCreationDTO.name())
                 .description(todoCreationDTO.description())
                 .dueTime(todoCreationDTO.dueTime())
-                .priorityLevel(todoCreationDTO.priorityLevel())
-                .isRecurrent(todoCreationDTO.isRecurrent())
                 .build();
 
         todo.setProject(project);
@@ -250,23 +246,6 @@ public class TodoServiceImpl implements TodoService {
         List<Todo> todos = todoRepository.findAccessibleTodosOfUserAndOrderByPositionAsc(user);
         log.info("All todos of user of ID: {} and username: {} were " +
                 "successfully fetched.", user.getUserId(), user.getUsername());
-
-        return todos.stream()
-                .map(todoDTOMapper)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<TodoDTO> getAllTodosByUserIdOrderedByPriority(Long userId)
-            throws AppEntityNotFoundException {
-
-        User user = userService.getUserById(userId);
-        log.info("Fetching all todos of user of ID: {} and username: {} ordered by priority..."
-                , user.getUserId(), user.getUsername());
-
-        List<Todo> todos = todoRepository.findAccessibleTodosOfUserAndOrderByPriorityLevelDesc(user);
-        log.info("All todos of user of ID: {} and username: {} ordered by priority " +
-                "were successfully fetched.", user.getUserId(), user.getUsername());
 
         return todos.stream()
                 .map(todoDTOMapper)

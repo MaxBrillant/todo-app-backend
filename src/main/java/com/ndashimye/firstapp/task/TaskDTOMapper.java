@@ -17,6 +17,7 @@ public class TaskDTOMapper implements Function<Task, TaskDTO> {
                 task.getName(),
                 task.getDueTime(),
                 task.getCompletionTime(),
+                task.getIsRecurrent(),
                 task.getPriorityLevel(),
                 task.getPosition(),
                 task.getChildTasks().stream()

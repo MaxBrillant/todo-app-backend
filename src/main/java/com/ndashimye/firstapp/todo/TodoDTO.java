@@ -7,9 +7,7 @@ public record TodoDTO(Long id,
                       String name,
                       String description,
                       ZonedDateTime dueTime,
-                      Integer priorityLevel,
                       Integer position,
-                      boolean isRecurrent,
                       ZonedDateTime dateCreated,
                       ZonedDateTime lastUpdated)
 {
