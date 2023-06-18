@@ -14,9 +14,7 @@ public class TodoDTOMapper implements Function<Todo, TodoDTO> {
                 todo.getName(),
                 todo.getDescription(),
                 todo.getDueTime(),
-                todo.getPriorityLevel(),
                 todo.getPosition(),
-                todo.getIsRecurrent(),
                 todo.getCreatedAt(),
                 todo.getUpdatedAt());
     }

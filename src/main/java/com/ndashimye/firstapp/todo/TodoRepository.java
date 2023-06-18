@@ -26,14 +26,6 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
             "LEFT JOIN BlacklistedUser bu ON t = bu.todo " +
             "WHERE up.user = :user " +
             "AND bu.blacklistedUserId IS NULL " +
-            "ORDER BY t.position DESC")
-    List<Todo> findAccessibleTodosOfUserAndOrderByPriorityLevelDesc(@Param("user") User user);
-
-    @Query("SELECT t from Todo t " +
-            "INNER JOIN UserProject up ON t.project = up.project " +
-            "LEFT JOIN BlacklistedUser bu ON t = bu.todo " +
-            "WHERE up.user = :user " +
-            "AND bu.blacklistedUserId IS NULL " +
             "ORDER BY t.dueTime DESC")
     List<Todo> findAccessibleTodosOfUserAndOrderByDueTimeDesc(@Param("user") User user);
 

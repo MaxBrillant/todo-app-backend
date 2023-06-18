@@ -59,18 +59,9 @@ public class Todo {
     private ZonedDateTime dueTime;
 
 
-    @Column(name = "priority_level")
-    @Range(min = 1, max = 5, message = "The priority level must be between 1 and 5")
-    private Integer priorityLevel;
-
-
     @Column(name = "position", nullable = false)
     @NotNull(message = "The position is required")
     private Integer position;
-
-
-    @Column(name = "is_recurrent")
-    private Boolean isRecurrent = false;
 
 
     @Column(name = "created_at")

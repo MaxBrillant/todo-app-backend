@@ -50,9 +50,8 @@ public class TodoGenerationService {
                     .stream().map(generatedTodoDTOMapper)
                     .map(generatedTodoDTO -> new GeneratedTodoDTO(generatedTodoDTO.projectId(),
                             generatedTodoDTO.name(),
-                            null,
-                            generatedTodoDTO.priorityLevel())
-                    ).collect(Collectors.toList());
+                            null
+                    )).collect(Collectors.toList());
 
 
             Gson gson = new Gson();
@@ -67,9 +66,8 @@ public class TodoGenerationService {
                     " in JSON format with the following properties: " +
                     "projectId(which is equal to the project ID)" +
                     ", name(regexp = ^[a-zA-Z]([a-zA-Z0-9]|[-_. ](?![._-])){1,48}[a-zA-Z0-9]$ )" +
-                    ", description(should be unique, creative, well-written, descriptive and easy to understand, " +
-                    "regexp = ^[\\w\\s.,;:!?'\\\"(){}\\[\\]-_*&#@^+=|%$\\/]{10,500}$ )" +
-                    " and priorityLevel(which is an integer between 1 and 5)." +
+                    " and description(should be unique, creative, well-written, descriptive and easy to understand, " +
+                    "regexp = ^[\\w\\s.,;:!?'\\\"(){}\\[\\]-_*&#@^+=|%$\\/]{10,500}$ )." +
                     " The generated todos or actions should be a continuity of the following todos: " + json + ".";
 
             System.out.println(prompt);

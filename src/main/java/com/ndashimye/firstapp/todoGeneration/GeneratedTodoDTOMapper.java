@@ -12,7 +12,6 @@ public class GeneratedTodoDTOMapper implements Function<TodoDTO, GeneratedTodoDT
         return new GeneratedTodoDTO(
                 todoDTO.projectId(),
                 todoDTO.name(),
-                todoDTO.description(),
-                todoDTO.priorityLevel());
+                todoDTO.description());
     }
 }
