@@ -1,6 +1,5 @@
 package com.ndashimye.firstapp.taskGeneration;
 
-public record GeneratedTaskDTO(Long todoId,
-                               String name,
+public record GeneratedTaskDTO(String name,
                                Integer priorityLevel) {
 }

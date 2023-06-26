@@ -1,8 +1,8 @@
-package com.ndashimye.firstapp.todo;
+package com.ndashimye.firstapp.goal;
 
 import java.time.ZonedDateTime;
 
-public record TodoDTO(Long id,
+public record GoalDTO(Long id,
                       Long projectId,
                       String name,
                       String description,

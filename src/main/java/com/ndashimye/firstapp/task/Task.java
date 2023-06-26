@@ -2,7 +2,7 @@ package com.ndashimye.firstapp.task;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
-import com.ndashimye.firstapp.todo.Todo;
+import com.ndashimye.firstapp.goal.Goal;
 import com.ndashimye.firstapp.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -33,10 +33,10 @@ public class Task {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "todo_id", nullable = false)
-    @NotNull(message = "The todo is required")
+    @JoinColumn(name = "goal_id", nullable = false)
+    @NotNull(message = "The goal is required")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Todo todo;
+    private Goal goal;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_task_id")

@@ -1,4 +1,4 @@
-package com.ndashimye.firstapp.todo;
+package com.ndashimye.firstapp.goal;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
@@ -10,7 +10,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.validator.constraints.Range;
 
 import java.time.ZonedDateTime;
 
@@ -20,14 +19,14 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "todo")
+@Table(name = "goal")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Todo {
+public class Goal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "todo_id", nullable = false, unique = true, updatable = false)
-    private Long todoId;
+    @Column(name = "goal_id", nullable = false, unique = true, updatable = false)
+    private Long goalId;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,10 +38,10 @@ public class Todo {
 
     @Column(name = "name", nullable = false)
     @Pattern(regexp = "^[a-zA-Z]([a-zA-Z0-9]|[-_. ](?![._-])){1,48}[a-zA-Z0-9]$"
-            , message = "The todo name should be 3 to 50 characters long." +
+            , message = "The goal name should be 3 to 50 characters long." +
             "It should start with an uppercase or lowercase letter." +
             "It can contain uppercase letters, lowercase letters, digits, spaces, and special characters '-', '_', and '.'." +
-            "The special characters '-', '_', and '.' must not appear consecutively or at the beginning or end of the todo name.")
+            "The special characters '-', '_', and '.' must not appear consecutively or at the beginning or end of the goal name.")
     private String name;
 
 

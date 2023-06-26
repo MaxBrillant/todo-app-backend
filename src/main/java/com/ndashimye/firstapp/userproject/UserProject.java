@@ -22,7 +22,7 @@ public class UserProject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_project_id", nullable = false, unique = true, updatable = false)
-    private Long userTodoId;
+    private Long userProjectId;
 
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -57,24 +57,6 @@ public class TaskController {
     /*
 
     HTTP endpoints that handle all the operations
-    related to the relationship between tasks and their parent tasks
-
-    */
-
-    @PutMapping("/{taskId}/parent-task/{parentTaskId}/update")
-    public void updateParentTask(@PathVariable Long taskId,
-                                 @PathVariable Long parentTaskId,
-                                 @RequestParam int position)
-            throws AppEntityNotFoundException {
-
-        taskService.updateParentTask(taskId, parentTaskId, position);
-    }
-
-
-
-    /*
-
-    HTTP endpoints that handle all the operations
     related to the relationship between tasks and their children tasks (sub-tasks)
 
     */

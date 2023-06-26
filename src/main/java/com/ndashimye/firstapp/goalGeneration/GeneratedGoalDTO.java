@@ -1,6 +1,6 @@
-package com.ndashimye.firstapp.todoGeneration;
+package com.ndashimye.firstapp.goalGeneration;
 
-public record GeneratedTodoDTO(Long projectId,
+public record GeneratedGoalDTO(Long projectId,
                                String name,
                                String description) {
 }

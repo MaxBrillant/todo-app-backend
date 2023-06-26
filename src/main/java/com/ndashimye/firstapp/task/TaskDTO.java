@@ -4,7 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 public record TaskDTO(Long id,
-                      Long todoId,
+                      Long goalId,
                       Long parentTaskId,
                       Long completedByUserId,
                       String name,

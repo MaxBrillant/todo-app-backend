@@ -1,12 +1,12 @@
-package com.ndashimye.firstapp.todoGeneration;
+package com.ndashimye.firstapp.goalGeneration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.ndashimye.firstapp.error.AppEntityNotFoundException;
-import com.ndashimye.firstapp.todo.TodoDTO;
-import com.ndashimye.firstapp.todo.TodoService;
+import com.ndashimye.firstapp.goal.GoalDTO;
+import com.ndashimye.firstapp.goal.GoalService;
 import com.ndashimye.firstapp.userproject.ProjectRole;
 import com.ndashimye.firstapp.userproject.UserProject;
 import com.ndashimye.firstapp.userproject.UserProjectService;
@@ -25,61 +25,61 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class TodoGenerationService {
+public class GoalGenerationService {
     private final String API_KEY = System.getenv("OPENAI_API_KEY");
     private final UserProjectService userProjectService;
-    private final TodoService todoService;
-    private final GeneratedTodoDTOMapper generatedTodoDTOMapper;
+    private final GoalService goalService;
+    private final GeneratedGoalDTOMapper generatedGoalDTOMapper;
 
-    public List<GeneratedTodoDTO> generateTodosOfProject(Long userId, Long projectId, Integer numberOfTodos)
+    public List<GeneratedGoalDTO> generateGoalsOfProject(Long userId, Long projectId, Integer numberOfGoals)
             throws AppEntityNotFoundException, IllegalAccessException {
 
-        numberOfTodos = numberOfTodos > 10 ? 10 : numberOfTodos;
+        numberOfGoals = numberOfGoals > 10 ? 10 : numberOfGoals;
 
         UserProject userProject = userProjectService.getUserProjectByUserIdAndProjectId(userId, projectId);
 
         if (userProject.getProjectRole().equals(ProjectRole.CREATOR) ||
                 userProject.getProjectRole().equals(ProjectRole.ADMIN)) {
 
-            List<TodoDTO> todos = todoService.getLastTodosOfUserByProjectId(userId, projectId);
+            List<GoalDTO> goals = goalService.getLastGoalsOfUserByProjectId(userId, projectId);
 
-            //Get the list of the last three todos of the project ranked by position and without their descriptions
-            List lastProjectTodos = todos.subList(
+            //Get the list of the last three goals of the project ranked by position and without their descriptions
+            List lastProjectGoals = goals.subList(
                             0,
-                            Math.min(todos.size(), 3))
-                    .stream().map(generatedTodoDTOMapper)
-                    .map(generatedTodoDTO -> new GeneratedTodoDTO(generatedTodoDTO.projectId(),
-                            generatedTodoDTO.name(),
+                            Math.min(goals.size(), 3))
+                    .stream().map(generatedGoalDTOMapper)
+                    .map(generatedGoalDTO -> new GeneratedGoalDTO(generatedGoalDTO.projectId(),
+                            generatedGoalDTO.name(),
                             null
                     )).collect(Collectors.toList());
 
 
             Gson gson = new Gson();
-            String json = gson.toJson(lastProjectTodos);
+            String json = gson.toJson(lastProjectGoals);
 
             String prompt = "Here is a project of ID: " + userProject.getProject().getProjectId() + "" +
                     ", name: '" + userProject.getProject().getName() + "'" +
                     " and description: '" + userProject.getProject().getDescription() + "'. " +
-                    "Generate " + numberOfTodos + "" +
-                    " todos or actions that will need to be executed in order to complete the project," +
+                    "Generate " + numberOfGoals + "" +
+                    " goals or actions that will need to be executed in order to complete the project," +
                     " they should be helpful, non-repetitive, straightforward, clear, concise and easy to understand," +
                     " in JSON format with the following properties: " +
                     "projectId(which is equal to the project ID)" +
                     ", name(regexp = ^[a-zA-Z]([a-zA-Z0-9]|[-_. ](?![._-])){1,48}[a-zA-Z0-9]$ )" +
                     " and description(should be unique, creative, well-written, descriptive and easy to understand, " +
                     "regexp = ^[\\w\\s.,;:!?'\\\"(){}\\[\\]-_*&#@^+=|%$\\/]{10,500}$ )." +
-                    " The generated todos or actions should be a continuity of the following todos: " + json + ".";
+                    " The generated goals or actions should be a continuity of the following goals: " + json + ".";
 
             System.out.println(prompt);
-            return generateTodos(prompt);
+            return generateGoals(prompt);
         } else {
             throw new IllegalAccessException
-                    ("You do not have the required permissions to generate todos in this project");
+                    ("You do not have the required permissions to generate goals in this project");
         }
     }
 
 
-    private List<GeneratedTodoDTO> generateTodos(String prompt) {
+    private List<GeneratedGoalDTO> generateGoals(String prompt) {
         List<ChatMessage> chatMessages = new ArrayList();
         ChatMessage message = new ChatMessage("user", prompt);
         chatMessages.add(message);
@@ -97,15 +97,15 @@ public class TodoGenerationService {
 
         //Convert the response into a list of generated tasks
         ObjectMapper mapper = new ObjectMapper();
-        List<GeneratedTodoDTO> generatedTodos = null;
+        List<GeneratedGoalDTO> generatedGoals = null;
         try {
-            generatedTodos = mapper.readValue(response
-                    , new TypeReference<List<GeneratedTodoDTO>>() {
+            generatedGoals = mapper.readValue(response
+                    , new TypeReference<List<GeneratedGoalDTO>>() {
                     });
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
 
-        return generatedTodos;
+        return generatedGoals;
     }
 }

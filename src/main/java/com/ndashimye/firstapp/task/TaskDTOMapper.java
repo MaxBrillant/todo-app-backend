@@ -11,7 +11,7 @@ public class TaskDTOMapper implements Function<Task, TaskDTO> {
     public TaskDTO apply(Task task) {
         return new TaskDTO(
                 task.getTaskId(),
-                task.getTodo().getTodoId(),
+                task.getGoal().getGoalId(),
                 task.getParentTask() == null ? null : task.getParentTask().getTaskId(),
                 task.getCompletedByUser() == null ? null : task.getCompletedByUser().getUserId(),
                 task.getName(),

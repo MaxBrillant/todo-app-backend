@@ -1,8 +1,8 @@
 package com.ndashimye.firstapp.user;
 
 import com.ndashimye.firstapp.error.InvalidTimeFormatException;
-import com.ndashimye.firstapp.todo.Todo;
-import com.ndashimye.firstapp.todo.TodoRepository;
+import com.ndashimye.firstapp.goal.Goal;
+import com.ndashimye.firstapp.goal.GoalRepository;
 import com.ndashimye.firstapp.userprofile.UserProfile;
 import com.ndashimye.firstapp.userprofile.UserProfileRepository;
 import com.ndashimye.firstapp.usersettings.UserSettings;
@@ -31,7 +31,7 @@ class UserServiceImplTest {
     private UserRepository userRepository;
 
     @Mock
-    private TodoRepository todoRepository;
+    private GoalRepository goalRepository;
 
     @Mock
     private UserProfileRepository userProfileRepository;
@@ -141,22 +141,22 @@ class UserServiceImplTest {
         Long userId = 1L;
         User user = User.builder().userId(userId).username("testUser").build();
 
-        List<Todo> todos = new ArrayList<>();
-        todos.add(Todo.builder().todoId(1L).name("Test Todo 1")
+        List<Goal> goals = new ArrayList<>();
+        goals.add(Goal.builder().todoId(1L).name("Test Goal 1")
                 .userTodo(new BlacklistedUser().builder().user(user).build()).build());
-        todos.add(Todo.builder().todoId(2L).name("Test Todo 2")
+        goals.add(Goal.builder().todoId(2L).name("Test Goal 2")
                 .userTodo(new BlacklistedUser().builder().user(user).build()).build());
 
         // When
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(todoRepository.findByUserOrderByUserTodoPositionAsc(user)).thenReturn(todos);
+        when(goalRepository.findByUserOrderByUserTodoPositionAsc(user)).thenReturn(goals);
 
         // Then
-        List<Todo> result = userServiceImpl.getAllTodosByUserId(userId);
+        List<Goal> result = userServiceImpl.getAllTodosByUserId(userId);
         assertEquals(2, result.size());
-        assertEquals(todos, result);
-        assertEquals("Test Todo 1", result.get(0).getName());
-        assertEquals("Test Todo 2", result.get(1).getName());
+        assertEquals(goals, result);
+        assertEquals("Test Goal 1", result.get(0).getName());
+        assertEquals("Test Goal 2", result.get(1).getName());
     }
 
     @Test
@@ -165,31 +165,31 @@ class UserServiceImplTest {
         Long userId = 1L;
         User user = User.builder().userId(userId).username("testUser").build();
 
-        Todo todo1 = new Todo();
-        todo1.setTodoId(1L);
-        todo1.setName("Todo1");
-        todo1.setUserTodo(BlacklistedUser.builder().priorityLevel(2).build());
+        Goal goal1 = new Goal();
+        goal1.setGoalId(1L);
+        goal1.setName("Todo1");
+        goal1.setUserTodo(BlacklistedUser.builder().priorityLevel(2).build());
 
-        Todo todo2 = new Todo();
-        todo2.setTodoId(2L);
-        todo2.setName("Todo2");
-        todo2.setUserTodo(BlacklistedUser.builder().priorityLevel(3).build());
+        Goal goal2 = new Goal();
+        goal2.setGoalId(2L);
+        goal2.setName("Todo2");
+        goal2.setUserTodo(BlacklistedUser.builder().priorityLevel(3).build());
 
-        List<Todo> expectedTodos = new ArrayList<>();
-        expectedTodos.add(todo1);
-        expectedTodos.add(todo2);
+        List<Goal> expectedGoals = new ArrayList<>();
+        expectedGoals.add(goal1);
+        expectedGoals.add(goal2);
 
         // When
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(todoRepository.findByUserOrderByTodoPriorityLevelDesc(user)).thenReturn(expectedTodos);
+        when(goalRepository.findByUserOrderByTodoPriorityLevelDesc(user)).thenReturn(expectedGoals);
 
-        List<Todo> todos = userServiceImpl.getAllTodosByUserIdOrderedByPriority(userId);
+        List<Goal> goals = userServiceImpl.getAllTodosByUserIdOrderedByPriority(userId);
 
         // Then
-        assertEquals(2, todos.size());
-        assertEquals(expectedTodos, todos);
-        assertEquals("Todo1", todos.get(0).getName());
-        assertEquals("Todo2", todos.get(1).getName());
+        assertEquals(2, goals.size());
+        assertEquals(expectedGoals, goals);
+        assertEquals("Todo1", goals.get(0).getName());
+        assertEquals("Todo2", goals.get(1).getName());
     }
 
     @Test
@@ -198,33 +198,33 @@ class UserServiceImplTest {
         Long userId = 1L;
         User user = User.builder().userId(userId).username("testUser").build();
 
-        Todo todo1 = new Todo();
-        todo1.setTodoId(1L);
-        todo1.setName("Todo1");
-        todo1.setUserTodo(BlacklistedUser.builder().priorityLevel(2).build());
-        todo1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(3), ZoneId.of("UTC")));
+        Goal goal1 = new Goal();
+        goal1.setGoalId(1L);
+        goal1.setName("Todo1");
+        goal1.setUserTodo(BlacklistedUser.builder().priorityLevel(2).build());
+        goal1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(3), ZoneId.of("UTC")));
 
-        Todo todo2 = new Todo();
-        todo2.setTodoId(2L);
-        todo2.setName("Todo2");
-        todo2.setUserTodo(BlacklistedUser.builder().priorityLevel(3).build());
-        todo1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(7), ZoneId.of("UTC")));
+        Goal goal2 = new Goal();
+        goal2.setGoalId(2L);
+        goal2.setName("Todo2");
+        goal2.setUserTodo(BlacklistedUser.builder().priorityLevel(3).build());
+        goal1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(7), ZoneId.of("UTC")));
 
-        List<Todo> expectedTodos = new ArrayList<>();
-        expectedTodos.add(todo1);
-        expectedTodos.add(todo2);
+        List<Goal> expectedGoals = new ArrayList<>();
+        expectedGoals.add(goal1);
+        expectedGoals.add(goal2);
 
         // When
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(todoRepository.findByUserOrderByDueTimeDesc(user)).thenReturn(expectedTodos);
+        when(goalRepository.findByUserOrderByDueTimeDesc(user)).thenReturn(expectedGoals);
 
-        List<Todo> todos = userServiceImpl.getAllTodosByUserIdOrderedByMostRecent(userId);
+        List<Goal> goals = userServiceImpl.getAllTodosByUserIdOrderedByMostRecent(userId);
 
         // Then
-        assertEquals(2, todos.size());
-        assertEquals(expectedTodos, todos);
-        assertEquals("Todo1", todos.get(0).getName());
-        assertEquals("Todo2", todos.get(1).getName());
+        assertEquals(2, goals.size());
+        assertEquals(expectedGoals, goals);
+        assertEquals("Todo1", goals.get(0).getName());
+        assertEquals("Todo2", goals.get(1).getName());
     }
 
 
@@ -234,33 +234,33 @@ class UserServiceImplTest {
         Long userId = 1L;
         User user = User.builder().userId(userId).username("testUser").build();
 
-        Todo todo1 = new Todo();
-        todo1.setTodoId(1L);
-        todo1.setName("Todo1");
-        todo1.setUserTodo(BlacklistedUser.builder().priorityLevel(2).build());
-        todo1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(3), ZoneId.of("UTC")));
+        Goal goal1 = new Goal();
+        goal1.setGoalId(1L);
+        goal1.setName("Todo1");
+        goal1.setUserTodo(BlacklistedUser.builder().priorityLevel(2).build());
+        goal1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(3), ZoneId.of("UTC")));
 
-        Todo todo2 = new Todo();
-        todo2.setTodoId(2L);
-        todo2.setName("Todo2");
-        todo2.setUserTodo(BlacklistedUser.builder().priorityLevel(3).build());
-        todo1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(7), ZoneId.of("UTC")));
+        Goal goal2 = new Goal();
+        goal2.setGoalId(2L);
+        goal2.setName("Todo2");
+        goal2.setUserTodo(BlacklistedUser.builder().priorityLevel(3).build());
+        goal1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(7), ZoneId.of("UTC")));
 
-        List<Todo> expectedTodos = new ArrayList<>();
-        expectedTodos.add(todo1);
-        expectedTodos.add(todo2);
+        List<Goal> expectedGoals = new ArrayList<>();
+        expectedGoals.add(goal1);
+        expectedGoals.add(goal2);
 
         // When
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(todoRepository.findByUserOrderByDueTimeAsc(user)).thenReturn(expectedTodos);
+        when(goalRepository.findByUserOrderByDueTimeAsc(user)).thenReturn(expectedGoals);
 
-        List<Todo> todos = userServiceImpl.getAllTodosByUserIdOrderedByLeastRecent(userId);
+        List<Goal> goals = userServiceImpl.getAllTodosByUserIdOrderedByLeastRecent(userId);
 
         // Then
-        assertEquals(2, todos.size());
-        assertEquals(expectedTodos, todos);
-        assertEquals("Todo1", todos.get(0).getName());
-        assertEquals("Todo2", todos.get(1).getName());
+        assertEquals(2, goals.size());
+        assertEquals(expectedGoals, goals);
+        assertEquals("Todo1", goals.get(0).getName());
+        assertEquals("Todo2", goals.get(1).getName());
     }
 
 
@@ -271,40 +271,40 @@ class UserServiceImplTest {
         User user = User.builder().userId(userId).username("testUser")
                 .settings(UserSettings.builder().timeZone("UTC").build()).build();
 
-        Todo todo1 = new Todo();
-        todo1.setTodoId(1L);
-        todo1.setName("Todo1");
-        todo1.setUserTodo(BlacklistedUser.builder().priorityLevel(2).build());
-        todo1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(3), ZoneId.of("UTC")));
+        Goal goal1 = new Goal();
+        goal1.setGoalId(1L);
+        goal1.setName("Todo1");
+        goal1.setUserTodo(BlacklistedUser.builder().priorityLevel(2).build());
+        goal1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(3), ZoneId.of("UTC")));
 
-        Todo todo2 = new Todo();
-        todo2.setTodoId(2L);
-        todo2.setName("Todo2");
-        todo2.setUserTodo(BlacklistedUser.builder().priorityLevel(3).build());
-        todo1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(7), ZoneId.of("UTC")));
+        Goal goal2 = new Goal();
+        goal2.setGoalId(2L);
+        goal2.setName("Todo2");
+        goal2.setUserTodo(BlacklistedUser.builder().priorityLevel(3).build());
+        goal1.setDueTime(ZonedDateTime.of(LocalDateTime.now().minusDays(7), ZoneId.of("UTC")));
 
-        List<Todo> expectedTodos = new ArrayList<>();
-        expectedTodos.add(todo1);
-        expectedTodos.add(todo2);
+        List<Goal> expectedGoals = new ArrayList<>();
+        expectedGoals.add(goal1);
+        expectedGoals.add(goal2);
 
         // When
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(todoRepository.findByUserAndDueTimeBetween(eq(userId)
+        when(goalRepository.findByUserAndDueTimeBetween(eq(userId)
                 , any(Timestamp.class)
                 , any(Timestamp.class)))
-                .thenReturn(expectedTodos);
+                .thenReturn(expectedGoals);
 
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        List<Todo> todos = userServiceImpl.getAllTodosBetweenDates
+        List<Goal> goals = userServiceImpl.getAllTodosBetweenDates
                 (userId, LocalDateTime.now().minusDays(3).format(formatter)
                         , LocalDateTime.now().minusDays(7).format(formatter));
 
         // Then
-        assertEquals(2, todos.size());
-        assertEquals(expectedTodos, todos);
-        assertEquals("Todo1", todos.get(0).getName());
-        assertEquals("Todo2", todos.get(1).getName());
+        assertEquals(2, goals.size());
+        assertEquals(expectedGoals, goals);
+        assertEquals("Todo1", goals.get(0).getName());
+        assertEquals("Todo2", goals.get(1).getName());
     }
 
 
