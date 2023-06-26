@@ -10,9 +10,9 @@ public interface TaskService {
     //Service methods that handle all the operations related to tasks
     Task getTaskById(Long taskId) throws AppEntityNotFoundException;
 
-    List<TaskDTO> getCompletedTasks(Long todoId) throws AppEntityNotFoundException;
+    List<TaskDTO> getCompletedTasks(Long goalId) throws AppEntityNotFoundException;
 
-    List<TaskDTO> getUncompletedTasks(Long todoId) throws AppEntityNotFoundException;
+    List<TaskDTO> getUncompletedTasks(Long goalId) throws AppEntityNotFoundException;
 
     void updateTask(TaskCreationDTO updatedTask, Long taskId)
             throws AppEntityNotFoundException;
@@ -32,23 +32,16 @@ public interface TaskService {
 
     /*
     Service methods that handle all the operations
-    related to the relationship between tasks and todos
+    related to the relationship between tasks and goals
     */
-    void addNewTaskToTodo(TaskCreationDTO task, Long todoId)
+    void addNewTaskToGoal(TaskCreationDTO task, Long goalId)
             throws AppEntityNotFoundException;
 
-    List<TaskDTO> getAllTasksByTodoId(Long todoId) throws AppEntityNotFoundException;
+    List<TaskDTO> getAllTasksByGoalId(Long goalId) throws AppEntityNotFoundException;
 
-    List<TaskDTO> getLastTasksByTodoId(Long todoId) throws AppEntityNotFoundException;
+    List<TaskDTO> getLastTasksByGoalId(Long goalId) throws AppEntityNotFoundException;
 
-    List<TaskDTO> getAllTasksByTodoIdOrderedByPriority(Long todoId)
-            throws AppEntityNotFoundException;
-
-    /*
-    Service methods that handle all the operations
-    related to the relationship between tasks and their parent tasks
-    */
-    void updateParentTask(Long taskId, Long parentTaskId, int position)
+    List<TaskDTO> getAllTasksByGoalIdOrderedByPriority(Long goalId)
             throws AppEntityNotFoundException;
 
     /*

@@ -7,8 +7,8 @@ import com.google.gson.Gson;
 import com.ndashimye.firstapp.error.AppEntityNotFoundException;
 import com.ndashimye.firstapp.task.TaskDTO;
 import com.ndashimye.firstapp.task.TaskService;
-import com.ndashimye.firstapp.todo.TodoDTO;
-import com.ndashimye.firstapp.todo.TodoService;
+import com.ndashimye.firstapp.goal.GoalDTO;
+import com.ndashimye.firstapp.goal.GoalService;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.service.OpenAiService;
@@ -26,38 +26,37 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class TaskGenerationService {
     private final String API_KEY = System.getenv("OPENAI_API_KEY");
-    private final TodoService todoService;
+    private final GoalService goalService;
     private final TaskService taskService;
     private final GeneratedTaskDTOMapper generatedTaskDTOMapper;
 
 
-    public List<GeneratedTaskDTO> generateTasksOfTodo(Long todoId, Integer numberOfTasks)
+    public List<GeneratedTaskDTO> generateTasksOfGoal(Long goalId, Integer numberOfTasks)
             throws AppEntityNotFoundException {
 
         numberOfTasks = numberOfTasks > 10 ? 10 : numberOfTasks;
 
-        TodoDTO todo = todoService.getTodoDTOById(todoId);
-        List<TaskDTO> tasks = taskService.getLastTasksByTodoId(todoId);
+        GoalDTO goal = goalService.getGoalDTOById(goalId);
+        List<TaskDTO> tasks = taskService.getLastTasksByGoalId(goalId);
 
-        //Get the list of the last three tasks of the todoItem ranked by position
-        List<GeneratedTaskDTO> lastTodoTasks = tasks.subList(
+        //Get the list of the last three tasks of the goal ranked by position
+        List<GeneratedTaskDTO> lastGoalTasks = tasks.subList(
                         0,
                         Math.min(tasks.size(), 3))
                 .stream().map(generatedTaskDTOMapper).collect(Collectors.toList());
 
 
         Gson gson = new Gson();
-        String json = gson.toJson(lastTodoTasks);
+        String json = gson.toJson(lastGoalTasks);
 
-        String prompt = "Here is a todo of ID: " + todo.id() + "" +
-                ", name: '" + todo.name() + "'" +
-                " and description: '" + todo.description() + "'. " +
+        String prompt = "Here is a goal of ID: " + goal.id() + "" +
+                ", name: '" + goal.name() + "'" +
+                " and description: '" + goal.description() + "'. " +
                 "Generate " + numberOfTasks + "" +
-                " tasks or sub-tasks that will need to be executed in order to complete the todo," +
+                " tasks or sub-tasks that will need to be executed in order to complete the goal," +
                 ", they should be helpful, non-repetitive, straightforward, clear, concise and easy to understand," +
                 " in JSON format with the following properties: " +
-                "todoId(which is equal to the todo ID)" +
-                ", name(regexp = ^[a-zA-Z]([a-zA-Z0-9]|[-_. ](?![._-])){1,48}[a-zA-Z0-9]$ )" +
+                "name(regexp = ^[a-zA-Z]([a-zA-Z0-9]|[-_. ](?![._-])){1,48}[a-zA-Z0-9]$ )" +
                 " and priorityLevel(which is an integer between 1 and 5)." +
                 " The generated tasks should be a continuity of the following tasks: " + json + ".";
 
@@ -72,7 +71,7 @@ public class TaskGenerationService {
 
         numberOfChildTasks = numberOfChildTasks > 5 ? 5 : numberOfChildTasks;
         TaskDTO task = taskService.getTaskDTOById(taskId);
-        TodoDTO todo = todoService.getTodoDTOById(task.todoId());
+        GoalDTO goal = goalService.getGoalDTOById(task.goalId());
 
         List<TaskDTO> childTasks = taskService.getLastChildTasksByTaskId(taskId);
 
@@ -88,13 +87,12 @@ public class TaskGenerationService {
 
         String prompt = "Here is a task of ID: '" + task.id() + "'" +
                 ", name: '" + task.name() + "'. " +
-                "The task belongs to a todo of ID: " + todo.id() + ". " +
+                "The task belongs to a goal of ID: " + goal.id() + ". " +
                 "Understand the specific task and Generate " + numberOfChildTasks + "" +
                 " child tasks or sub-tasks that will need to be executed in order to complete the task" +
                 ", they should be helpful, non-repetitive, straightforward, clear, concise and easy to understand," +
                 " in JSON format with the following properties: " +
-                "todoId(which is equal to the todo ID)" +
-                ", name(regexp = ^[a-zA-Z]([a-zA-Z0-9]|[-_. ](?![._-])){1,48}[a-zA-Z0-9]$ )" +
+                "name(regexp = ^[a-zA-Z]([a-zA-Z0-9]|[-_. ](?![._-])){1,48}[a-zA-Z0-9]$ )" +
                 " and priorityLevel(which is an integer between 1 and 5)." +
                 " The generated child tasks or sub-tasks should be a continuity of the following tasks: " + json + ".";
 

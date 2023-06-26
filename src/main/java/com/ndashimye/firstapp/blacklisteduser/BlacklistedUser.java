@@ -1,10 +1,9 @@
 package com.ndashimye.firstapp.blacklisteduser;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.ndashimye.firstapp.todo.Todo;
+import com.ndashimye.firstapp.goal.Goal;
 import com.ndashimye.firstapp.userproject.UserProject;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
@@ -34,8 +33,8 @@ public class BlacklistedUser {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "todo_id", nullable = false)
-    @NotNull(message = "The todo is required")
+    @JoinColumn(name = "goal_id", nullable = false)
+    @NotNull(message = "The goal is required")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Todo todo;
+    private Goal goal;
 }

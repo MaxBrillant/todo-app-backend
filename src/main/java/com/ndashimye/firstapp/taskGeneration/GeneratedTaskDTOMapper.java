@@ -10,7 +10,6 @@ public class GeneratedTaskDTOMapper implements Function<TaskDTO, GeneratedTaskDT
     @Override
     public GeneratedTaskDTO apply(TaskDTO taskDTO) {
         return new GeneratedTaskDTO(
-                taskDTO.todoId(),
                 taskDTO.name(),
                 taskDTO.priorityLevel());
     }

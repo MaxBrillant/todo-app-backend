@@ -3,13 +3,9 @@ package com.ndashimye.firstapp.user;
 import com.ndashimye.firstapp.blacklisteduser.BlackListedUserService;
 import com.ndashimye.firstapp.error.AppEntityNotFoundException;
 import com.ndashimye.firstapp.error.InvalidTimeFormatException;
-import com.ndashimye.firstapp.project.Project;
-import com.ndashimye.firstapp.project.ProjectService;
+import com.ndashimye.firstapp.goal.GoalService;
 import com.ndashimye.firstapp.task.TaskService;
-import com.ndashimye.firstapp.todo.Todo;
-import com.ndashimye.firstapp.todo.TodoDTO;
-import com.ndashimye.firstapp.todo.TodoService;
-import com.ndashimye.firstapp.userproject.UserProject;
+import com.ndashimye.firstapp.goal.GoalDTO;
 import com.ndashimye.firstapp.userproject.UserProjectDTO;
 import com.ndashimye.firstapp.userproject.UserProjectService;
 import lombok.AllArgsConstructor;
@@ -22,7 +18,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final TodoService todoService;
+    private final GoalService goalService;
     private final TaskService taskService;
     private final UserProjectService userProjectService;
     private final BlackListedUserService blackListedUserService;
@@ -86,12 +82,12 @@ public class UserController {
 
     */
 
-    @GetMapping("/{userId}/projects/{projectId}/todos")
-    public List<TodoDTO> getTodosOfUserByProjectId(@PathVariable Long userId,
+    @GetMapping("/{userId}/projects/{projectId}/goals")
+    public List<GoalDTO> getGoalsOfUserByProjectId(@PathVariable Long userId,
                                                    @PathVariable Long projectId)
             throws AppEntityNotFoundException {
 
-        return todoService.getAllTodosOfUserByProjectId(userId, projectId);
+        return goalService.getAllGoalsOfUserByProjectId(userId, projectId);
     }
 
     @GetMapping("/{userId}/projects")
@@ -106,38 +102,38 @@ public class UserController {
     /*
 
     HTTP endpoints that handle all the operations
-    related to the relationship between users and todos
+    related to the relationship between users and goals
 
     */
 
-    @GetMapping("/{userId}/todos")
-    public List<TodoDTO> getTodosByUserId(@PathVariable Long userId)
+    @GetMapping("/{userId}/goals")
+    public List<GoalDTO> getGoalsByUserId(@PathVariable Long userId)
             throws AppEntityNotFoundException {
 
-        return todoService.getAllTodosByUserId(userId);
+        return goalService.getAllGoalsByUserId(userId);
     }
 
-    @GetMapping("/{userId}/todos/order-by/due-time/most-recent")
-    public List<TodoDTO> getTodosByUserIdOrderedByMostRecent(@PathVariable Long userId)
+    @GetMapping("/{userId}/goals/order-by/due-time/most-recent")
+    public List<GoalDTO> getGoalsByUserIdOrderedByMostRecent(@PathVariable Long userId)
             throws AppEntityNotFoundException {
 
-        return todoService.getAllTodosByUserIdOrderedByMostRecent(userId);
+        return goalService.getAllGoalsByUserIdOrderedByMostRecent(userId);
     }
 
-    @GetMapping("/{userId}/todos/order-by/due-time/least-recent")
-    public List<TodoDTO> getTodosByUserIdOrderedByLeastRecent(@PathVariable Long userId)
+    @GetMapping("/{userId}/goals/order-by/due-time/least-recent")
+    public List<GoalDTO> getGoalsByUserIdOrderedByLeastRecent(@PathVariable Long userId)
             throws AppEntityNotFoundException {
 
-        return todoService.getAllTodosByUserIdOrderedByLeastRecent(userId);
+        return goalService.getAllGoalsByUserIdOrderedByLeastRecent(userId);
     }
 
-    @GetMapping("/{userId}/todos/between")
-    public List<TodoDTO> getTodosBetweenDates
+    @GetMapping("/{userId}/goals/between")
+    public List<GoalDTO> getGoalsBetweenDates
             (@PathVariable Long userId
                     , @RequestParam String start, @RequestParam String end)
             throws AppEntityNotFoundException, InvalidTimeFormatException {
 
-            return todoService.getAllTodosByUserIdBetweenDates(userId, start, end);
+            return goalService.getAllGoalsByUserIdBetweenDates(userId, start, end);
 
     }
 
@@ -146,35 +142,35 @@ public class UserController {
     /*
 
     HTTP endpoints that handle all the operations
-    related to the relationship between users and restricted todos
+    related to the relationship between users and restricted goals
 
     */
 
-    @GetMapping("/{userId}/projects/{projectId}/restricted-todos")
-    public List<TodoDTO> getRestrictedTodosOfUserInProject
+    @GetMapping("/{userId}/projects/{projectId}/restricted-goals")
+    public List<GoalDTO> getRestrictedGoalsOfUserInProject
             (@PathVariable Long userId, @PathVariable Long projectId)
             throws AppEntityNotFoundException {
 
-        return blackListedUserService.getRestrictedTodosOfUserInProject(userId, projectId);
+        return blackListedUserService.getRestrictedGoalsOfUserInProject(userId, projectId);
     }
 
 
-    @PutMapping("/{userId}/projects/{projectId}/todos/{todoId}/restrict-access")
-    public void restrictUserFromAccessingTodoInProject
+    @PutMapping("/{userId}/projects/{projectId}/goals/{goalId}/restrict-access")
+    public void restrictUserFromAccessingGoalInProject
             (@PathVariable Long userId, @PathVariable Long projectId
-                    , @PathVariable Long todoId)
+                    , @PathVariable Long goalId)
             throws AppEntityNotFoundException {
 
-        blackListedUserService.restrictUserFromAccessingTodoInProject(userId, projectId, todoId);
+        blackListedUserService.restrictUserFromAccessingGoalInProject(userId, projectId, goalId);
     }
 
-    @PutMapping("/{userId}/projects/{projectId}/todos/{todoId}/unrestrict")
+    @PutMapping("/{userId}/projects/{projectId}/goals/{goalId}/unrestrict")
     public void unrestrictUserFromAccessingTodoInProject
             (@PathVariable Long userId, @PathVariable Long projectId
-                    , @PathVariable Long todoId)
+                    , @PathVariable Long goalId)
             throws AppEntityNotFoundException {
 
-        blackListedUserService.unrestrictUserFromAccessingTodoInProject(userId, projectId, todoId);
+        blackListedUserService.unrestrictUserFromAccessingGoalInProject(userId, projectId, goalId);
     }
 
 
