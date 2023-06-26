@@ -54,9 +54,9 @@ public class TaskGenerationService {
                 " and description: '" + goal.description() + "'. " +
                 "Generate " + numberOfTasks + "" +
                 " tasks or sub-tasks that will need to be executed in order to complete the goal," +
-                ", they should be helpful, non-repetitive, straightforward, clear, concise and easy to understand," +
+                ", they should be helpful, non-repetitive and easy to understand," +
                 " in JSON format with the following properties: " +
-                "name(regexp = ^[a-zA-Z]([a-zA-Z0-9]|[-_. ](?![._-])){1,48}[a-zA-Z0-9]$ )" +
+                "name(regexp = ^[a-zA-Z]([a-zA-Z0-9]|[-_. ](?![._-])){1,48}[a-zA-Z0-9]$ and should be very detailed and descriptive about the task)" +
                 " and priorityLevel(which is an integer between 1 and 5)." +
                 " The generated tasks should be a continuity of the following tasks: " + json + ".";
 
@@ -90,9 +90,9 @@ public class TaskGenerationService {
                 "The task belongs to a goal of ID: " + goal.id() + ". " +
                 "Understand the specific task and Generate " + numberOfChildTasks + "" +
                 " child tasks or sub-tasks that will need to be executed in order to complete the task" +
-                ", they should be helpful, non-repetitive, straightforward, clear, concise and easy to understand," +
+                ", they should be helpful, non-repetitive and easy to understand," +
                 " in JSON format with the following properties: " +
-                "name(regexp = ^[a-zA-Z]([a-zA-Z0-9]|[-_. ](?![._-])){1,48}[a-zA-Z0-9]$ )" +
+                "name(regexp = ^[a-zA-Z]([a-zA-Z0-9]|[-_. ](?![._-])){1,48}[a-zA-Z0-9]$ and should be very detailed and descriptive about the task)" +
                 " and priorityLevel(which is an integer between 1 and 5)." +
                 " The generated child tasks or sub-tasks should be a continuity of the following tasks: " + json + ".";
 
