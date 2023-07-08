@@ -11,10 +11,12 @@ public class TaskDTOMapper implements Function<Task, TaskDTO> {
     public TaskDTO apply(Task task) {
         return new TaskDTO(
                 task.getTaskId(),
-                task.getGoal().getGoalId(),
+                task.getProject().getProjectId(),
                 task.getParentTask() == null ? null : task.getParentTask().getTaskId(),
-                task.getCompletedByUser() == null ? null : task.getCompletedByUser().getUserId(),
+                task.getAssignedToUser() == null ? null : task.getAssignedToUser().getUser().getUserId(),
+                task.getCompletedByUser() == null ? null : task.getCompletedByUser().getUser().getUserId(),
                 task.getName(),
+                task.getDescription(),
                 task.getDueTime(),
                 task.getCompletionTime(),
                 task.getIsRecurrent(),

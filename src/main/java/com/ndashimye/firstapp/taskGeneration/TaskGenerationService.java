@@ -5,10 +5,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.ndashimye.firstapp.error.AppEntityNotFoundException;
+import com.ndashimye.firstapp.project.Project;
+import com.ndashimye.firstapp.project.ProjectService;
 import com.ndashimye.firstapp.task.TaskDTO;
 import com.ndashimye.firstapp.task.TaskService;
-import com.ndashimye.firstapp.goal.GoalDTO;
-import com.ndashimye.firstapp.goal.GoalService;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.service.OpenAiService;
@@ -26,34 +26,34 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class TaskGenerationService {
     private final String API_KEY = System.getenv("OPENAI_API_KEY");
-    private final GoalService goalService;
     private final TaskService taskService;
+    private final ProjectService projectService;
     private final GeneratedTaskDTOMapper generatedTaskDTOMapper;
 
 
-    public List<GeneratedTaskDTO> generateTasksOfGoal(Long goalId, Integer numberOfTasks)
+    public List<GeneratedTaskDTO> generateTasksOfProject(Long projectId, Integer numberOfTasks)
             throws AppEntityNotFoundException {
 
         numberOfTasks = numberOfTasks > 10 ? 10 : numberOfTasks;
 
-        GoalDTO goal = goalService.getGoalDTOById(goalId);
-        List<TaskDTO> tasks = taskService.getLastTasksByGoalId(goalId);
+        Project project = projectService.getProjectById(projectId);
+        List<TaskDTO> tasks = taskService.getLastTasksByProjectId(projectId);
 
-        //Get the list of the last three tasks of the goal ranked by position
-        List<GeneratedTaskDTO> lastGoalTasks = tasks.subList(
+        //Get the list of the last three tasks of the project ranked by position
+        List<GeneratedTaskDTO> lastProjectTasks = tasks.subList(
                         0,
                         Math.min(tasks.size(), 3))
                 .stream().map(generatedTaskDTOMapper).collect(Collectors.toList());
 
 
         Gson gson = new Gson();
-        String json = gson.toJson(lastGoalTasks);
+        String json = gson.toJson(lastProjectTasks);
 
-        String prompt = "Here is a goal of ID: " + goal.id() + "" +
-                ", name: '" + goal.name() + "'" +
-                " and description: '" + goal.description() + "'. " +
+        String prompt = "Here is a project of ID: " + project.getProjectId() + "" +
+                ", name: '" + project.getName() + "'" +
+                " and description: '" + project.getDescription() + "'. " +
                 "Generate " + numberOfTasks + "" +
-                " tasks or sub-tasks that will need to be executed in order to complete the goal," +
+                " tasks or sub-tasks that will need to be executed in order to complete the project," +
                 ", they should be helpful, non-repetitive and easy to understand," +
                 " in JSON format with the following properties: " +
                 "name(regexp = ^[a-zA-Z]([a-zA-Z0-9]|[-_. ](?![._-])){1,48}[a-zA-Z0-9]$ and should be very detailed and descriptive about the task)" +
@@ -71,7 +71,7 @@ public class TaskGenerationService {
 
         numberOfChildTasks = numberOfChildTasks > 5 ? 5 : numberOfChildTasks;
         TaskDTO task = taskService.getTaskDTOById(taskId);
-        GoalDTO goal = goalService.getGoalDTOById(task.goalId());
+        Project project = projectService.getProjectById(task.projectId());
 
         List<TaskDTO> childTasks = taskService.getLastChildTasksByTaskId(taskId);
 
@@ -87,7 +87,7 @@ public class TaskGenerationService {
 
         String prompt = "Here is a task of ID: '" + task.id() + "'" +
                 ", name: '" + task.name() + "'. " +
-                "The task belongs to a goal of ID: " + goal.id() + ". " +
+                "The task belongs to a project of ID: " + project.getProjectId() + ". " +
                 "Understand the specific task and Generate " + numberOfChildTasks + "" +
                 " child tasks or sub-tasks that will need to be executed in order to complete the task" +
                 ", they should be helpful, non-repetitive and easy to understand," +

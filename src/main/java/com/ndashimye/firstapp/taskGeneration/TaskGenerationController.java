@@ -12,12 +12,12 @@ import java.util.List;
 public class TaskGenerationController {
     private TaskGenerationService taskGenerationService;
 
-    @GetMapping("/goals/{goalId}/generate/tasks")
-    public List<GeneratedTaskDTO> generateTasksOfGoal(@PathVariable Long goalId,
+    @GetMapping("/projects/{projectId}/generate/tasks")
+    public List<GeneratedTaskDTO> generateTasksOfProject(@PathVariable Long projectId,
                                                       @RequestParam("number") Integer numberOfTasks)
             throws AppEntityNotFoundException {
 
-        return taskGenerationService.generateTasksOfGoal(goalId, numberOfTasks);
+        return taskGenerationService.generateTasksOfProject(projectId, numberOfTasks);
     }
 
     @GetMapping("/tasks/{taskId}/generate/sub-tasks")

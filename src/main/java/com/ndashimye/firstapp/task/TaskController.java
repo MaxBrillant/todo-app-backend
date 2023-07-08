@@ -14,7 +14,7 @@ public class TaskController {
 
 
 
-    //HTTP endpoints that handle all the operations related to projects
+    //HTTP endpoints that handle all the operations related to tasks
 
     @PutMapping("/{taskId}")
     public void updateTask(@RequestBody TaskCreationDTO updatedTask, @PathVariable Long taskId)
@@ -28,6 +28,20 @@ public class TaskController {
             throws AppEntityNotFoundException {
 
         taskService.deleteTask(taskId);
+    }
+
+    @PutMapping("/{taskId}/assign-to/{userId}")
+    public void assignTask(@PathVariable Long userId, @PathVariable Long taskId)
+            throws AppEntityNotFoundException {
+
+        taskService.assignTaskToUser(userId, taskId);
+    }
+
+    @PutMapping("/{taskId}/complete")
+    public void completeTask(@PathVariable Long taskId)
+            throws AppEntityNotFoundException {
+
+        taskService.completeTask(taskId);
     }
 
     @PutMapping("/{taskId}/uncompleted")
@@ -50,6 +64,18 @@ public class TaskController {
             throws AppEntityNotFoundException {
 
         return taskService.getTaskDTOById(taskId);
+    }
+
+
+
+
+
+    @PutMapping("/{taskId}/move-to/{projectId}")
+    public void moveToProject(@PathVariable Long taskId,
+                              @PathVariable Long projectId)
+            throws AppEntityNotFoundException {
+
+        taskService.moveTaskToProject(taskId, projectId);
     }
 
 

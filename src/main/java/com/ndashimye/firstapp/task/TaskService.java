@@ -1,6 +1,8 @@
 package com.ndashimye.firstapp.task;
 
 import com.ndashimye.firstapp.error.AppEntityNotFoundException;
+import com.ndashimye.firstapp.error.InvalidTimeFormatException;
+
 import java.util.List;
 
 public interface TaskService {
@@ -10,9 +12,9 @@ public interface TaskService {
     //Service methods that handle all the operations related to tasks
     Task getTaskById(Long taskId) throws AppEntityNotFoundException;
 
-    List<TaskDTO> getCompletedTasks(Long goalId) throws AppEntityNotFoundException;
+    List<TaskDTO> getCompletedTasksInProject(Long projectId) throws AppEntityNotFoundException;
 
-    List<TaskDTO> getUncompletedTasks(Long goalId) throws AppEntityNotFoundException;
+    List<TaskDTO> getUncompletedTasksInProject(Long projectId) throws AppEntityNotFoundException;
 
     void updateTask(TaskCreationDTO updatedTask, Long taskId)
             throws AppEntityNotFoundException;
@@ -20,7 +22,10 @@ public interface TaskService {
     void deleteTask(Long taskId)
             throws AppEntityNotFoundException;
 
-    void completeTask(Long taskId, Long userId)
+    void assignTaskToUser(Long userId, Long taskId)
+            throws AppEntityNotFoundException;
+
+    void completeTask(Long taskId)
             throws AppEntityNotFoundException;
 
     void unCompleteTask(Long taskId) throws AppEntityNotFoundException;
@@ -32,16 +37,19 @@ public interface TaskService {
 
     /*
     Service methods that handle all the operations
-    related to the relationship between tasks and goals
+    related to the relationship between tasks and projects
     */
-    void addNewTaskToGoal(TaskCreationDTO task, Long goalId)
+    void addNewTaskToProject(TaskCreationDTO task, Long projectId)
             throws AppEntityNotFoundException;
 
-    List<TaskDTO> getAllTasksByGoalId(Long goalId) throws AppEntityNotFoundException;
+    void moveTaskToProject(Long taskId, Long projectId)
+            throws AppEntityNotFoundException;
 
-    List<TaskDTO> getLastTasksByGoalId(Long goalId) throws AppEntityNotFoundException;
+    List<TaskDTO> getAllTasksByProjectId(Long projectId) throws AppEntityNotFoundException;
 
-    List<TaskDTO> getAllTasksByGoalIdOrderedByPriority(Long goalId)
+    List<TaskDTO> getLastTasksByProjectId(Long projectId) throws AppEntityNotFoundException;
+
+    List<TaskDTO> getAllTasksByProjectIdOrderedByPriority(Long projectId)
             throws AppEntityNotFoundException;
 
     /*
@@ -60,4 +68,17 @@ public interface TaskService {
     List<TaskDTO> getCompletedChildTasks(Long taskId) throws AppEntityNotFoundException;
 
     List<TaskDTO> getUncompletedChildTasks(Long taskId) throws AppEntityNotFoundException;
+
+    List<TaskDTO> getAllTasksByUserId(Long userId)
+            throws AppEntityNotFoundException;
+
+    List<TaskDTO> getAllTasksByUserIdOrderedByMostRecent(Long userId)
+            throws AppEntityNotFoundException;
+
+    List<TaskDTO> getAllTasksByUserIdOrderedByLeastRecent(Long userId)
+            throws AppEntityNotFoundException;
+
+    List<TaskDTO> getAllTasksByUserIdBetweenDates
+            (Long userId, String start, String end)
+            throws AppEntityNotFoundException, InvalidTimeFormatException;
 }
