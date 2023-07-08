@@ -81,7 +81,6 @@ public class UserProjectServiceImpl implements UserProjectService {
                 .builder()
                 .name(projectCreationDTO.name())
                 .description(projectCreationDTO.description())
-                .coverImageUrl(projectCreationDTO.coverURL())
                 .build();
 
         projectRepository.save(project);
@@ -124,7 +123,6 @@ public class UserProjectServiceImpl implements UserProjectService {
 
             userProject.getProject().setName(updatedProject.name());
             userProject.getProject().setDescription(updatedProject.description());
-            userProject.getProject().setCoverImageUrl(updatedProject.coverURL());
 
             //projectRepository.save(project);
             log.info("Project of ID: {} was successfully updated.", userProject.getProject().getProjectId());

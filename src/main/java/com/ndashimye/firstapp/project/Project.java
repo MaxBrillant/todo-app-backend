@@ -44,14 +44,6 @@ public class Project {
     private String description;
 
 
-    @Column(name = "cover_image_url")
-    @Pattern(regexp = "^https?:\\/\\/.+(\\.(?i)(jpg|jpeg|png|webp|svg))$"
-            , message = "The link should start with http:// or https://." +
-            "The link should contain a valid domain name and path." +
-            "The image file extension should be one of the following: jpg, jpeg, png, webp, svg.")
-    private String coverImageUrl;
-
-
     @Column(name = "created_at")
     @CreationTimestamp
     private ZonedDateTime createdAt;

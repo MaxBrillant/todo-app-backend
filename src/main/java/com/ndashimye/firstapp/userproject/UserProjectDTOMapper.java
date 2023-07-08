@@ -12,7 +12,6 @@ public class UserProjectDTOMapper implements Function<UserProject, UserProjectDT
                 userProject.getProject().getProjectId(),
                 userProject.getProject().getName(),
                 userProject.getProject().getDescription(),
-                userProject.getProject().getCoverImageUrl(),
                 userProject.getProjectRole(),
                 userProject.getPosition(),
                 userProject.getProject().getCreatedAt(),

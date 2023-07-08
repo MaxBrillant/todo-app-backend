@@ -2,8 +2,8 @@ package com.ndashimye.firstapp.task;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ndashimye.firstapp.ZonedDateTimeAttributeConverter;
-import com.ndashimye.firstapp.goal.Goal;
-import com.ndashimye.firstapp.user.User;
+import com.ndashimye.firstapp.project.Project;
+import com.ndashimye.firstapp.userproject.UserProject;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -33,10 +33,10 @@ public class Task {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "goal_id", nullable = false)
-    @NotNull(message = "The goal is required")
+    @JoinColumn(name = "project_id", nullable = false)
+    @NotNull(message = "The project is required")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Goal goal;
+    private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_task_id")
@@ -44,9 +44,15 @@ public class Task {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_to_user")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private UserProject assignedToUser;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "completed_by_user")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User CompletedByUser;
+    private UserProject completedByUser;
 
 
     @Column(name = "name", nullable = false)
@@ -56,6 +62,15 @@ public class Task {
             "It can contain uppercase letters, lowercase letters, digits, spaces, and special characters '-', '_', and '.'." +
             "The special characters '-', '_', and '.' must not appear consecutively or at the beginning or end of the task name.")
     private String name;
+
+
+    @Column(name = "description")
+    @Pattern(regexp = "^[\\w\\s.,;:!?'\\\"(){}\\[\\]-_*&#@^+=|%$\\/]{10,500}$"
+            , message = "The task description should be 10 to 500 characters long." +
+            "It can contain uppercase letters, lowercase letters, digits, spaces, and common " +
+            "punctuation marks (., ,, ;, :, !, ?, ', \", (, ), {, }, [, ], -, _, *, &, #, @, ^, +, =, |, %, $, /).")
+    private String description;
+
 
     @Column(name = "due_time")
     @Convert(converter = ZonedDateTimeAttributeConverter.class)
@@ -70,11 +85,12 @@ public class Task {
 
 
     @Column(name = "is_recurrent")
+    @Builder.Default
     private Boolean isRecurrent = false;
 
 
     @Column(name = "priority_level")
-    @Range(min = 1, max = 5, message = "The priority level must be between 1 and 5")
+    @Range(min = 0, max = 3, message = "The priority level must be between 0 and 3")
     private Integer priorityLevel;
 
 
